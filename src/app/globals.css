@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --page-bg: #EBE2DB;
+  --component-bg: #F2F1EC;
+  --primary: #2D2319;
 }
 
 @theme inline {
@@ -20,7 +21,112 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--page-bg);
+  color: var(--primary);
 }
+
+/* Remove default focus outline */
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Editor container border */
+.editor-wrapper {
+  border: 1px solid #d8d3cc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Table styling */
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #cfcac3;
+  padding: 8px;
+  min-width: 80px;
+}
+
+.ProseMirror th {
+  background-color: #f3eee8;
+  font-weight: 600;
+}
+
+.ProseMirror p {
+  margin: 6px 0;
+}
+
+/* Show active cell highlight */
+.ProseMirror .selectedCell {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Optional hover effect */
+.ProseMirror td:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.editor-wrapper .ProseMirror {
+  min-height: 250px;
+  padding: 12px;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+.product-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th,
+.product-table td {
+  border: 1px solid #ddd;
+  padding: 14px 18px;
+  font-size: 14px;
+}
+
+.product-table th {
+  background-color: #f5f3ef;
+  font-weight: 600;
+  text-align: left;
+}
+
+.product-table tr:nth-child(even) {
+  background-color: #faf9f7;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+}
+
+/* Hide scrollbar but allow scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE */
+  scrollbar-width: none;     /* Firefox */
+}
+
