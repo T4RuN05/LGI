@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 export const fetchFeaturedProducts = async () => {
   const res = await fetch(`${BASE_URL}/products/featured`);
@@ -23,7 +23,7 @@ export const fetchProductBySlug = async (slug) => {
 };
 
 export const fetchCategories = async () => {
-  const res = await fetch("http://localhost:5000/api/categories", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`, {
     cache: "no-store",
   });
 

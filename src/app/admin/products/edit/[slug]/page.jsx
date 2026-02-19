@@ -36,7 +36,7 @@ export default function EditProductPage() {
   // ================= FETCH PRODUCT =================
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await fetch(`http://localhost:5000/api/products/${slug}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`);
 
       const data = await res.json();
 
@@ -64,7 +64,7 @@ export default function EditProductPage() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await fetch("http://localhost:5000/api/categories");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
       const data = await res.json();
       setCategories(data);
     };
@@ -80,7 +80,7 @@ export default function EditProductPage() {
       formData.append("images", file);
     }
 
-    const res = await fetch("http://localhost:5000/api/products/upload", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user?.token}`,
@@ -104,7 +104,7 @@ const handleRemoveImage = async (index) => {
     // 🔥 Delete from Cloudinary
     if (imageToDelete.public_id) {
       await fetch(
-        `http://localhost:5000/api/products/image/${imageToDelete.public_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/image/${imageToDelete.public_id}`,
         {
           method: "DELETE",
           headers: {
@@ -142,7 +142,7 @@ const handleRemoveImage = async (index) => {
   const handleUpdate = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/products/slug/${slug}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/slug/${slug}`,
         {
           method: "PUT",
           headers: {

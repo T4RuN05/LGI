@@ -66,7 +66,7 @@ export default function ProductDetails({ product }) {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/products/${product._id}/whatsapp`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/${product._id}/whatsapp`,
       );
 
       const data = await res.json();

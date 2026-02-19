@@ -57,7 +57,7 @@ export default function CreateProductPage() {
       setUploading(true);
       const toastId = toast.loading("Uploading images...");
 
-      const res = await fetch("http://localhost:5000/api/products/upload", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -99,7 +99,7 @@ export default function CreateProductPage() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await fetch("http://localhost:5000/api/categories");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
       const data = await res.json();
       setCategories(data);
     };
@@ -151,7 +151,7 @@ export default function CreateProductPage() {
       setLoading(true);
       const toastId = toast.loading("Creating product...");
 
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

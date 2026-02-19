@@ -17,7 +17,7 @@ export default function AdminProductsPage() {
   const [categories, setCategories] = useState([]);
 
   const fetchData = async () => {
-    let url = "http://localhost:5000/api/admin/products?";
+    let url = `${process.env.NEXT_PUBLIC_API_URL}/api/admin/products?`;
 
     if (categorySlug) {
       url += `category=${categorySlug}&`;
@@ -36,7 +36,7 @@ export default function AdminProductsPage() {
     const productData = await productRes.json();
     setProducts(productData.products || []);
 
-    const categoryRes = await fetch("http://localhost:5000/api/categories");
+    const categoryRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
     const categoryData = await categoryRes.json();
     setCategories(categoryData || []);
   };
@@ -63,7 +63,7 @@ export default function AdminProductsPage() {
   }
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:5000/api/products/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${user?.token}`,
@@ -74,7 +74,7 @@ export default function AdminProductsPage() {
   };
 
   const handleToggleFeatured = async (id) => {
-    await fetch(`http://localhost:5000/api/products/${id}/toggle-featured`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/toggle-featured`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${user?.token}`,
