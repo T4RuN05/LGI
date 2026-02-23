@@ -4,7 +4,7 @@ import TopHeader from "./components/layout/TopHeader";
 import Navbar from "./components/layout/Navbar";
 import { AuthProvider } from "@/context/AuthContext";
 import ToastProvider from "./providers/ToastProvider";
-
+import { Analytics } from "@vercel/analytics/react";
 import Footer from "./components/layout/Footer";
 
 const notoSerif = Noto_Serif({
@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
           <TopHeader />
           <Navbar />
           <ToastProvider />
+          <Analytics/>
           {children}
           <Footer />
         </AuthProvider>

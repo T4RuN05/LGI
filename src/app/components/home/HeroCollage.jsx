@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HeroCollage() {
   return (
     <section className="w-full flex justify-center bg-[#EBE2DB]">
@@ -11,6 +13,7 @@ export default function HeroCollage() {
 
             <GridItem
               title="Rosary Jewelries"
+              slug="rosary"
               image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185622/lgi-home-img1_puenz4.png"
               desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
             />
@@ -18,11 +21,13 @@ export default function HeroCollage() {
             <div className="grid grid-cols-2 h-full">
               <GridItem
                 title="PENDANTS"
+                slug="pendants"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img3_ym64ns.png"
                 desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
               />
               <GridItem
                 title="BANGLES"
+                slug="bangles"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185618/lgi-home-img4_glpaq3.png"
                 desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
               />
@@ -35,6 +40,7 @@ export default function HeroCollage() {
 
             <GridItem
               title="SILVER CHAINS"
+              slug="silver-chains"
               image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185624/lgi-home-img2_xvfpda.png"
               desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
             />
@@ -42,11 +48,13 @@ export default function HeroCollage() {
             <div className="grid grid-rows-2 h-full">
               <GridItem
                 title="WEDDING EARRINGS"
+                slug="earrings"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771260375/lgi-home-img6_bho4wn.png"
                 desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
               />
               <GridItem
                 title="BRASS BRACELETS"
+                slug="bracelets"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img5_mhmbyj.png"
                 desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
               />
@@ -62,7 +70,7 @@ export default function HeroCollage() {
   );
 }
 
-function GridItem({ title, image, desc }) {
+function GridItem({ title, slug, image, desc }) {
   return (
     <div className="relative w-full h-full overflow-hidden group">
 
@@ -86,9 +94,11 @@ function GridItem({ title, image, desc }) {
           {desc}
         </h4>
 
-        <button className="mt-3 border border-white px-5 py-1 text-sm tracking-wide hover:bg-white hover:text-black transition">
+        <Link 
+        href={`\products?category=${slug}`}
+        className="mt-3 border border-white px-5 py-1 text-sm tracking-wide hover:bg-white hover:text-black transition">
           VIEW PRODUCTS
-        </button>
+        </Link>
 
       </div>
     </div>

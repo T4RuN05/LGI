@@ -1,31 +1,26 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import ProductsLayout from "@/app/components/products/ProductsLayout";
 import { useAuth } from "@/context/AuthContext";
 
-export default function AdminProductsPage() {
-
-  const { user } = useAuth();
-  const searchParams = useSearchParams();
-
-  const categorySlug = searchParams.get("category");
-  const featured = searchParams.get("featured");
-
+export default function AdminProductsPage({ searchParams }) {
+  const { user, hydrated } = useAuth();   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const categorySlug = searchParams?.category;
+  const featured = searchParams?.featured;
 
-  const fetchData = async () => {
+const fetchData = async () => {
+  try {
+    setLoading(true);
+
     let url = `${process.env.NEXT_PUBLIC_API_URL}/api/admin/products?`;
 
-    if (categorySlug) {
-      url += `category=${categorySlug}&`;
-    }
-
-    if (featured) {
-      url += `featured=true&`;
-    }
+    if (categorySlug) url += `category=${categorySlug}&`;
+    if (featured) url += `featured=true&`;
 
     const productRes = await fetch(url, {
       headers: {
@@ -33,21 +28,46 @@ export default function AdminProductsPage() {
       },
     });
 
+    if (!productRes.ok) {
+      console.error("Product fetch failed:", productRes.status);
+      setLoading(false);
+      return;
+    }
+
     const productData = await productRes.json();
     setProducts(productData.products || []);
 
-    const categoryRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
+    const categoryRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/categories`
+    );
+
+    if (!categoryRes.ok) {
+      console.error("Category fetch failed:", categoryRes.status);
+      setLoading(false);
+      return;
+    }
+
     const categoryData = await categoryRes.json();
     setCategories(categoryData || []);
-  };
+
+  } catch (error) {
+    console.error("FETCH ERROR:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    if (user?.token) {
-      fetchData();
-    }
-  }, [user, categorySlug, featured]);
+    if (!hydrated) return;        // 👈 wait for auth hydration
 
-  // 🔥 Dynamic Header Logic
+    if (!user?.token) {
+      setLoading(false);
+      return;
+    }
+
+    fetchData();
+  }, [hydrated, user?.token, categorySlug, featured]);
+
   let selectedCategoryName = "ALL PRODUCTS";
 
   if (featured === "true") {
@@ -74,12 +94,15 @@ export default function AdminProductsPage() {
   };
 
   const handleToggleFeatured = async (id) => {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/toggle-featured`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${user?.token}`,
-      },
-    });
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/toggle-featured`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+      }
+    );
 
     fetchData();
   };
@@ -92,6 +115,7 @@ export default function AdminProductsPage() {
       isAdmin={true}
       onDelete={handleDelete}
       onToggleFeatured={handleToggleFeatured}
+      loading={loading}
     />
   );
 }

@@ -3,13 +3,27 @@
 import { useEffect, useState } from "react";
 import { fetchFeaturedProducts } from "../../../lib/api";
 import ProductCard from "../products/ProductCard";
+import ProductCardSkeleton from "../ui/ProductCardSkeleton";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFeaturedProducts().then(setProducts);
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchFeaturedProducts();
+        setProducts(data || []);
+      } catch (error) {
+        console.error("Failed to fetch featured products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
   }, []);
 
   return (
@@ -50,9 +64,15 @@ export default function FeaturedProducts() {
 
         {/* Grid */}
         <div className="grid grid-cols-4 gap-8">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))
+            : products.length === 0
+              ? <p className="col-span-4 text-center">No featured products.</p>
+              : products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
         </div>
       </div>
     </section>
