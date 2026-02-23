@@ -13,6 +13,7 @@ export default function ProductDetails({ product }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const thumbnailsRef = useRef(null);
   const faqRef = useRef(null);
+  const [showGallery, setShowGallery] = useState(false);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -143,7 +144,8 @@ export default function ProductDetails({ product }) {
                 {/* IMAGE */}
                 <img
                   src={activeImage}
-                  className="max-w-full max-h-full object-contain transition duration-500 hover:scale-105"
+                  onClick={() => setShowGallery(true)}
+                  className="max-w-full max-h-full object-contain transition duration-500 hover:scale-105 cursor-zoom-in"
                 />
 
                 {/* RIGHT ARROW */}
@@ -203,7 +205,18 @@ export default function ProductDetails({ product }) {
             className="bg-[#F2F1EC] mt-6 shadow-md rounded-md p-8"
           >
             <div
-              className="product-table"
+              className="product-table overflow-x-auto
+             [&_table]:w-full
+             [&_table]:border-collapse
+             [&_td]:p-3
+             [&_td]:border
+             [&_th]:p-3
+             [&_th]:border
+             [&_h2]:mt-8
+             [&_h3]:mt-6
+             [&_table]:mt-4
+             [&_ul]:mt-4
+             [&_li]:mb-2"
               dangerouslySetInnerHTML={{ __html: product.attributes }}
             />
           </div>
@@ -221,15 +234,6 @@ export default function ProductDetails({ product }) {
             />
           </div>
 
-          {/* REVIEWS */}
-          <div
-            ref={reviewsRef}
-            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-8"
-          >
-            <h2 className="text-lg font-semibold mb-4">Reviews</h2>
-            <p>No reviews yet.</p>
-          </div>
-
           {/* FAQ */}
           <div
             ref={faqRef}
@@ -244,6 +248,15 @@ export default function ProductDetails({ product }) {
               }}
             />
           </div>
+
+          {/* REVIEWS */}
+          <div
+            ref={reviewsRef}
+            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-8"
+          >
+            <h2 className="text-lg font-semibold mb-4">Reviews</h2>
+            <p>No reviews yet.</p>
+          </div>
         </div>
 
         {/* RIGHT SIDEBAR */}
@@ -255,6 +268,62 @@ export default function ProductDetails({ product }) {
           </div>
         </div>
       </div>
+      {showGallery && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Dark Overlay */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowGallery(false)}
+          />
+
+          {/* Modal Content */}
+          <div className="relative w-[90%] max-w-[1200px] h-[85vh] bg-[#F2F1EC] rounded-lg flex items-center justify-center p-6">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowGallery(false)}
+              className="absolute top-4 right-4 text-black text-2xl"
+            >
+              ✕
+            </button>
+
+            {/* Left Arrow */}
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-4 bg-white/90 hover:bg-white p-4 rounded-full shadow"
+            >
+              <FaChevronUp className="-rotate-90" size={18} />
+            </button>
+
+            {/* Main Large Image */}
+            <img
+              src={activeImage}
+              className="max-h-full max-w-full object-contain"
+            />
+
+            {/* Right Arrow */}
+            <button
+              onClick={handleNextImage}
+              className="absolute right-4 bg-white/90 hover:bg-white p-4 rounded-full shadow"
+            >
+              <FaChevronDown className="rotate-270" size={18} />
+            </button>
+
+            {/* Bottom Thumbnails */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 bg-white/80 backdrop-blur-md px-4 py-2 rounded-md">
+              {product.images?.map((img, index) => (
+                <img
+                  key={index}
+                  src={img.url}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`w-16 h-16 object-contain cursor-pointer border rounded-md ${
+                    currentIndex === index ? "border-black" : "border-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
     </section>
   );

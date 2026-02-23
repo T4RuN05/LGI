@@ -10,12 +10,18 @@ export const AuthProvider = ({ children }) => {
   const [hydrated, setHydrated] = useState(false);
   const router = useRouter();
 
+  // 🔥 Hydrate from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (err) {
+      console.error("Auth hydration failed:", err);
+    } finally {
+      setHydrated(true);
     }
-    setHydrated(true);
   }, []);
 
   const login = (data) => {
@@ -23,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     document.cookie = `token=${data.token}; path=/`;
     setUser(data);
 
-    // 🔥 REDIRECT HERE
+    // 🔥 Redirect based on role
     if (data.role === "admin") {
       router.replace("/admin/products");
     } else {
@@ -38,10 +44,15 @@ export const AuthProvider = ({ children }) => {
     router.replace("/");
   };
 
-  if (!hydrated) return null;
-
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        hydrated, // 👈 expose hydration state
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

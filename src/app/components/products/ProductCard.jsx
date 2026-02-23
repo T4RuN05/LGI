@@ -22,13 +22,12 @@ export default function ProductCard({
   const imageUrl = product?.images?.[0]?.url;
   const minPrice = product?.priceRange?.min;
   const maxPrice = product?.priceRange?.max;
+  const [updatingFeatured, setUpdatingFeatured] = useState(false);
 
   const handleDelete = async () => {
     try {
       await onDelete(product._id);
-
       toast.success("Product deleted successfully");
-
       setShowConfirm(false);
     } catch (error) {
       toast.error("Failed to delete product");
@@ -37,8 +36,6 @@ export default function ProductCard({
 
   const priceDisplay =
     minPrice !== maxPrice ? `$${minPrice}-${maxPrice}` : `$${minPrice}`;
-
-  const whatsappMessage = `Hello, I'm interested in "${product.title}" (MOQ: ${product.moq} ${product.moqUnit}). Please share more details.`;
 
   const handleChat = async () => {
     if (!user) {
@@ -51,15 +48,16 @@ export default function ProductCard({
     );
 
     const data = await res.json();
-
     window.open(data.whatsappUrl, "_blank");
   };
 
   return (
-    <div className="bg-[#F2F1EC] rounded-md shadow-md p-6 text-center">
-      <Link href={`/products/${product.slug}`}>
-        <div className="cursor-pointer group">
-          {/* Added overflow-hidden + group for zoom effect */}
+    <div className="bg-[#F2F1EC] rounded-md shadow-md p-6 text-center flex flex-col h-full">
+      
+      {/* CONTENT WRAPPER (ADDED flex-grow) */}
+      <Link href={`/products/${product.slug}`} className="flex-grow">
+        <div className="cursor-pointer group h-full flex flex-col">
+          
           <div className="aspect-square mb-6 bg-white flex items-center justify-center overflow-hidden">
             <img
               src={imageUrl}
@@ -68,7 +66,7 @@ export default function ProductCard({
             />
           </div>
 
-          <p className="text-sm mb-2 text-gray-700 line-clamp-2">
+          <p className="text-sm mb-2 text-gray-700 line-clamp-2 min-h-[40px]">
             {product.title}
           </p>
 
@@ -80,43 +78,71 @@ export default function ProductCard({
         </div>
       </Link>
 
-      {/* ADMIN MODE */}
+      {/* BUTTON SECTION (ADDED mt-auto) */}
       {isAdmin ? (
-        <div className="space-y-2 mt-4">
+        <div className="space-y-2 mt-auto">
           <div className="flex gap-2">
             <Link
               href={`/admin/products/edit/${product.slug}`}
-              className="flex-1 border py-1 text-sm hover:bg-black hover:text-white transition"
+              className="flex-1 border py-2 text-base hover:bg-black hover:text-white transition"
             >
               EDIT
             </Link>
 
             <button
               onClick={() => setShowConfirm(true)}
-              className="flex-1 border py-1 text-sm hover:bg-black hover:text-white transition"
+              className="flex-1 border py-2 text-base hover:bg-black hover:text-white transition"
             >
               DELETE
             </button>
           </div>
 
           <button
-            onClick={() => onToggleFeatured(product._id)}
-            className="w-full border py-1 text-sm hover:bg-black hover:text-white transition"
+            disabled={updatingFeatured}
+            onClick={async () => {
+              try {
+                setUpdatingFeatured(true);
+
+                await onToggleFeatured(product._id);
+
+                toast.success(
+                  product.isFeatured
+                    ? "Product removed from featured"
+                    : "Product added to featured",
+                );
+              } catch (err) {
+                toast.error("Failed to update featured status");
+              } finally {
+                setUpdatingFeatured(false);
+              }
+            }}
+            className={`w-full border py-2 text-base transition
+              ${
+                updatingFeatured
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-black hover:text-white"
+              }`}
           >
-            {product.isFeatured ? "REMOVE FEATURED" : "ADD TO FEATURED"}
+            {updatingFeatured
+              ? "Updating..."
+              : product.isFeatured
+              ? "REMOVE FEATURED"
+              : "ADD TO FEATURED"}
           </button>
         </div>
       ) : (
-        <button
-          onClick={handleChat}
-          className="inline-flex items-center justify-center gap-2 
-                     border border-black px-6 py-1 
-                     text-sm tracking-wide 
-                     hover:bg-black hover:text-white transition"
-        >
-          <FaWhatsapp size={14} />
-          CHAT NOW
-        </button>
+        <div className="mt-auto">
+          <button
+            onClick={handleChat}
+            className="inline-flex items-center justify-center gap-2 
+           border border-black px-8 py-2 
+           text-base tracking-wide 
+           hover:bg-black hover:text-white transition"
+          >
+            <FaWhatsapp size={14} />
+            CHAT NOW
+          </button>
+        </div>
       )}
 
       {showModal && <AuthModal onClose={() => setShowModal(false)} />}

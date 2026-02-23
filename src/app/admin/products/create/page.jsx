@@ -7,6 +7,82 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import MinimalEditor from "@/app/components/admin/MinimalEditor";
 import toast from "react-hot-toast";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
+
+function SortableImage({
+  img,
+  index,
+  selectedImage,
+  setSelectedImage,
+  removeImage,
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: img.url });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group"
+    >
+      {/* IMAGE */}
+      <img
+        src={img.url}
+        onClick={() => setSelectedImage(index)}
+        className={`w-20 h-20 object-contain border rounded-md transition hover:shadow-md ${
+          selectedImage === index
+            ? "border-black"
+            : "border-gray-300"
+        }`}
+      />
+
+      {/* DELETE BUTTON */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          removeImage(index);
+        }}
+        className="absolute top-1 right-1 
+          bg-black text-white 
+          w-5 h-5 rounded-full text-xs 
+          flex items-center justify-center 
+          z-10"
+      >
+        ✕
+      </button>
+
+      {/* DRAG HANDLE (ONLY THIS DRAGS) */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute bottom-1 left-1 bg-white/80 text-xs px-2 py-0.5 rounded cursor-grab active:cursor-grabbing"
+      >
+        ☰
+      </div>
+    </div>
+  );
+}
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -39,6 +115,7 @@ export default function CreateProductPage() {
       behavior: "smooth",
     });
   };
+  const sensors = useSensors(useSensor(PointerSensor));
 
   /* =========================
       IMAGE UPLOAD HANDLING
@@ -57,13 +134,16 @@ export default function CreateProductPage() {
       setUploading(true);
       const toastId = toast.loading("Uploading images...");
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user?.token}`,
+          },
+          body: formData,
         },
-        body: formData,
-      });
+      );
 
       const data = await res.json();
 
@@ -99,13 +179,32 @@ export default function CreateProductPage() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/categories`,
+      );
       const data = await res.json();
       setCategories(data);
     };
 
     fetchCategories();
   }, []);
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = images.findIndex((img) => img.url === active.id);
+    const newIndex = images.findIndex((img) => img.url === over.id);
+
+    const updated = arrayMove(images, oldIndex, newIndex);
+    setImages(updated);
+
+    // Keep selected image in sync
+    if (selectedImage === oldIndex) {
+      setSelectedImage(newIndex);
+    }
+  };
 
   /* =========================
       FORM HANDLING
@@ -123,7 +222,10 @@ export default function CreateProductPage() {
   };
 
   const handleEditorChange = (value) => {
-    setForm({ ...form, [activeTab]: value });
+    setForm((prev) => ({
+      ...prev,
+      [activeTab]: value,
+    }));
   };
 
   /* =========================
@@ -151,27 +253,30 @@ export default function CreateProductPage() {
       setLoading(true);
       const toastId = toast.loading("Creating product...");
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user?.token}`,
-        },
-        body: JSON.stringify({
-          title: form.title,
-          moq: Number(form.moq),
-          moqUnit: form.moqUnit,
-          priceRange: {
-            min: Number(form.priceMin),
-            max: Number(form.priceMax),
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
           },
-          category: form.category,
-          attributes: form.attributes,
-          description: form.description,
-          faq: form.faq,
-          images: images,
-        }),
-      });
+          body: JSON.stringify({
+            title: form.title,
+            moq: Number(form.moq),
+            moqUnit: form.moqUnit,
+            priceRange: {
+              min: Number(form.priceMin),
+              max: Number(form.priceMax),
+            },
+            category: form.category,
+            attributes: form.attributes,
+            description: form.description,
+            faq: form.faq,
+            images: images,
+          }),
+        },
+      );
 
       if (!res.ok) {
         toast.error("Failed to create product", { id: toastId });
@@ -212,45 +317,32 @@ export default function CreateProductPage() {
               </button>
 
               {/* THUMBNAIL LIST */}
-              <div
-                ref={thumbnailsRef}
-                className="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-2 no-scrollbar"
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                {images?.map((img, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={img.url}
-                      onClick={() => setSelectedImage(index)}
-                      className={`w-20 h-20 object-contain border rounded-md cursor-pointer transition hover:shadow-md ${
-                        selectedImage === index
-                          ? "border-black"
-                          : "border-gray-300"
-                      }`}
-                    />
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-
-                        const updated = images.filter((_, i) => i !== index);
-                        setImages(updated);
-
-                        if (selectedImage >= updated.length) {
-                          setSelectedImage(updated.length - 1);
-                        }
-                      }}
-                      className="absolute top-1 right-1 
-                   bg-black text-white 
-                   w-5 h-5 rounded-full text-xs 
-                   flex items-center justify-center 
-                   opacity-0 group-hover:opacity-100 
-                   transition"
-                    >
-                      ✕
-                    </button>
+                <SortableContext
+                  items={images.map((img) => img.url)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div
+                    ref={thumbnailsRef}
+                    className="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-2 no-scrollbar"
+                  >
+                    {images.map((img, index) => (
+                      <SortableImage
+                        key={img.url}
+                        img={img}
+                        index={index}
+                        selectedImage={selectedImage}
+                        setSelectedImage={setSelectedImage}
+                        removeImage={removeImage}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
 
               {/* DOWN ARROW */}
               <button

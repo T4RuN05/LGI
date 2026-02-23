@@ -8,6 +8,83 @@ import { FiUpload, FiX } from "react-icons/fi";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import toast from "react-hot-toast";
 
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
+
+function SortableImage({
+  img,
+  index,
+  activeImage,
+  setActiveImage,
+  handleRemoveImage,
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: img.url });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group"
+    >
+      {/* IMAGE */}
+      <img
+        src={img.url}
+        onClick={() => setActiveImage(img.url)}
+        className={`w-20 h-20 object-cover rounded-md border transition hover:shadow-md ${
+          activeImage === img.url
+            ? "border-black"
+            : "border-gray-300"
+        }`}
+      />
+
+      {/* DELETE BUTTON */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleRemoveImage(index);
+        }}
+        className="absolute top-1 right-1 
+          bg-black text-white 
+          w-5 h-5 rounded-full text-xs 
+          flex items-center justify-center 
+          z-10"
+      >
+        ✕
+      </button>
+
+      {/* DRAG HANDLE */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute bottom-1 left-1 bg-white/80 text-xs px-2 py-0.5 rounded cursor-grab active:cursor-grabbing"
+      >
+        ☰
+      </div>
+    </div>
+  );
+}
+
 export default function EditProductPage() {
   const { slug } = useParams();
   const router = useRouter();
@@ -32,11 +109,14 @@ export default function EditProductPage() {
     description: "",
     faq: "",
   });
+  const sensors = useSensors(useSensor(PointerSensor));
 
   // ================= FETCH PRODUCT =================
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`,
+      );
 
       const data = await res.json();
 
@@ -64,7 +144,9 @@ export default function EditProductPage() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/categories`,
+      );
       const data = await res.json();
       setCategories(data);
     };
@@ -80,13 +162,16 @@ export default function EditProductPage() {
       formData.append("images", file);
     }
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user?.token}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: formData,
       },
-      body: formData,
-    });
+    );
 
     const data = await res.json();
 
@@ -97,38 +182,48 @@ export default function EditProductPage() {
     }
   };
 
-const handleRemoveImage = async (index) => {
-  const imageToDelete = images[index];
+  const handleRemoveImage = async (index) => {
+    const imageToDelete = images[index];
 
-  try {
-    // 🔥 Delete from Cloudinary
-    if (imageToDelete.public_id) {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products/image/${imageToDelete.public_id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
+    try {
+      // 🔥 Delete from Cloudinary
+      if (imageToDelete.public_id) {
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/products/image/${imageToDelete.public_id}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
           },
-        }
-      );
-    }
+        );
+      }
 
-    // 🔥 Update local state
-    const updated = images.filter((_, i) => i !== index);
+      // 🔥 Update local state
+      const updated = images.filter((_, i) => i !== index);
+      setImages(updated);
+
+      if (activeImage === imageToDelete.url) {
+        setActiveImage(updated[0]?.url || null);
+      }
+
+      toast.success("Image removed successfully");
+    } catch (error) {
+      toast.error("Failed to delete image");
+    }
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = images.findIndex((img) => img.url === active.id);
+    const newIndex = images.findIndex((img) => img.url === over.id);
+
+    const updated = arrayMove(images, oldIndex, newIndex);
     setImages(updated);
-
-    if (activeImage === imageToDelete.url) {
-      setActiveImage(updated[0]?.url || null);
-    }
-
-    toast.success("Image removed successfully");
-
-  } catch (error) {
-    toast.error("Failed to delete image");
-  }
-};
-
+  };
 
   // ================= FORM =================
   const handleChange = (e) => {
@@ -195,7 +290,6 @@ const handleRemoveImage = async (index) => {
         {/* TOP SECTION */}
         <div className="bg-[#F2F1EC] shadow-md p-8 rounded-md flex gap-10">
           {/* LEFT IMAGE SECTION */}
-          {/* LEFT IMAGE SECTION */}
           <div className="flex gap-6 w-1/2">
             {/* THUMBNAILS WITH ARROWS */}
             <div className="flex flex-col items-center">
@@ -213,31 +307,32 @@ const handleRemoveImage = async (index) => {
               </button>
 
               {/* THUMBNAIL LIST */}
-              <div
-                ref={thumbnailsRef}
-                className="flex flex-col gap-3 max-h-[360px] overflow-hidden"
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                {images.map((img, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={img.url}
-                      onClick={() => setActiveImage(img.url)}
-                      className={`w-20 h-20 object-cover rounded-md cursor-pointer border transition hover:shadow-md ${
-                        activeImage === img.url
-                          ? "border-black"
-                          : "border-gray-300"
-                      }`}
-                    />
-
-                    <button
-                      onClick={() => handleRemoveImage(index)}
-                      className="absolute top-0 right-0 bg-black text-white p-1 text-xs rounded-sm"
-                    >
-                      <FiX size={12} />
-                    </button>
+                <SortableContext
+                  items={images.map((img) => img.url)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div
+                    ref={thumbnailsRef}
+                    className="flex flex-col gap-3 max-h-[360px] overflow-hidden"
+                  >
+                    {images.map((img, index) => (
+                      <SortableImage
+                        key={img.url}
+                        img={img}
+                        index={index}
+                        activeImage={activeImage}
+                        setActiveImage={setActiveImage}
+                        handleRemoveImage={handleRemoveImage}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
 
               {/* DOWN ARROW */}
               <button

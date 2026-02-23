@@ -16,6 +16,7 @@ export default function ProductsLayout({
   isAdmin = false,
   onDelete,
   onToggleFeatured,
+  loading = false,
 }) {
   return (
     <section className="bg-[#EBE2DB] min-h-screen py-3">
@@ -35,7 +36,6 @@ export default function ProductsLayout({
           </button>
         </div>
 
-        {/* FILTER ROW */}
         {/* FILTER ROW */}
         {isAdmin ? (
           <div className="flex items-center justify-between gap-8 mb-12">
@@ -101,6 +101,7 @@ export default function ProductsLayout({
           isAdmin={isAdmin}
           onDelete={onDelete}
           onToggleFeatured={onToggleFeatured}
+          loading={loading}
         />
       </div>
     </section>

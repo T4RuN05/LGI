@@ -130,3 +130,22 @@ body {
   scrollbar-width: none;     /* Firefox */
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -700px 0;
+  }
+  100% {
+    background-position: 700px 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #e6dfd6 0%,
+    #f5f2ed 50%,
+    #e6dfd6 100%
+  );
+  background-size: 1400px 100%;
+  animation: shimmer 1.6s infinite linear;
+}
