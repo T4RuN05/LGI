@@ -2,20 +2,16 @@
 export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import ProductsLayout from "@/app/components/products/ProductsLayout";
 import { useAuth } from "@/context/AuthContext";
 
-export default function AdminProductsPage() {
+export default function AdminProductsPage({ searchParams }) {
   const { user, hydrated } = useAuth();   
-  const searchParams = useSearchParams();
-
-  const categorySlug = searchParams.get("category");
-  const featured = searchParams.get("featured");
-
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const categorySlug = searchParams?.category;
+  const featured = searchParams?.featured;
 
 const fetchData = async () => {
   try {
