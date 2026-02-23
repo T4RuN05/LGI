@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +8,7 @@ import ProductsLayout from "@/app/components/products/ProductsLayout";
 import { useAuth } from "@/context/AuthContext";
 
 export default function AdminProductsPage() {
-  const { user, hydrated } = useAuth();   // 👈 include hydrated
+  const { user, hydrated } = useAuth();   
   const searchParams = useSearchParams();
 
   const categorySlug = searchParams.get("category");
