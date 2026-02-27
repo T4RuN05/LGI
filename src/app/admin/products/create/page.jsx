@@ -40,19 +40,13 @@ function SortableImage({
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="relative group"
-    >
+    <div ref={setNodeRef} style={style} className="relative group">
       {/* IMAGE */}
       <img
         src={img.url}
         onClick={() => setSelectedImage(index)}
         className={`w-20 h-20 object-contain border rounded-md transition hover:shadow-md ${
-          selectedImage === index
-            ? "border-black"
-            : "border-gray-300"
+          selectedImage === index ? "border-black" : "border-gray-300"
         }`}
       />
 
@@ -138,9 +132,7 @@ export default function CreateProductPage() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
+          credentials: "include",
           body: formData,
         },
       );
@@ -259,8 +251,8 @@ export default function CreateProductPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user?.token}`,
           },
+          credentials: "include",
           body: JSON.stringify({
             title: form.title,
             moq: Number(form.moq),

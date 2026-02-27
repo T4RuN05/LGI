@@ -1,13 +1,8 @@
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiSearch,
-  FiBox,
-  FiFilter,
-} from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiBox } from "react-icons/fi";
 import ProductsGrid from "./ProductsGrid";
 import CategoryAccordion from "./CategoryAccordion";
 import Link from "next/link";
+import SearchBar from "../SearchBar";
 
 export default function ProductsLayout({
   products = [],
@@ -63,21 +58,8 @@ export default function ProductsLayout({
 
             {/* RIGHT - SEARCH + FILTER */}
             <div className="flex-1 flex justify-end">
-              <div
-                className="bg-[#F2F1EC] 
-                      flex items-center gap-3 
-                      px-6 py-4 
-                      shadow-md rounded-md 
-                      w-[360px]"
-              >
-                <FiSearch size={18} />
-
-                <input
-                  placeholder="Search among 100+ products"
-                  className="bg-transparent outline-none text-sm w-full"
-                />
-
-                <FiFilter size={18} className="cursor-pointer" />
+              <div className="w-[320px]">
+                <SearchBar isAdmin={true} />
               </div>
             </div>
           </div>
@@ -85,12 +67,8 @@ export default function ProductsLayout({
           <div className="flex justify-between items-center mb-12">
             <CategoryAccordion categories={categories} isAdmin={false} />
 
-            <div className="bg-[#F2F1EC] flex items-center gap-3 px-5 py-3 shadow-sm rounded-md w-[320px]">
-              <FiSearch size={18} />
-              <input
-                placeholder="Search among 100+ products"
-                className="bg-transparent outline-none text-sm w-full"
-              />
+            <div className="w-[320px]">
+              <SearchBar isAdmin={false} />
             </div>
           </div>
         )}

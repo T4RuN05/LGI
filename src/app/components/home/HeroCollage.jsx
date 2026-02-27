@@ -15,7 +15,7 @@ export default function HeroCollage() {
               title="Rosary Jewelries"
               slug="rosary"
               image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185622/lgi-home-img1_puenz4.png"
-              desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+              desc="Gracefully crafted devotional pieces that blend spiritual meaning with timeless elegance and intricate detailing."
             />
 
             <div className="grid grid-cols-2 h-full">
@@ -23,13 +23,13 @@ export default function HeroCollage() {
                 title="PENDANTS"
                 slug="pendants"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img3_ym64ns.png"
-                desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+                desc="Artfully crafted pendants that express personality, tradition, and contemporary style in every detail."
               />
               <GridItem
                 title="BANGLES"
                 slug="bangles"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185618/lgi-home-img4_glpaq3.png"
-                desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+                desc="Beautifully sculpted bangles that celebrate heritage, craftsmanship, and everyday grace."
               />
             </div>
 
@@ -42,7 +42,7 @@ export default function HeroCollage() {
               title="SILVER CHAINS"
               slug="silver-chains"
               image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185624/lgi-home-img2_xvfpda.png"
-              desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+              desc="Delicately designed silver chains that add subtle sophistication and effortless charm to every look."
             />
 
             <div className="grid grid-rows-2 h-full">
@@ -50,13 +50,13 @@ export default function HeroCollage() {
                 title="WEDDING EARRINGS"
                 slug="earrings"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771260375/lgi-home-img6_bho4wn.png"
-                desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+                desc="Exquisite earrings designed to enhance bridal radiance with sparkle, elegance, and unforgettable charm."
               />
               <GridItem
                 title="BRASS BRACELETS"
                 slug="bracelets"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img5_mhmbyj.png"
-                desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+                desc="Bold and beautifully finished brass bracelets that combine vintage character with modern design appeal."
               />
             </div>
 
@@ -90,7 +90,7 @@ function GridItem({ title, slug, image, desc }) {
         </h2>
 
         {/* Slightly smaller subtext */}
-        <h4 className="text-[9px] font-extralight w-[25rem]">
+        <h4 className="text-[8px] font-extralight w-[25rem]">
           {desc}
         </h4>
 

@@ -10,50 +10,51 @@ export const AuthProvider = ({ children }) => {
   const [hydrated, setHydrated] = useState(false);
   const router = useRouter();
 
-  // 🔥 Hydrate from localStorage
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`,
+          { credentials: "include" }
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setHydrated(true);
       }
-    } catch (err) {
-      console.error("Auth hydration failed:", err);
-    } finally {
-      setHydrated(true);
-    }
+    };
+
+    checkAuth();
   }, []);
 
-  const login = (data) => {
-    localStorage.setItem("user", JSON.stringify(data));
-    document.cookie = `token=${data.token}; path=/`;
-    setUser(data);
-
-    // 🔥 Redirect based on role
-    if (data.role === "admin") {
-      router.replace("/admin/products");
-    } else {
-      router.replace("/");
-    }
+  const login = (userData) => {
+    setUser(userData);
+    router.refresh(); // important
   };
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    document.cookie = "token=; Max-Age=0; path=/";
+  const logout = async () => {
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
     setUser(null);
-    router.replace("/");
+    router.push("/");
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        hydrated, // 👈 expose hydration state
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{ user, login, logout, hydrated }}>
+      {hydrated ? children : null}
     </AuthContext.Provider>
   );
 };

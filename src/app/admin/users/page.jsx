@@ -8,26 +8,30 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
+useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
+        { credentials: "include" }
+      );
 
-        const data = await res.json();
-        setUsers(data);
+      if (!res.ok) {
         setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setLoading(false);
+        return;
       }
-    };
 
-    if (user?.token) fetchUsers();
-  }, [user]);
+      const data = await res.json();
+      setUsers(data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  fetchUsers();
+}, []);
 
   if (loading) {
     return (
