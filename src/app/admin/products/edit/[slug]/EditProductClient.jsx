@@ -186,34 +186,18 @@ export default function EditProductPage() {
     }
   };
 
-  const handleRemoveImage = async (index) => {
-    const imageToDelete = images[index];
+const handleRemoveImage = (index) => {
+  const updated = images.filter((_, i) => i !== index);
+  const removedImage = images[index];
 
-    try {
-      // 🔥 Delete from Cloudinary
-      if (imageToDelete.public_id) {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/products/image/${imageToDelete.public_id}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          },
-        );
-      }
+  setImages(updated);
 
-      // 🔥 Update local state
-      const updated = images.filter((_, i) => i !== index);
-      setImages(updated);
+  if (activeImage === removedImage.url) {
+    setActiveImage(updated[0]?.url || null);
+  }
 
-      if (activeImage === imageToDelete.url) {
-        setActiveImage(updated[0]?.url || null);
-      }
-
-      toast.success("Image removed successfully");
-    } catch (error) {
-      toast.error("Failed to delete image");
-    }
-  };
+  toast.success("Image removed");
+};
 
   const handleDragEnd = (event) => {
     const { active, over } = event;

@@ -83,14 +83,14 @@ function GridItem({ title, slug, image, desc }) {
                    group-hover:scale-105"
       />
 
-      <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white text-center">
+      <div className="absolute inset-0 bg-black/40 transition delay-50 hover:bg-black/10 flex flex-col justify-center items-center text-white text-center">
 
         <h2 className="text-[22px] font-medium tracking-wide">
           {title}
         </h2>
 
         {/* Slightly smaller subtext */}
-        <h4 className="text-[8px] font-extralight w-[25rem]">
+        <h4 className="text-[10px] font-extralight w-[22rem]">
           {desc}
         </h4>
 

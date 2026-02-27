@@ -42,15 +42,9 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-0 z-50 bg-[var(--component-bg)] border-y border-[#e3e1dc] shadow-lg my-[1rem]">
-      
-      {/* FIXED HEIGHT NAVBAR */}
-      <div className="w-full mx-auto px-6 h-[70px] flex items-center justify-between">
-
-        {/* LEFT (optional logo space) */}
-        <div className="w-[120px]" />
-
-        {/* CENTER NAV */}
-        <div className="flex gap-6 md:gap-10 text-[15px] md:text-[17px] font-medium whitespace-nowrap">
+      <div className="relative w-full mx-auto px-6 h-[70px] flex items-center">
+        {/* CENTER NAV (Perfectly Centered) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex gap-6 md:gap-10 text-[15px] md:text-[17px] font-medium whitespace-nowrap">
           {isAdmin ? (
             <>
               {navItem("/admin/products", "Products")}
@@ -66,9 +60,8 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* RIGHT SIDE (STICKS TO EDGE) */}
-        <div className="flex items-center gap-6">
-
+        {/* RIGHT SIDE */}
+        <div className="ml-auto flex items-center gap-6">
           {!isAdmin && (
             <div className="hidden md:flex items-center gap-2 cursor-pointer">
               <HiOutlineGlobeAlt />
@@ -119,7 +112,6 @@ export default function Navbar() {
             </Link>
           )}
         </div>
-
       </div>
     </div>
   );

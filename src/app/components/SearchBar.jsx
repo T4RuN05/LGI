@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SearchBar({ isAdmin }) {
   const [query, setQuery] = useState("");
@@ -94,17 +95,24 @@ export default function SearchBar({ isAdmin }) {
       />
 
       {/* Dropdown */}
-      {showDropdown && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-lg border mt-1 rounded-md z-[100]">
-          {suggestions.map((item) => (
-            <div
-              key={item.slug}
-              onClick={() => handleSearch(item.title)}
-              className="px-4 py-3 text-sm hover:bg-gray-100 cursor-pointer"
-            >
-              {item.title}
+      {query && showDropdown && (
+        <div className="absolute top-full left-0 w-full bg-white shadow-md rounded-md mt-2 z-20">
+          {suggestions.length > 0 ? (
+            suggestions.map((item) => (
+              <Link
+                key={item._id}
+                href={`/products/${item.slug}`}
+                className="block px-4 py-2 hover:bg-gray-100 text-sm"
+                onClick={() => setShowDropdown(false)}
+              >
+                {item.title}
+              </Link>
+            ))
+          ) : (
+            <div className="px-4 py-3 text-sm text-gray-500">
+              No products found
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FaWhatsapp, FaChevronUp, FaChevronDown } from "react-icons/fa";
 import AuthModal from "@/app/components/AuthModal";
 import { useAuth } from "@/context/AuthContext";
+import ProductCard from "./ProductCard";
 
 export default function ProductDetails({ product }) {
   const attributesRef = useRef(null);
@@ -13,6 +14,8 @@ export default function ProductDetails({ product }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const thumbnailsRef = useRef(null);
   const faqRef = useRef(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [cardsToShow, setCardsToShow] = useState(4);
   const [showGallery, setShowGallery] = useState(false);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -79,6 +82,44 @@ export default function ProductDetails({ product }) {
       console.error("WhatsApp redirect failed:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchRelated = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/products/slug/${product.slug}/related`,
+        );
+
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          setRelatedProducts(data);
+        } else {
+          setRelatedProducts([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch related products", error);
+      }
+    };
+
+    fetchRelated();
+  }, [product._id]);
+
+  useEffect(() => {
+    const calculateCards = () => {
+      const pageHeight = document.body.scrollHeight;
+      const approxCardHeight = 360; // adjust if needed
+
+      const count = Math.floor(pageHeight / approxCardHeight);
+
+      setCardsToShow(count > 2 ? count : 4);
+    };
+
+    calculateCards();
+    window.addEventListener("resize", calculateCards);
+
+    return () => window.removeEventListener("resize", calculateCards);
+  }, []);
 
   return (
     <section className="bg-[#EBE2DB] min-h-screen py-3">
@@ -175,7 +216,7 @@ export default function ProductDetails({ product }) {
                 onClick={handleChat}
                 className="inline-flex items-center gap-2 
                   border border-black px-6 py-2
-               hover:bg-black hover:text-white transition"
+               hover:bg-black hover:text-white transition cursor-pointer"
               >
                 <FaWhatsapp />
                 CHAT NOW
@@ -184,7 +225,7 @@ export default function ProductDetails({ product }) {
           </div>
 
           {/* TAB STRIP */}
-          <div className="bg-[#F2F1EC] mt-8 shadow-md rounded-md sticky top-14 z-10">
+          <div className="bg-[#F2F1EC] mt-8 shadow-md rounded-md sticky top-18 z-10">
             <div className="flex justify-center gap-16 py-4 text-lg">
               <button onClick={() => scrollToSection(attributesRef)}>
                 Attributes
@@ -261,10 +302,23 @@ export default function ProductDetails({ product }) {
 
         {/* RIGHT SIDEBAR */}
         <div className="w-[320px]">
-          <div className="bg-[#F2F1EC] shadow-md rounded-md p-4">
-            <h3 className="text-center font-semibold tracking-widest">
+          <div className="bg-[#F2F1EC] shadow-md rounded-md p-4 mb-6 sticky top-18 z-10">
+            <h3 className="text-center font-semibold tracking-widest text-sm">
               OTHER RECOMMENDATION
             </h3>
+          </div>
+
+          <div className="space-y-4">
+            {Array.isArray(relatedProducts) &&
+              relatedProducts
+                .slice(0, cardsToShow)
+                .map((item) => (
+                  <ProductCard
+                    key={item._id}
+                    product={item}
+                    variant="compact"
+                  />
+                ))}
           </div>
         </div>
       </div>
