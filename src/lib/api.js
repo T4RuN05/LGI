@@ -5,16 +5,18 @@ export const fetchFeaturedProducts = async () => {
   return res.json();
 };
 
-export const fetchProducts = async (categorySlug) => {
+export async function fetchProducts(categorySlug, search) {
+  let url = `${process.env.NEXT_PUBLIC_API_URL}/api/products?`;
 
-  const url = categorySlug
-    ? `${BASE_URL}/products?category=${categorySlug}`
-    : `${BASE_URL}/products`;
+  if (categorySlug) url += `category=${categorySlug}&`;
+  if (search) url += `search=${search}&`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url, {
+    cache: "no-store",
+  });
 
   return res.json();
-};
+}
 
 
 export const fetchProductBySlug = async (slug) => {

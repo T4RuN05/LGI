@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { FiUpload, FiX } from "react-icons/fi";
-import { FaChevronUp, FaChevronDown } from "react-icons/fa";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import MinimalEditor from "@/app/components/admin/MinimalEditor";
+import { FiUpload, FiX } from "react-icons/fi";
+import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import toast from "react-hot-toast";
+
 import {
   DndContext,
   closestCenter,
@@ -27,9 +28,9 @@ import { CSS } from "@dnd-kit/utilities";
 function SortableImage({
   img,
   index,
-  selectedImage,
-  setSelectedImage,
-  removeImage,
+  activeImage,
+  setActiveImage,
+  handleRemoveImage,
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: img.url });
@@ -44,9 +45,9 @@ function SortableImage({
       {/* IMAGE */}
       <img
         src={img.url}
-        onClick={() => setSelectedImage(index)}
-        className={`w-20 h-20 object-contain border rounded-md transition hover:shadow-md ${
-          selectedImage === index ? "border-black" : "border-gray-300"
+        onClick={() => setActiveImage(img.url)}
+        className={`w-20 h-20 object-cover rounded-md border transition hover:shadow-md ${
+          activeImage === img.url ? "border-black" : "border-gray-300"
         }`}
       />
 
@@ -55,7 +56,7 @@ function SortableImage({
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          removeImage(index);
+          handleRemoveImage(index);
         }}
         className="absolute top-1 right-1 
           bg-black text-white 
@@ -66,7 +67,7 @@ function SortableImage({
         ✕
       </button>
 
-      {/* DRAG HANDLE (ONLY THIS DRAGS) */}
+      {/* DRAG HANDLE */}
       <div
         {...attributes}
         {...listeners}
@@ -78,19 +79,23 @@ function SortableImage({
   );
 }
 
-export default function CreateProductPage() {
+export default function EditProductPage() {
+  const { slug } = useParams();
   const router = useRouter();
   const { user } = useAuth();
 
-  const [activeTab, setActiveTab] = useState("attributes");
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [images, setImages] = useState([]);
+  const [activeImage, setActiveImage] = useState(null);
+  const [productId, setProductId] = useState(null);
+  const [activeTab, setActiveTab] = useState("attributes");
+  const thumbnailsRef = useRef(null);
+
   const [form, setForm] = useState({
     title: "",
     moq: "",
-    moqUnit: "",
+    moqUnit: "pieces",
     priceMin: "",
     priceMax: "",
     category: "",
@@ -98,76 +103,42 @@ export default function CreateProductPage() {
     description: "",
     faq: "",
   });
-  const [uploading, setUploading] = useState(false);
-  const thumbnailsRef = useRef(null);
-
-  const scrollThumbs = (direction) => {
-    if (!thumbnailsRef.current) return;
-
-    thumbnailsRef.current.scrollBy({
-      top: direction === "up" ? -120 : 120,
-      behavior: "smooth",
-    });
-  };
   const sensors = useSensors(useSensor(PointerSensor));
 
-  /* =========================
-      IMAGE UPLOAD HANDLING
-  ========================== */
-
-  const uploadImages = async (files) => {
-    if (!files?.length) return;
-
-    const formData = new FormData();
-
-    for (let file of files) {
-      formData.append("images", file);
-    }
-
-    try {
-      setUploading(true);
-      const toastId = toast.loading("Uploading images...");
-
+  // ================= FETCH PRODUCT =================
+  useEffect(() => {
+    const fetchProduct = async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
-        {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        },
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/${slug}`,
       );
 
       const data = await res.json();
-
       if (!res.ok) {
-        toast.error("Upload failed", { id: toastId });
+        router.push("/admin/products");
         return;
       }
 
-      setImages((prev) => [...prev, ...data]);
+      setProductId(data._id); // ⭐ store ID
 
-      toast.success("Images uploaded", { id: toastId });
-    } catch (err) {
-      toast.error("Image upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
+      setForm({
+        title: data.title || "",
+        moq: data.moq || "",
+        moqUnit: data.moqUnit || "",
+        priceMin: data.priceRange?.min || "",
+        priceMax: data.priceRange?.max || "",
+        category: data.category?._id || "",
+        attributes: data.attributes || "",
+        description: data.description || "",
+        faq: data.faq || "",
+      });
 
-  const handleFileChange = (e) => {
-    uploadImages(e.target.files);
-  };
+      setImages(data.images || []);
+      setActiveImage(data.images?.[0]?.url || null);
+      setLoading(false);
+    };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    uploadImages(e.dataTransfer.files);
-  };
-
-  const removeImage = (index) => {
-    const updated = [...images];
-    updated.splice(index, 1);
-    setImages(updated);
-  };
+    if (slug) fetchProduct();
+  }, [slug]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -175,11 +146,58 @@ export default function CreateProductPage() {
         `${process.env.NEXT_PUBLIC_API_URL}/api/categories`,
       );
       const data = await res.json();
+      if (!res.ok) {
+        router.push("/admin/products");
+        return;
+      }
       setCategories(data);
     };
 
     fetchCategories();
   }, []);
+
+  // ================= IMAGE UPLOAD =================
+  const uploadImages = async (files) => {
+    const formData = new FormData();
+
+    for (let file of files) {
+      formData.append("images", file);
+    }
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      },
+    );
+
+    const data = await res.json();
+    if (!res.ok) {
+      router.push("/admin/products");
+      return;
+    }
+
+    setImages((prev) => [...prev, ...data]);
+
+    if (!activeImage && data.length > 0) {
+      setActiveImage(data[0].url);
+    }
+  };
+
+const handleRemoveImage = (index) => {
+  const updated = images.filter((_, i) => i !== index);
+  const removedImage = images[index];
+
+  setImages(updated);
+
+  if (activeImage === removedImage.url) {
+    setActiveImage(updated[0]?.url || null);
+  }
+
+  toast.success("Image removed");
+};
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -191,118 +209,88 @@ export default function CreateProductPage() {
 
     const updated = arrayMove(images, oldIndex, newIndex);
     setImages(updated);
-
-    // Keep selected image in sync
-    if (selectedImage === oldIndex) {
-      setSelectedImage(newIndex);
-    }
   };
 
-  /* =========================
-      FORM HANDLING
-  ========================== */
-
+  // ================= FORM =================
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Prevent negative values manually
-    if (["moq", "priceMin", "priceMax"].includes(name)) {
-      if (value < 0) return;
-    }
-
-    setForm({ ...form, [name]: value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleEditorChange = (value) => {
-    setForm((prev) => ({
-      ...prev,
-      [activeTab]: value,
-    }));
+    setForm({ ...form, [activeTab]: value });
   };
 
-  /* =========================
-      SUBMIT
-  ========================== */
-
-  const handleSubmit = async () => {
-    if (!form.title) return toast.error("Title is required");
-
-    if (!form.moq || form.moq <= 0)
-      return toast.error("MOQ must be greater than 0");
-
-    if (form.priceMin < 0 || form.priceMax < 0)
-      return toast.error("Price cannot be negative");
-
-    if (Number(form.priceMax) < Number(form.priceMin))
-      return toast.error("Max price must be greater than Min price");
-
-    if (!form.moqUnit) return toast.error("Please select MOQ Unit");
-
-    if (images.length === 0)
-      return toast.error("Please upload at least one image");
-
+  const handleUpdate = async () => {
     try {
-      setLoading(true);
-      const toastId = toast.loading("Creating product...");
-
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/slug/${slug}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           credentials: "include",
           body: JSON.stringify({
             title: form.title,
-            moq: Number(form.moq),
+            moq: form.moq,
             moqUnit: form.moqUnit,
             priceRange: {
-              min: Number(form.priceMin),
-              max: Number(form.priceMax),
+              min: form.priceMin,
+              max: form.priceMax,
             },
             category: form.category,
             attributes: form.attributes,
             description: form.description,
             faq: form.faq,
-            images: images,
+            images,
           }),
         },
       );
 
+      const data = await res.json();
       if (!res.ok) {
-        toast.error("Failed to create product", { id: toastId });
+        router.push("/admin/products");
         return;
       }
 
-      toast.success("Product created successfully", { id: toastId });
+      if (!res.ok) {
+        toast.error(data.message || "Failed to update product");
+        return;
+      }
 
+      toast.success("Product updated successfully");
+
+      // Optional redirect after small delay
       setTimeout(() => {
         router.push("/admin/products");
-      }, 800);
-    } catch (err) {
+      }, 1000);
+    } catch (error) {
+      console.error(error);
       toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
     }
   };
 
-  /* =========================
-      UI
-  ========================== */
+  if (loading) {
+    return <div className="p-10 text-center">Loading...</div>;
+  }
 
   return (
     <section className="bg-[#EBE2DB] min-h-screen py-10">
       <div className="max-w-[1400px] mx-auto space-y-10">
         {/* TOP SECTION */}
         <div className="bg-[#F2F1EC] shadow-md p-8 rounded-md flex gap-10">
-          {/* IMAGE GALLERY SECTION */}
-          <div className="w-1/2 flex gap-6 h-[340px]">
-            {/* LEFT: THUMBNAILS (SCROLLABLE) */}
+          {/* LEFT IMAGE SECTION */}
+          <div className="flex gap-6 w-1/2">
+            {/* THUMBNAILS WITH ARROWS */}
             <div className="flex flex-col items-center">
               {/* UP ARROW */}
               <button
-                onClick={() => scrollThumbs("up")}
+                onClick={() => {
+                  thumbnailsRef.current?.scrollBy({
+                    top: -120,
+                    behavior: "smooth",
+                  });
+                }}
                 className="mb-2 p-2 bg-white rounded-full shadow hover:scale-105 transition"
               >
                 <FaChevronUp size={12} />
@@ -320,16 +308,16 @@ export default function CreateProductPage() {
                 >
                   <div
                     ref={thumbnailsRef}
-                    className="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-2 no-scrollbar"
+                    className="flex flex-col gap-3 max-h-[360px] overflow-hidden"
                   >
                     {images.map((img, index) => (
                       <SortableImage
                         key={img.url}
                         img={img}
                         index={index}
-                        selectedImage={selectedImage}
-                        setSelectedImage={setSelectedImage}
-                        removeImage={removeImage}
+                        activeImage={activeImage}
+                        setActiveImage={setActiveImage}
+                        handleRemoveImage={handleRemoveImage}
                       />
                     ))}
                   </div>
@@ -338,74 +326,65 @@ export default function CreateProductPage() {
 
               {/* DOWN ARROW */}
               <button
-                onClick={() => scrollThumbs("down")}
+                onClick={() => {
+                  thumbnailsRef.current?.scrollBy({
+                    top: 120,
+                    behavior: "smooth",
+                  });
+                }}
                 className="mt-2 p-2 bg-white rounded-full shadow hover:scale-105 transition"
               >
                 <FaChevronDown size={12} />
               </button>
             </div>
 
-            {/* RIGHT: UPLOAD BOX (FIXED HEIGHT) */}
-            <div
-              className={`flex-1 border-2 border-dashed rounded-md 
-bg-[#f7f5f2] flex items-center justify-center 
-text-center cursor-pointer transition h-full
-${uploading ? "opacity-60 pointer-events-none" : ""}
-`}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={handleDrop}
-            >
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                id="imageUpload"
-              />
-
-              {uploading ? (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mb-3" />
-                  <p className="text-sm">Uploading...</p>
-                </div>
+            {/* MAIN IMAGE PREVIEW */}
+            <div className="flex-1 flex items-center justify-center bg-white rounded-lg shadow-inner overflow-hidden h-[420px] relative">
+              {activeImage ? (
+                <img
+                  src={activeImage}
+                  className="max-h-full max-w-full object-contain transition duration-500 hover:scale-105"
+                />
               ) : (
-                <label htmlFor="imageUpload" className="cursor-pointer">
-                  <FiUpload size={28} className="mx-auto mb-3" />
-                  <p>Add Photos</p>
-                </label>
+                <span className="text-gray-400">No Image</span>
               )}
+
+              {/* Upload Button */}
+              <label className="absolute bottom-4 right-4 bg-black text-white px-3 py-2 text-sm cursor-pointer rounded-md hover:opacity-90 transition">
+                <FiUpload />
+                <input
+                  type="file"
+                  multiple
+                  hidden
+                  onChange={(e) => uploadImages(e.target.files)}
+                />
+              </label>
             </div>
           </div>
 
-          {/* FORM FIELDS */}
+          {/* RIGHT FORM */}
           <div className="w-1/2 space-y-4">
             <input
-              type="text"
               name="title"
-              placeholder="ADD TITLE"
               value={form.title}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#e8ded5] outline-none"
+              className="w-full px-4 py-3 bg-[#e8ded5]"
             />
 
             <div className="flex gap-4">
               <input
-                type="number"
                 name="moq"
-                min="1"
                 value={form.moq}
-                placeholder="Enter MOQ"
                 onChange={handleChange}
-                className="w-2/3 px-4 py-2 bg-[#e8ded5] outline-none"
+                className="w-2/3 px-4 py-2 bg-[#e8ded5]"
               />
+
               <select
                 name="moqUnit"
                 value={form.moqUnit}
                 onChange={handleChange}
-                className="w-1/3 px-4 py-2 bg-[#e8ded5] outline-none"
+                className="w-1/3 px-4 py-2 bg-[#e8ded5]"
               >
-                <option value="">Select Unit</option>
                 <option value="pieces">Pieces</option>
                 <option value="dozens">Dozens</option>
                 <option value="pairs">Pairs</option>
@@ -415,48 +394,37 @@ ${uploading ? "opacity-60 pointer-events-none" : ""}
 
             <div className="flex gap-4">
               <input
-                type="number"
-                min="0"
                 name="priceMin"
                 value={form.priceMin}
-                placeholder="Min Price"
                 onChange={handleChange}
-                className="w-1/2 px-4 py-2 bg-[#e8ded5] outline-none"
+                className="w-1/2 px-4 py-2 bg-[#e8ded5]"
               />
               <input
-                type="number"
-                min="0"
                 name="priceMax"
                 value={form.priceMax}
-                placeholder="Max Price"
                 onChange={handleChange}
-                className="w-1/2 px-4 py-2 bg-[#e8ded5] outline-none"
+                className="w-1/2 px-4 py-2 bg-[#e8ded5]"
               />
             </div>
 
+            {/* CATEGORY DROPDOWN */}
             <select
               name="category"
               value={form.category}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#e8ded5] outline-none"
+              className="w-full px-4 py-3 bg-[#e8ded5]"
             >
               <option value="">Select Category</option>
-
-              {categories.flatMap((cat) => [
+              {categories.map((cat) => (
                 <option key={cat._id} value={cat._id}>
                   {cat.name}
-                </option>,
-                ...(cat.children || []).map((child) => (
-                  <option key={child._id} value={child._id}>
-                    └ {child.name}
-                  </option>
-                )),
-              ])}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        {/* TABS + EDITOR */}
+        {/* EDITOR SECTION */}
         <div className="bg-[#F2F1EC] shadow-md p-6 rounded-md">
           <div className="flex gap-12 border-b mb-6">
             {["attributes", "description", "faq"].map((tab) => (
@@ -480,14 +448,12 @@ ${uploading ? "opacity-60 pointer-events-none" : ""}
           />
         </div>
 
-        {/* SAVE */}
         <div className="text-right">
           <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-black text-white px-8 py-3 hover:opacity-90 transition disabled:opacity-50"
+            onClick={handleUpdate}
+            className="bg-black text-white px-8 py-3 cursor-pointer hover:opacity-90 transition"
           >
-            {loading ? "Saving..." : "SAVE PRODUCT"}
+            UPDATE PRODUCT
           </button>
         </div>
       </div>

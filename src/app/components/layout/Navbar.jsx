@@ -2,25 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiSearch } from "react-icons/fi";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout, hydrated } = useAuth();
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const isAdmin = user?.role === "admin";
 
   const navItem = (href, label) => (
     <Link
       href={href}
-      className={`relative pb-1 ${
+      className={`relative whitespace-nowrap ${
         pathname === href
-          ? "after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-black"
+          ? "after:absolute after:left-0 after:-bottom-1 after:w-full after:h-[2px] after:bg-black"
           : ""
       }`}
     >
@@ -28,10 +26,10 @@ export default function Navbar() {
     </Link>
   );
 
-  const isAdmin = user?.role === "admin";
-
-  // Close dropdown on outside click
+  /* Close Profile Dropdown */
   useEffect(() => {
+    if (!hydrated) return;
+
     const handleClick = (e) => {
       if (!e.target.closest(".profile-dropdown")) {
         setOpen(false);
@@ -40,16 +38,13 @@ export default function Navbar() {
 
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
-  }, []);
+  }, [hydrated]);
 
   return (
-    <div className="bg-[var(--component-bg)] border-y border-[#e3e1dc] my-3 shadow-lg rounded-lg sticky top-0 z-10">
-      <div className="max-w-8xl mx-auto px-6 py-3 flex items-center">
-        {/* LEFT SPACER */}
-        <div className="flex-1"></div>
-
-        {/* CENTER NAV */}
-        <div className="flex-1 flex justify-center gap-14 text-[18px]">
+    <div className="sticky top-0 z-50 bg-[var(--component-bg)] border-y border-[#e3e1dc] shadow-lg my-[1rem]">
+      <div className="relative w-full mx-auto px-6 h-[70px] flex items-center">
+        {/* CENTER NAV (Perfectly Centered) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex gap-6 md:gap-10 text-[15px] md:text-[17px] font-medium whitespace-nowrap">
           {isAdmin ? (
             <>
               {navItem("/admin/products", "Products")}
@@ -66,15 +61,12 @@ export default function Navbar() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex-1 flex justify-end items-center gap-6 text-[17px]">
+        <div className="ml-auto flex items-center gap-6">
           {!isAdmin && (
-            <>
-              <FiSearch className="cursor-pointer" />
-              <div className="flex items-center gap-2 cursor-pointer">
-                <HiOutlineGlobeAlt />
-                English - US
-              </div>
-            </>
+            <div className="hidden md:flex items-center gap-2 cursor-pointer">
+              <HiOutlineGlobeAlt />
+              English - US
+            </div>
           )}
 
           {user ? (
@@ -84,7 +76,7 @@ export default function Navbar() {
               </button>
 
               {open && (
-                <div className="absolute right-0 top-[140%] w-52 bg-[#F2F1EC] shadow-xl rounded-lg border border-[#d8d3cc] z-50 overflow-hidden animate-fadeIn">
+                <div className="absolute right-0 top-[120%] w-52 bg-[#F2F1EC] shadow-xl rounded-lg border border-[#d8d3cc] z-50 overflow-hidden">
                   <div className="px-4 py-3 text-sm border-b border-[#d8d3cc] text-gray-600 truncate">
                     {user.email}
                   </div>
@@ -100,18 +92,10 @@ export default function Navbar() {
                   )}
 
                   <button
-onClick={() => {
-  setOpen(false);
-
-
-  logout();
-
-
-  document.cookie = "token=; Max-Age=0; path=/";
-
-
-  window.location.href = "/";
-}}
+                    onClick={() => {
+                      setOpen(false);
+                      logout();
+                    }}
                     className="w-full text-left px-4 py-3 text-sm hover:bg-[#ebe6e0] transition"
                   >
                     Logout

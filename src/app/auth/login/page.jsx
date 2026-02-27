@@ -34,11 +34,15 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(form),
+        },
+      );
 
       const data = await res.json();
 
@@ -104,6 +108,26 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "LOGIN"}
           </button>
+
+          {/* OR Divider */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px bg-gray-300" />
+            <span className="text-sm text-gray-500">OR</span>
+            <div className="flex-1 h-px bg-gray-300" />
+          </div>
+
+          {/* Google Login */}
+          <a
+            href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`}
+            className="w-full flex items-center justify-center gap-3 border py-3 rounded-md hover:bg-black hover:text-white transition duration-300 tracking-wide"
+          >
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google"
+              className="w-5 h-5"
+            />
+            Continue with Google
+          </a>
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
