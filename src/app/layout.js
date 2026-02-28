@@ -7,6 +7,7 @@ import ToastProvider from "./providers/ToastProvider";
 import { Analytics } from "@vercel/analytics/react";
 import RouteProgressBar from "./components/ui/RouteProgressBar";
 import Footer from "./components/layout/Footer";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const notoSerif = Noto_Serif({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <RouteProgressBar />
           <ToastProvider />
+          <SpeedInsights />
           <Analytics/>
           {children}
           <Footer />
