@@ -5,6 +5,7 @@ import { FaWhatsapp, FaChevronUp, FaChevronDown } from "react-icons/fa";
 import AuthModal from "@/app/components/AuthModal";
 import { useAuth } from "@/context/AuthContext";
 import ProductCard from "./ProductCard";
+import { useLocale } from "@/context/LocaleContext";
 
 export default function ProductDetails({ product }) {
   const attributesRef = useRef(null);
@@ -17,6 +18,7 @@ export default function ProductDetails({ product }) {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [cardsToShow, setCardsToShow] = useState(4);
   const [showGallery, setShowGallery] = useState(false);
+  const { currency, rates, t } = useLocale();
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -207,7 +209,7 @@ export default function ProductDetails({ product }) {
               <h1 className="text-xl font-semibold mb-4">{product.title}</h1>
 
               <p className="text-sm text-gray-600 mb-2">
-                Minimum Order Quantity: {product.moq} {product.moqUnit}
+                {t("minOrder")}: {product.moq} {product.moqUnit}
               </p>
 
               <p className="text-2xl font-semibold mb-6">{priceDisplay}</p>
@@ -219,7 +221,7 @@ export default function ProductDetails({ product }) {
                hover:bg-black hover:text-white transition cursor-pointer"
               >
                 <FaWhatsapp />
-                CHAT NOW
+                {t("chatNow")}
               </button>
             </div>
           </div>
@@ -228,15 +230,15 @@ export default function ProductDetails({ product }) {
           <div className="bg-[#F2F1EC] mt-8 shadow-md rounded-md sticky top-18 z-10">
             <div className="flex justify-center gap-16 py-4 text-lg">
               <button onClick={() => scrollToSection(attributesRef)}>
-                Attributes
+                {t("attributes")}
               </button>
               <button onClick={() => scrollToSection(descriptionRef)}>
-                Description
+                {t("description")}
               </button>
               <button onClick={() => scrollToSection(reviewsRef)}>
-                Reviews
+                {t("reviews")}
               </button>
-              <button onClick={() => scrollToSection(faqRef)}>FAQ</button>
+              <button onClick={() => scrollToSection(faqRef)}>{t("faq")}</button>
             </div>
           </div>
 
@@ -304,7 +306,7 @@ export default function ProductDetails({ product }) {
         <div className="w-[320px]">
           <div className="bg-[#F2F1EC] shadow-md rounded-md p-4 mb-6 sticky top-18 z-10">
             <h3 className="text-center font-semibold tracking-widest text-sm">
-              OTHER RECOMMENDATION
+              {t("otherRecommendation")}
             </h3>
           </div>
 

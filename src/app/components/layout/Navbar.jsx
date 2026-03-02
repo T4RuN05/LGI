@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
+import LanguageCurrencyPopup from "../ui/LanguageCurrencyPopup";
+import { useLocale } from "@/context/LocaleContext";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -12,6 +14,8 @@ export default function Navbar() {
   const { user, logout, hydrated } = useAuth();
   const [open, setOpen] = useState(false);
   const isAdmin = user?.role === "admin";
+  const [showLocalePopup, setShowLocalePopup] = useState(false);
+  const { language, currency, t } = useLocale();
 
   const navItem = (href, label) => (
     <Link
@@ -52,10 +56,10 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {navItem("/", "Home")}
-              {navItem("/products", "Products")}
-              {navItem("/about", "About us")}
-              {navItem("/contact", "Contact Us")}
+              {navItem("/", t("home"))}
+              {navItem("/products", t("products"))}
+              {navItem("/about", t("about"))}
+              {navItem("/contact", t("contact"))}
             </>
           )}
         </div>
@@ -63,9 +67,20 @@ export default function Navbar() {
         {/* RIGHT SIDE */}
         <div className="ml-auto flex items-center gap-6">
           {!isAdmin && (
-            <div className="hidden md:flex items-center gap-2 cursor-pointer">
-              <HiOutlineGlobeAlt />
-              English - US
+            <div className="relative hidden md:flex items-center gap-2 cursor-pointer">
+              <div
+                onClick={() => setShowLocalePopup(!showLocalePopup)}
+                className="flex items-center gap-2"
+              >
+                <HiOutlineGlobeAlt />
+                {language.toUpperCase()} - {currency}
+              </div>
+
+              {showLocalePopup && (
+                <LanguageCurrencyPopup
+                  onClose={() => setShowLocalePopup(false)}
+                />
+              )}
             </div>
           )}
 

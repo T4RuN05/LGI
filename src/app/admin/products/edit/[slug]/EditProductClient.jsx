@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import MinimalEditor from "@/app/components/admin/MinimalEditor";
 import { FiUpload, FiX } from "react-icons/fi";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
+import EditProductSkeleton from "@/app/components/admin/EditProductSkeleton";
 import toast from "react-hot-toast";
 
 import {
@@ -118,7 +119,7 @@ export default function EditProductPage() {
         return;
       }
 
-      setProductId(data._id); // ⭐ store ID
+      setProductId(data._id); 
 
       setForm({
         title: data.title || "",
@@ -134,7 +135,7 @@ export default function EditProductPage() {
 
       setImages(data.images || []);
       setActiveImage(data.images?.[0]?.url || null);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 200);
     };
 
     if (slug) fetchProduct();
@@ -271,7 +272,7 @@ const handleRemoveImage = (index) => {
   };
 
   if (loading) {
-    return <div className="p-10 text-center">Loading...</div>;
+    return <EditProductSkeleton />;;
   }
 
   return (

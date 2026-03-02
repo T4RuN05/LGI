@@ -5,12 +5,13 @@ import { fetchFeaturedProducts } from "../../../lib/api";
 import ProductCard from "../products/ProductCard";
 import ProductCardSkeleton from "../ui/ProductCardSkeleton";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useLocale } from "@/context/LocaleContext";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const { t } = useLocale();
   const ITEMS_PER_PAGE = 8;
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export default function FeaturedProducts() {
 
           {/* TITLE */}
           <h2 className="tracking-[0.3em] text-2xl font-semibold text-center">
-            FEATURED PRODUCTS
+            {t("featuredProducts")}
           </h2>
 
           {/* RIGHT ARROW */}
