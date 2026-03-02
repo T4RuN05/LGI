@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import toast from "react-hot-toast";
+import { useLocale } from "@/context/LocaleContext";
+import { convertPrice, formatCurrency } from "@/utils/currency";
 import AuthModal from "../AuthModal";
 
 export default function ProductCard({
@@ -26,6 +28,15 @@ export default function ProductCard({
   const [updatingFeatured, setUpdatingFeatured] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const isCompact = variant === "compact";
+  const { currency, rates, t } = useLocale();
+
+  const convertedMin = convertPrice(minPrice, currency, rates);
+  const convertedMax = convertPrice(maxPrice, currency, rates);
+
+  const priceDisplay =
+    minPrice !== maxPrice
+      ? `${formatCurrency(convertedMin, currency)} - ${formatCurrency(convertedMax, currency)}`
+      : formatCurrency(convertedMin, currency);
 
   const handleDelete = async () => {
     try {
@@ -41,9 +52,6 @@ export default function ProductCard({
       setDeleting(false);
     }
   };
-
-  const priceDisplay =
-    minPrice !== maxPrice ? `$${minPrice}-${maxPrice}` : `$${minPrice}`;
 
   const handleChat = async () => {
     if (!user) {
@@ -91,7 +99,7 @@ export default function ProductCard({
 
           {!isCompact && (
             <p className="text-xs text-gray-500 mb-4">
-              Min. Order: {product.moq} {product.moqUnit}
+              {t("MinOrder")}: {product.moq} {product.moqUnit}
             </p>
           )}
         </div>
@@ -159,7 +167,7 @@ export default function ProductCard({
            hover:bg-black hover:text-white transition cursor-pointer"
           >
             <FaWhatsapp size={14} />
-            CHAT NOW
+            {t("chatNow")}
           </button>
         </div>
       )}

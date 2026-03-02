@@ -17,7 +17,7 @@ export default function ProductsLayout({
     <section className="bg-[#EBE2DB] min-h-screen py-3">
       <div className="max-w-[1850px] mx-auto px-8">
         {/* HEADER */}
-        <div className="bg-[#F2F1EC] flex items-center justify-between px-6 py-4 mb-12 shadow-md rounded-md">
+        <div className="bg-[#F2F1EC] flex items-center justify-between px-6 py-4 mb-12 shadow-md">
           <button className="w-10 h-10 flex items-center justify-center border border-[#d8d3cc] bg-[#EBE2DB] rounded-sm">
             <FiChevronLeft size={20} />
           </button>

@@ -7,6 +7,9 @@ import ToastProvider from "./providers/ToastProvider";
 import { Analytics } from "@vercel/analytics/react";
 import RouteProgressBar from "./components/ui/RouteProgressBar";
 import Footer from "./components/layout/Footer";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { LocaleProvider } from "@/context/LocaleContext";
+
 
 const notoSerif = Noto_Serif({
   subsets: ["latin"],
@@ -21,15 +24,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={notoSerif.className}>
-        <AuthProvider>
-          <TopHeader />
-          <Navbar />
-          <RouteProgressBar />
-          <ToastProvider />
-          <Analytics/>
-          {children}
-          <Footer />
-        </AuthProvider>
+        <LocaleProvider>
+          <AuthProvider>
+            <TopHeader />
+            <Navbar />
+            <RouteProgressBar />
+            <ToastProvider />
+            <SpeedInsights />
+            <Analytics/>
+              {children}
+            <Footer />
+          </AuthProvider>
+        </LocaleProvider>
       </body>
     </html>
   );
