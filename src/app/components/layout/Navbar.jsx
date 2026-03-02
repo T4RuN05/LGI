@@ -58,7 +58,7 @@ export default function Navbar() {
             <>
               {navItem("/", t("home"))}
               {navItem("/products", t("products"))}
-              {navItem("/about", t("about"))}
+              {navItem("/about", t("navAbout"))}
               {navItem("/contact", t("contact"))}
             </>
           )}
