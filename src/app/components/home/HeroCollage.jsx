@@ -1,6 +1,11 @@
+"use client"
+
 import Link from "next/link";
+import { useLocale } from "@/context/LocaleContext";
 
 export default function HeroCollage() {
+  const { t } = useLocale();
+
   return (
     <section className="w-full flex justify-center bg-[#EBE2DB]">
 
@@ -12,24 +17,24 @@ export default function HeroCollage() {
           <div className="grid grid-rows-2 h-full">
 
             <GridItem
-              title="Rosary Jewelries"
+              title={t("rosary")}
               slug="rosary"
               image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185622/lgi-home-img1_puenz4.png"
-              desc="Gracefully crafted devotional pieces that blend spiritual meaning with timeless elegance and intricate detailing."
+              desc={t("rosaryDesc")}
             />
 
             <div className="grid grid-cols-2 h-full">
               <GridItem
-                title="PENDANTS"
+                title={t("pendant")}
                 slug="pendants"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img3_ym64ns.png"
-                desc="Artfully crafted pendants that express personality, tradition, and contemporary style in every detail."
+                desc={t("pendantDesc")}
               />
               <GridItem
-                title="BANGLES"
+                title={t("bangles")}
                 slug="bangles"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185618/lgi-home-img4_glpaq3.png"
-                desc="Beautifully sculpted bangles that celebrate heritage, craftsmanship, and everyday grace."
+                desc={t("BanglesDesc")}
               />
             </div>
 
@@ -39,24 +44,24 @@ export default function HeroCollage() {
           <div className="grid grid-rows-2 h-full">
 
             <GridItem
-              title="SILVER CHAINS"
+              title={t("silverchain")}
               slug="silver-chains"
               image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185624/lgi-home-img2_xvfpda.png"
-              desc="Delicately designed silver chains that add subtle sophistication and effortless charm to every look."
+              desc={t("silverchainDesc")}
             />
 
             <div className="grid grid-rows-2 h-full">
               <GridItem
-                title="WEDDING EARRINGS"
+                title={t("weddingearring")}
                 slug="earrings"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771260375/lgi-home-img6_bho4wn.png"
-                desc="Exquisite earrings designed to enhance bridal radiance with sparkle, elegance, and unforgettable charm."
+                desc={t("weddingearringDesc")}
               />
               <GridItem
-                title="BRASS BRACELETS"
+                title={t("brassbracelets")}
                 slug="bracelets"
                 image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img5_mhmbyj.png"
-                desc="Bold and beautifully finished brass bracelets that combine vintage character with modern design appeal."
+                desc={t("brassbraceletsDesc")}
               />
             </div>
 
@@ -71,6 +76,7 @@ export default function HeroCollage() {
 }
 
 function GridItem({ title, slug, image, desc }) {
+  const { t } = useLocale();
   return (
     <div className="relative w-full h-full overflow-hidden group">
 
@@ -97,7 +103,7 @@ function GridItem({ title, slug, image, desc }) {
         <Link 
         href={`\products?category=${slug}`}
         className="mt-3 border border-white px-5 py-1 text-sm tracking-wide hover:bg-white hover:text-black transition">
-          VIEW PRODUCTS
+          {t("viewProducts")}
         </Link>
 
       </div>
