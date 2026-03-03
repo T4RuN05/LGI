@@ -26,8 +26,8 @@ export default function AboutPage() {
   const { t } = useLocale();
   return (
     <>
-      <section className="bg-[#EBE2DB] space-y">
-        <div className="max-w-[1850px] mx-auto space-y-12">
+      <section className="bg-[#EBE2DB] min-h-screen py-3">
+        <div className="max-w-[1800px] mx-auto space-y-12">
           {/* ===== TITLE STRIP ===== */}
           <div
             className="bg-[var(--component-bg)]
