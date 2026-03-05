@@ -59,7 +59,7 @@ export default function CountrySlider() {
   const duplicated = [...countries, ...countries];
 
   return (
-    <div className="relative max-w-[1850px] mx-auto overflow-hidden">
+    <div className="relative max-w-[1800px] mx-auto overflow-hidden">
       {/* Fade edges */}
       <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-[#EBE2DB] to-transparent z-10 pointer-events-none" />
       <div className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-[#EBE2DB] to-transparent z-10 pointer-events-none" />

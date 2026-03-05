@@ -37,7 +37,7 @@ export default function MinimalEditor({ content, onChange }) {
     },
   });
 
-  // 🔥 Sync content when tab changes
+  // Sync content when tab changes
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content || "", false);

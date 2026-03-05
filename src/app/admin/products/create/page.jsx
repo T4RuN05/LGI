@@ -463,7 +463,7 @@ ${uploading ? "opacity-60 pointer-events-none" : ""}
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-3 capitalize ${
+                className={`pb-3 capitalize cursor-pointer ${
                   activeTab === tab
                     ? "border-b-2 border-black font-semibold"
                     : ""
@@ -485,9 +485,9 @@ ${uploading ? "opacity-60 pointer-events-none" : ""}
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="bg-black text-white px-8 py-3 hover:opacity-90 transition disabled:opacity-50"
+            className="bg-black text-white px-8 py-3 hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
           >
-            {loading ? "Saving..." : "SAVE PRODUCT"}
+            {loading ? "Creating..." : "CREATE PRODUCT"}
           </button>
         </div>
       </div>

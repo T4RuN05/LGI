@@ -41,8 +41,8 @@ export default function ContactPage() {
     }
   };
   return (
-    <div className="min-h-screen px-4 md:px-8">
-      <div className="max-w-[1850px] mx-auto">
+    <div className="min-h-screen py-3">
+      <div className="max-w-[1800px] mx-auto">
         {/* TITLE STRIP */}
         <div
           className="bg-[var(--component-bg)]

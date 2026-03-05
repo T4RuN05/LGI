@@ -96,7 +96,7 @@ export default function WorldShippingMap() {
     IN: {
       name: "India",
       selector: "#IN",
-      color: "#93CAED",
+      color: "#A3B5C3",
       hoverColor: "#93CAEF",
       isMain: true,
     },
