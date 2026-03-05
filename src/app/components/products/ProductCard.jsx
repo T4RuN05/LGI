@@ -69,15 +69,15 @@ export default function ProductCard({
 
   return (
     <div
-      className={`bg-[#F2F1EC] rounded-md shadow-md text-center flex flex-col
-  ${isCompact ? "p-4" : "p-6 h-full"}`}
+      className={`bg-[#F2F1EC] rounded-lg shadow-lg text-center flex flex-col
+  ${isCompact ? "p-6" : "p-6 h-full"}`}
     >
       {/* CONTENT WRAPPER (ADDED flex-grow) */}
       <Link href={`/products/${product.slug}`} className="flex-grow">
         <div className="cursor-pointer group h-full flex flex-col">
           <div
             className={`bg-white flex items-center justify-center overflow-hidden
-  ${isCompact ? "h-32 mb-3" : "aspect-square mb-6"}`}
+  ${isCompact ? "h-36 mb-3" : "aspect-square mb-6"}`}
           >
             <img
               src={imageUrl}
@@ -88,12 +88,12 @@ export default function ProductCard({
 
           <p
             className={`text-gray-700 line-clamp-2
-  ${isCompact ? "text-xs mb-1 min-h-[30px]" : "text-sm mb-2 min-h-[40px]"}`}
+  ${isCompact ? "text-xs mb-2 min-h-[30px]" : "text-sm mb-2 min-h-[40px]"}`}
           >
             {product.title}
           </p>
 
-          <p className={`${isCompact ? "text-base" : "text-lg"} font-semibold`}>
+          <p className={`${isCompact ? "text-base mb-2" : "text-lg"} font-semibold`}>
             {priceDisplay}
           </p>
 

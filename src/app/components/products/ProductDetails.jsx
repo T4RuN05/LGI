@@ -6,6 +6,7 @@ import AuthModal from "@/app/components/AuthModal";
 import { useAuth } from "@/context/AuthContext";
 import ProductCard from "./ProductCard";
 import { useLocale } from "@/context/LocaleContext";
+import { convertPrice, formatCurrency } from "@/utils/currency";
 
 export default function ProductDetails({ product }) {
   const attributesRef = useRef(null);
@@ -19,6 +20,8 @@ export default function ProductDetails({ product }) {
   const [cardsToShow, setCardsToShow] = useState(4);
   const [showGallery, setShowGallery] = useState(false);
   const { currency, rates, t } = useLocale();
+  const minPrice = product?.priceRange?.min;
+  const maxPrice = product?.priceRange?.max;
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -58,12 +61,13 @@ export default function ProductDetails({ product }) {
     );
   };
 
-  const minPrice = product?.priceRange?.min;
-  const maxPrice = product?.priceRange?.max;
+  const convertedMin = convertPrice(minPrice, currency, rates);
+  const convertedMax = convertPrice(maxPrice, currency, rates);
 
   const priceDisplay =
-    minPrice !== maxPrice ? `$${minPrice}-${maxPrice}` : `$${minPrice}`;
-
+    minPrice !== maxPrice
+      ? `${formatCurrency(convertedMin, currency)} - ${formatCurrency(convertedMax, currency)}`
+      : formatCurrency(convertedMin, currency);
   const handleChat = async () => {
     if (!user) {
       setShowAuthModal(true);
@@ -229,16 +233,30 @@ export default function ProductDetails({ product }) {
           {/* TAB STRIP */}
           <div className="bg-[#F2F1EC] mt-8 shadow-md rounded-md sticky top-18 z-10">
             <div className="flex justify-center gap-16 py-4 text-lg">
-              <button onClick={() => scrollToSection(attributesRef)}>
+              <button
+                className="cursor-pointer"
+                onClick={() => scrollToSection(attributesRef)}
+              >
                 {t("attributes")}
               </button>
-              <button onClick={() => scrollToSection(descriptionRef)}>
+              <button
+                className="cursor-pointer"
+                onClick={() => scrollToSection(descriptionRef)}
+              >
                 {t("description")}
               </button>
-              <button onClick={() => scrollToSection(reviewsRef)}>
+              <button
+                className="cursor-pointer"
+                onClick={() => scrollToSection(reviewsRef)}
+              >
                 {t("reviews")}
               </button>
-              <button onClick={() => scrollToSection(faqRef)}>{t("faq")}</button>
+              <button
+                className="cursor-pointer"
+                onClick={() => scrollToSection(faqRef)}
+              >
+                {t("faq")}
+              </button>
             </div>
           </div>
 
