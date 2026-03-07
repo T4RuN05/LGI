@@ -55,7 +55,7 @@ export default function FeaturedProducts() {
           className="bg-[var(--component-bg)] 
                 flex items-center justify-between 
                 px-6 py-4 mb-12 
-                shadow-md"
+                shadow-md rounded-md"
         >
           {/* LEFT ARROW */}
           <button

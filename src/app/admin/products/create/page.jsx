@@ -52,7 +52,7 @@ function SortableImage({
 
       {/* DELETE BUTTON */}
       <button
-        type="button"
+        type="button cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
           removeImage(index);
