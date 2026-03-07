@@ -45,7 +45,7 @@ export default function Navbar() {
   }, [hydrated]);
 
   return (
-    <div className="sticky top-0 z-50 bg-[var(--component-bg)] border-y border-[#e3e1dc] shadow-lg my-[1rem]">
+    <div className="sticky top-0 z-50 bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg my-[1rem]">
       <div className="relative w-full mx-auto px-6 h-[70px] flex items-center">
         {/* CENTER NAV (Perfectly Centered) */}
         <div className="absolute left-1/2 -translate-x-1/2 flex gap-6 md:gap-10 text-[15px] md:text-[17px] font-medium whitespace-nowrap">
