@@ -10,6 +10,7 @@ export default function WorldShippingMap() {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const hoveredCountryRef = useRef(null);
   const [start, setStart] = useState({ x: 0, y: 0 });
 
   const highlighted = {
@@ -102,6 +103,32 @@ export default function WorldShippingMap() {
     },
   };
 
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+
+    const handleMouseMove = (e) => {
+      if (!hoveredCountryRef.current) {
+        setTooltip(null);
+        return;
+      }
+
+      const rect = wrapper.getBoundingClientRect();
+
+      setTooltip({
+        name: hoveredCountryRef.current.name,
+        isMain: hoveredCountryRef.current.isMain || false,
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    };
+
+    wrapper.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      wrapper.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
   // ---------- LOAD SVG ----------
   useEffect(() => {
     fetch("/world.svg")
@@ -124,7 +151,23 @@ export default function WorldShippingMap() {
             el.style.transition = "all 0.25s ease";
             el.style.cursor = "pointer";
 
-            el.addEventListener("mouseenter", (e) => {
+            el.addEventListener("mouseenter", () => {
+              hoveredCountryRef.current = country;
+
+              setTooltip({
+                name: country.name,
+                isMain: country.isMain || false,
+                x: 0,
+                y: 0,
+              });
+            });
+
+            el.addEventListener("mouseleave", () => {
+              hoveredCountryRef.current = null;
+              setTooltip(null);
+            });
+
+            el.addEventListener("mousemove", (e) => {
               const rect = wrapperRef.current.getBoundingClientRect();
 
               setTooltip({
@@ -134,11 +177,6 @@ export default function WorldShippingMap() {
                 y: e.clientY - rect.top,
               });
             });
-            el.addEventListener("mouseleave", () => {
-              setTooltip(null);
-              el.style.fill = country.color;
-              el.style.filter = "none";
-            });
           });
         });
       });
@@ -147,6 +185,12 @@ export default function WorldShippingMap() {
   // ---------- ZOOM + PAN ----------
   useEffect(() => {
     const wrapper = wrapperRef.current;
+
+    const handleMouseLeave = () => {
+      setTooltip(null);
+    };
+
+    wrapper.addEventListener("mouseleave", handleMouseLeave);
 
     const handleWheel = (e) => {
       e.preventDefault();
@@ -189,6 +233,7 @@ export default function WorldShippingMap() {
       wrapper.removeEventListener("wheel", handleWheel);
       wrapper.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mousemove", handleMouseMove);
+      wrapper.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, position, start, scale]);
