@@ -36,6 +36,7 @@ export default function RouteProgressBar() {
     };
   }, []);
 
+  
   useEffect(() => {
     NProgress.done();
   }, [pathname]);
