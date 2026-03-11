@@ -120,7 +120,7 @@ export default function Navbar() {
             </div>
           ) : (
             <Link
-              href="/auth/login"
+              href="/auth"
               className="border px-4 py-1 text-sm hover:bg-black hover:text-white transition"
             >
               Sign In
