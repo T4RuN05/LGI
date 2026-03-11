@@ -41,9 +41,7 @@ export default function ProductCard({
   const handleDelete = async () => {
     try {
       setDeleting(true);
-
       await onDelete(product._id);
-
       toast.success("Product deleted successfully");
       setShowConfirm(false);
     } catch (error) {
@@ -58,11 +56,9 @@ export default function ProductCard({
       setShowModal(true);
       return;
     }
-
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/products/${product._id}/whatsapp`,
     );
-
     const data = await res.json();
     window.open(data.whatsappUrl, "_blank");
   };
@@ -72,7 +68,6 @@ export default function ProductCard({
       className={`bg-[#F2F1EC] rounded-lg shadow-lg text-center flex flex-col
   ${isCompact ? "p-6" : "p-6 h-full"}`}
     >
-      {/* CONTENT WRAPPER (ADDED flex-grow) */}
       <Link href={`/products/${product.slug}`} className="flex-grow">
         <div className="cursor-pointer group h-full flex flex-col">
           <div
@@ -105,19 +100,19 @@ export default function ProductCard({
         </div>
       </Link>
 
-      {/* BUTTON SECTION (ADDED mt-auto) */}
       {isAdmin ? (
         <div className="space-y-2 mt-auto">
           <div className="flex gap-2">
             <Link
               href={`/admin/products/edit/${product.slug}`}
-              className="flex-1 border py-2 text-base hover:bg-black hover:text-white transition"
+              className="flex-1 border py-2 text-base hover:bg-black hover:text-white transition cursor-pointer"
             >
               EDIT
             </Link>
 
             <button
               onClick={() => setShowConfirm(true)}
+              style={{ cursor: "pointer" }}
               className="flex-1 border py-2 text-base hover:bg-black hover:text-white transition"
             >
               DELETE
@@ -126,12 +121,11 @@ export default function ProductCard({
 
           <button
             disabled={updatingFeatured}
+            style={{ cursor: updatingFeatured ? "not-allowed" : "pointer" }}
             onClick={async () => {
               try {
                 setUpdatingFeatured(true);
-
                 await onToggleFeatured(product._id);
-
                 toast.success(
                   product.isFeatured
                     ? "Product removed from featured"
@@ -144,11 +138,7 @@ export default function ProductCard({
               }
             }}
             className={`w-full border py-2 text-base transition
-              ${
-                updatingFeatured
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-black hover:text-white"
-              }`}
+              ${updatingFeatured ? "opacity-50" : "hover:bg-black hover:text-white"}`}
           >
             {updatingFeatured
               ? "Updating..."
