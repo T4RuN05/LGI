@@ -25,6 +25,10 @@ body {
   color: var(--primary);
 }
 
+button {
+  cursor: pointer;
+}
+
 /* Remove default focus outline */
 .ProseMirror:focus {
   outline: none;
