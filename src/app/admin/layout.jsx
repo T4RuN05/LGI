@@ -12,7 +12,7 @@ export default function AdminLayout({ children }) {
     if (!hydrated) return;
 
     if (!user || user.role !== "admin") {
-      router.replace("/auth/login");
+      router.replace("/auth");
     }
   }, [user, hydrated]);
 

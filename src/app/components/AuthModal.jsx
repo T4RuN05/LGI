@@ -33,19 +33,19 @@ export default function AuthModal({ onClose }) {
         <h2 className="text-xl font-semibold mb-4">Please Sign In</h2>
 
         <p className="text-gray-500 mb-6">
-          You must be logged in to chat with the seller.
+          You must be logged in to chat with the seller
         </p>
 
         <div className="flex gap-4 justify-center">
           <Link
-            href="/auth/login"
+            href="/auth"
             className="border px-4 py-2 hover:bg-black hover:text-white transition"
           >
             Login
           </Link>
 
           <Link
-            href="/auth/register"
+            href="/auth"
             className="border px-4 py-2 hover:bg-black hover:text-white transition"
           >
             Sign Up

@@ -20,6 +20,14 @@
   }
 }
 
+html.loading body {
+  overflow: hidden;
+}
+
+html.loading body > *:not(.site-loader) {
+  visibility: hidden;
+}
+
 body {
   background-color: var(--page-bg);
   color: var(--primary);
