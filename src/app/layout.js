@@ -18,7 +18,14 @@ const notoSerif = Noto_Serif({
 });
 
 export const metadata = {
-  title: "Lord Ganesha Impex",
+  title: "Lord Ganesha Impex | Premium Jewelry Manufacturer & Global Supplier",
+  description:
+    "Lord Ganesha Impex is a global supplier of premium gold-finished jewelry including bangles, bridal collections, rosaries, chains, and earrings crafted with over three decades of expertise.",
+    icons: {
+      icon: "/favicon.ico",
+      shortcut: "/favicon.ico",
+      apple: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }) {
