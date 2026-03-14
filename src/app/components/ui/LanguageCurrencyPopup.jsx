@@ -1,7 +1,8 @@
 "use client";
 
 import { useLocale } from "@/context/LocaleContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function LanguageCurrencyPopup({ onClose }) {
@@ -14,22 +15,44 @@ export default function LanguageCurrencyPopup({ onClose }) {
     t,
   } = useLocale();
 
+  const router = useRouter();
+  const popupRef = useRef(null);
+
   const [selectedLang, setSelectedLang] = useState(language);
   const [selectedCurrency, setSelectedCurrency] = useState(currency);
 
-  // Extract currency codes dynamically
   const currencyOptions = Object.keys(rates || {});
+
+  // CLOSE WHEN CLICKED OUTSIDE
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        onClose();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleSave = () => {
     updateLanguage(selectedLang);
     updateCurrency(selectedCurrency);
 
     toast.success(t("preferencesUpdated") || "Preferences updated");
+
     onClose();
+
+    // Refresh the current page
+    router.refresh();
   };
 
   return (
     <div
+      ref={popupRef}
       className="absolute right-0 top-[120%] w-[340px]
       bg-[var(--component-bg)]
       border border-black/10

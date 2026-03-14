@@ -19,8 +19,9 @@ export default function ProductCategories() {
               {/* TOP IMAGE */}
               <div className="col-span-2 relative overflow-hidden rounded-md">
                 <RevealHoverImage
-                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773406962/Untitled_design_51_pacvju.png"
-                  hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773421350/Untitled_design_54_kyiok1.png"
+                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773406962/Untitled_design_51_pacvju.png"
+                  hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773421350/Untitled_design_54_kyiok1.png"
+                  priority
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
@@ -46,7 +47,8 @@ export default function ProductCategories() {
               {/* RIGHT IMAGE */}
               <div className="relative overflow-hidden rounded-md">
                 <RevealHoverImage
-                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773406014/Hda8aad0a9c124fd3835e59517ee70f4aW_ermxbv.jpg"
+                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773406014/Hda8aad0a9c124fd3835e59517ee70f4aW_ermxbv.jpg"
+                  priority
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
@@ -57,8 +59,9 @@ export default function ProductCategories() {
               {/* TOP IMAGE */}
               <div className="relative overflow-hidden rounded-md">
                 <RevealHoverImage
-                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405876/Untitled_design_34_mqoubn.png"
-                  hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773426857/Untitled_design_58_g2bgmf.png"
+                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405876/Untitled_design_34_mqoubn.png"
+                  hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426857/Untitled_design_58_g2bgmf.png"
+                  priority
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
@@ -84,8 +87,9 @@ export default function ProductCategories() {
               {/* BOTTOM IMAGE */}
               <div className="col-span-2 relative overflow-hidden rounded-md">
                 <RevealHoverImage
-                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773407575/Untitled_design_52_stnvqw.png"
-                  hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773426345/Untitled_design_55_etxihm.png"
+                  src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773407575/Untitled_design_52_stnvqw.png"
+                  hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426345/Untitled_design_55_etxihm.png"
+                  priority
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
@@ -98,8 +102,8 @@ export default function ProductCategories() {
           <div className="grid grid-cols-[1fr_940px_1fr] items-center h-[45vh] mb-10">
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773407909/Untitled_design_53_bml2dh.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773426537/Untitled_design_57_fotae0.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773407909/Untitled_design_53_bml2dh.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426537/Untitled_design_57_fotae0.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
@@ -127,8 +131,8 @@ export default function ProductCategories() {
 
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405883/Gemini_Generated_Image_ogsa6zogsa6zogsa_aygxqf.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773427062/Untitled_design_60_hd7nnq.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405883/Gemini_Generated_Image_ogsa6zogsa6zogsa_aygxqf.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773427062/Untitled_design_60_hd7nnq.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
@@ -158,24 +162,24 @@ export default function ProductCategories() {
 
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405876/Untitled_design_35_extrm8.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773427210/Untitled_design_61_qxk4ys.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405876/Untitled_design_35_extrm8.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773427210/Untitled_design_61_qxk4ys.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
 
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405941/Untitled_design_36_guwvp5.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773427454/Untitled_design_62_h2mmbt.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405941/Untitled_design_36_guwvp5.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773427454/Untitled_design_62_h2mmbt.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
 
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405939/ChatGPT_Image_Mar_1_2026_06_33_02_PM_o8io17.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773427556/Untitled_design_63_wqlqlt.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405939/ChatGPT_Image_Mar_1_2026_06_33_02_PM_o8io17.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773427556/Untitled_design_63_wqlqlt.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
@@ -187,24 +191,24 @@ export default function ProductCategories() {
           <div className="grid grid-cols-[1fr_1fr_1fr_1fr] items-end min-h-[30vh] mb-10 gap-6">
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405948/Untitled_design_37_kqnk35.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773426990/Untitled_design_59_okcmx2.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405948/Untitled_design_37_kqnk35.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426990/Untitled_design_59_okcmx2.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
 
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773405940/ChatGPT_Image_Mar_1_2026_06_47_49_PM_dphshz.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773428846/Untitled_design_65_ex1osn.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405940/ChatGPT_Image_Mar_1_2026_06_47_49_PM_dphshz.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773428846/Untitled_design_65_ex1osn.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>
 
             <div className="relative overflow-hidden h-full rounded-md">
               <RevealHoverImage
-                src="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773406851/Rectangle_125_wsqgve.png"
-                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/v1773426471/Untitled_design_56_wfuhdw.png"
+                src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773406851/Rectangle_125_wsqgve.png"
+                hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426471/Untitled_design_56_wfuhdw.png"
                 className="absolute inset-0 w-full h-full object-cover"
               />
             </div>

@@ -19,7 +19,7 @@ export default function HeroCollage() {
             <GridItem
               title={t("rosary")}
               slug="rosary"
-              image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185622/lgi-home-img1_puenz4.png"
+              image="https://res.cloudinary.com/dijssimbb/image/upload/f_auto,q_auto/v1771185622/lgi-home-img1_puenz4.png"
               desc={t("rosaryDesc")}
             />
 
@@ -27,13 +27,13 @@ export default function HeroCollage() {
               <GridItem
                 title={t("pendant")}
                 slug="pendants"
-                image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img3_ym64ns.png"
+                image="https://res.cloudinary.com/dijssimbb/image/upload/f_auto,q_auto/v1771185617/lgi-home-img3_ym64ns.png"
                 desc={t("pendantDesc")}
               />
               <GridItem
                 title={t("bangles")}
                 slug="bangles"
-                image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185618/lgi-home-img4_glpaq3.png"
+                image="https://res.cloudinary.com/dijssimbb/image/upload/f_auto,q_auto/v1771185618/lgi-home-img4_glpaq3.png"
                 desc={t("BanglesDesc")}
               />
             </div>
@@ -46,7 +46,7 @@ export default function HeroCollage() {
             <GridItem
               title={t("silverchain")}
               slug="silver-chains"
-              image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185624/lgi-home-img2_xvfpda.png"
+              image="https://res.cloudinary.com/dijssimbb/image/upload/f_auto,q_auto/v1771185624/lgi-home-img2_xvfpda.png"
               desc={t("silverchainDesc")}
             />
 
@@ -54,13 +54,13 @@ export default function HeroCollage() {
               <GridItem
                 title={t("weddingearring")}
                 slug="earrings"
-                image="https://res.cloudinary.com/dijssimbb/image/upload/v1771260375/lgi-home-img6_bho4wn.png"
+                image="https://res.cloudinary.com/dijssimbb/image/upload/f_auto,q_auto/v1771260375/lgi-home-img6_bho4wn.png"
                 desc={t("weddingearringDesc")}
               />
               <GridItem
                 title={t("brassbracelets")}
                 slug="bracelets"
-                image="https://res.cloudinary.com/dijssimbb/image/upload/v1771185617/lgi-home-img5_mhmbyj.png"
+                image="https://res.cloudinary.com/dijssimbb/image/upload/f_auto,q_auto/v1771185617/lgi-home-img5_mhmbyj.png"
                 desc={t("brassbraceletsDesc")}
               />
             </div>

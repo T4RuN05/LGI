@@ -180,7 +180,7 @@ export default function AuthPage() {
     <>
       <style>{animStyles}</style>
       <div
-        className="relative overflow-hidden bg-[#ede6de] flex items-stretch"
+        className="relative overflow-hidden bg-[#ebe2db] flex items-stretch"
         style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", minHeight: "calc(100vh - 120px)", marginTop: 0 }}
       >
         {/* ── SLIDING PANEL ── */}
