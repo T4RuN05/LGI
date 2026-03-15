@@ -75,6 +75,11 @@ frontend/
 ```
 ---
 
+## 🎨 FIGMA File
+```
+https://tinyurl.com/lgi-frontend-ui
+```
+
 ## 🔗 Backend Repository
 
 This frontend connects to the Express backend API:
