@@ -10,7 +10,6 @@ export default function RevealHoverImage({
   priority = false,
   className = "",
 }) {
-
   // Preload hover image to prevent flicker
   useEffect(() => {
     if (!hoverSrc) return;
@@ -32,11 +31,12 @@ export default function RevealHoverImage({
       <Image
         src={src}
         alt=""
-        fill
+        width={1200}
+        height={800}
         priority={priority}
         sizes="(max-width: 768px) 100vw, 50vw"
         unoptimized
-        className={`object-cover ${className}`}
+        className={`w-full h-full object-cover ${className}`}
       />
 
       {/* HOVER IMAGE */}
@@ -50,10 +50,11 @@ export default function RevealHoverImage({
           <Image
             src={hoverSrc}
             alt=""
-            fill
+            width={1200}
+            height={800}
             sizes="(max-width: 768px) 100vw, 50vw"
             unoptimized
-            className={`object-cover ${className}`}
+            className={`w-full h-full object-cover ${className}`}
           />
         </motion.div>
       )}

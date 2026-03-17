@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function TopHeader() {
   return (
-    <div className="bg-[var(--component-bg)] w-full shadow-lg rounded-lg">
+    <div className="hidden md:block bg-[var(--component-bg)] w-full shadow-lg rounded-lg">
       <div className="max-w-7xl mx-auto flex justify-center items-center py-4">
         <Link href="/">
           <Image

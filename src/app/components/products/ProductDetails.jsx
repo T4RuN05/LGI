@@ -27,6 +27,26 @@ export default function ProductDetails({ product }) {
 
   const activeImage = product?.images?.[currentIndex]?.url;
 
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+
+    if (diff > 50) handleNextImage(); // swipe left
+    if (diff < -50) handlePrevImage(); // swipe right
+  };
+
+  const totalImages = product?.images?.length || 0;
+
   const scrollToSection = (ref) => {
     if (!ref.current) return;
 
@@ -129,15 +149,15 @@ export default function ProductDetails({ product }) {
 
   return (
     <section className="bg-[#EBE2DB] min-h-screen py-3">
-      <div className="max-w-[1850px] mx-auto px-8 flex gap-10">
+      <div className="max-w-[1850px] mx-auto px-4 md:px-8 flex flex-col md:flex-row gap-6 md:gap-10">
         {/* LEFT CONTENT */}
         <div className="flex-1">
           {/* TOP PRODUCT SECTION */}
-          <div className="bg-[#F2F1EC] p-8 shadow-md rounded-md flex gap-10">
+          <div className="bg-[#F2F1EC] p-4 md:p-4 md:p-8 shadow-md rounded-md flex flex-col md:flex-row gap-6 md:gap-10">
             {/* IMAGES */}
-            <div className="flex gap-6">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center">
               {/* THUMBNAILS */}
-              <div className="flex flex-col items-center">
+              <div className="hidden md:flex flex-col items-center">
                 {/* UP ARROW */}
                 <button
                   onClick={() => scrollThumbs("up")}
@@ -149,7 +169,7 @@ export default function ProductDetails({ product }) {
                 {/* THUMBNAIL LIST */}
                 <div
                   ref={thumbnailsRef}
-                  className="flex flex-col gap-3 max-h-[360px] overflow-hidden"
+                  className="flex md:flex-col flex-row gap-2 md:gap-3 max-h-[360px] md:overflow-hidden overflow-x-auto"
                 >
                   {product.images?.map((img, index) => (
                     <img
@@ -176,7 +196,7 @@ export default function ProductDetails({ product }) {
               </div>
 
               {/* MAIN IMAGE */}
-              <div className="relative w-[450px] h-[450px] bg-white rounded-lg flex items-center justify-center shadow-inner overflow-hidden group">
+              <div className="relative w-full max-w-[450px] h-[300px] md:h-[450px] bg-white rounded-lg flex items-center justify-center shadow-inner overflow-hidden group">
                 {/* LEFT ARROW */}
                 <button
                   onClick={handlePrevImage}
@@ -192,8 +212,22 @@ export default function ProductDetails({ product }) {
                 <img
                   src={activeImage}
                   onClick={() => setShowGallery(true)}
-                  className="max-w-full max-h-full object-contain transition duration-500 hover:scale-105 cursor-zoom-in"
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className="max-w-full max-h-full object-contain transition duration-500 md:hover:scale-105 cursor-zoom-in"
                 />
+
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 md:hidden">
+                  {product.images?.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-2 w-2 rounded-full transition ${
+                        currentIndex === index ? "bg-black w-4" : "bg-gray-400"
+                      }`}
+                    />
+                  ))}
+                </div>
 
                 {/* RIGHT ARROW */}
                 <button
@@ -210,19 +244,21 @@ export default function ProductDetails({ product }) {
 
             {/* PRODUCT INFO */}
             <div className="flex-1">
-              <h1 className="text-xl font-semibold mb-4">{product.title}</h1>
+              <h1 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-left">
+                {product.title}
+              </h1>
 
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-gray-600 mb-2 text-left">
                 {t("minOrder")}: {product.moq} {product.moqUnit}
               </p>
 
-              <p className="text-2xl font-semibold mb-6">{priceDisplay}</p>
+              <p className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-left">
+                {priceDisplay}
+              </p>
 
               <button
                 onClick={handleChat}
-                className="inline-flex items-center gap-2 
-                  border border-black px-6 py-2
-               hover:bg-black hover:text-white transition cursor-pointer"
+                className="w-full md:w-auto inline-flex justify-center items-center gap-2 border border-black px-6 py-2"
               >
                 <FaWhatsapp />
                 {t("chatNow")}
@@ -230,9 +266,27 @@ export default function ProductDetails({ product }) {
             </div>
           </div>
 
+          {/* MOBILE RECOMMENDATIONS TAB HEADER */}
+          <div className="mt-5 md:hidden bg-[#F2F1EC] shadow-md rounded-md py-3">
+            <h3 className="text-center text-base font-semibold tracking-wide">
+              {t("otherRecommendation")}
+            </h3>
+          </div>
+
+          {/* MOBILE RECOMMENDATIONS CONTENT */}
+          <div className="md:hidden mt-4">
+            <div className="flex gap-4 overflow-x-auto px-2 snap-x snap-mandatory scroll-smooth no-scrollbar">
+              {relatedProducts.map((item) => (
+                <div key={item._id} className="min-w-[220px] snap-start">
+                  <ProductCard product={item} variant="compact" />
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* TAB STRIP */}
-          <div className="bg-[#F2F1EC] mt-8 shadow-md rounded-md sticky top-18 z-10">
-            <div className="flex justify-center gap-16 py-4 text-lg">
+          <div className="bg-[#F2F1EC] mt-8 shadow-md backdrop-blur-md rounded-md sticky top-18 z-20">
+            <div className="flex justify-center gap-6 md:gap-16 py-4 text-base md:text-lg tracking-wide overflow-x-auto text-center w-full">
               <button
                 className="cursor-pointer"
                 onClick={() => scrollToSection(attributesRef)}
@@ -263,7 +317,7 @@ export default function ProductDetails({ product }) {
           {/* ===== ATTRIBUTES SECTION ===== */}
           <div
             ref={attributesRef}
-            className="bg-[#F2F1EC] mt-6 shadow-md rounded-md p-8"
+            className="bg-[#F2F1EC] mt-6 shadow-md rounded-md p-4 md:p-8"
           >
             <div
               className="product-table overflow-x-auto
@@ -281,11 +335,10 @@ export default function ProductDetails({ product }) {
               dangerouslySetInnerHTML={{ __html: product.attributes }}
             />
           </div>
-
           {/* DESCRIPTION */}
           <div
             ref={descriptionRef}
-            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-8"
+            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-4 md:p-8"
           >
             <div
               className="prose max-w-none"
@@ -294,11 +347,10 @@ export default function ProductDetails({ product }) {
               }}
             />
           </div>
-
           {/* FAQ */}
           <div
             ref={faqRef}
-            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-8"
+            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-4 md:p-8"
           >
             <h2 className="text-lg font-semibold mb-4">FAQ</h2>
 
@@ -309,11 +361,10 @@ export default function ProductDetails({ product }) {
               }}
             />
           </div>
-
           {/* REVIEWS */}
           <div
             ref={reviewsRef}
-            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-8"
+            className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-4 md:p-8"
           >
             <h2 className="text-lg font-semibold mb-4">Reviews</h2>
             <p>No reviews yet.</p>
@@ -321,7 +372,7 @@ export default function ProductDetails({ product }) {
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div className="w-[320px]">
+        <div className="hidden md:block w-[320px]">
           <div className="bg-[#F2F1EC] shadow-md rounded-md p-4 mb-6 sticky top-18 z-10">
             <h3 className="text-center font-semibold tracking-widest text-sm">
               {t("otherRecommendation")}

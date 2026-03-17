@@ -1,7 +1,7 @@
 // frontend/src/app/auth/page.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -101,6 +101,14 @@ export default function AuthPage() {
   const { login } = useAuth();
   const router = useRouter();
   const { t } = useLocale();
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const check = () => setIsMobile(window.innerWidth < 768);
+  check();
+  window.addEventListener("resize", check);
+  return () => window.removeEventListener("resize", check);
+}, []);
 
   const [mode, setMode] = useState("login");
   const [transitioning, setTransitioning] = useState(false);
@@ -108,6 +116,28 @@ export default function AuthPage() {
   const [registerForm, setRegisterForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  
+if (isMobile) {
+  return (
+    <div className="min-h-screen bg-[#ebe2db] flex items-center justify-center px-4">
+      <FormCard
+        isRegister={mode === "register"}
+        t={t}
+        loginForm={loginForm}
+        registerForm={registerForm}
+        handleLoginChange={handleLoginChange}
+        handleRegisterChange={handleRegisterChange}
+        handleLoginSubmit={handleLoginSubmit}
+        handleRegisterSubmit={handleRegisterSubmit}
+        loading={loading}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        switchMode={switchMode}
+      />
+    </div>
+  );
+}
 
   const isLogin = mode === "login";
 

@@ -41,14 +41,14 @@ export default function ContactPage() {
     }
   };
   return (
-    <div className="min-h-screen py-3">
+    <div className="min-h-screen py-3 px-4 md:px-6">
       <div className="max-w-[1800px] mx-auto">
         {/* TITLE STRIP */}
         <div
           className="bg-[var(--component-bg)]
             flex items-center justify-center
             px-6 py-4 mb-8
-            shadow-md"
+            shadow-md rounded-md"
         >
           <h2 className="tracking-[0.3em] text-2xl font-semibold uppercase">
             {t("contact")}
@@ -56,13 +56,13 @@ export default function ContactPage() {
         </div>
 
         {/* Main Content Area */}
-        <main className="bg-[var(--component-bg)] shadow-md p-10 md:p-14">
+        <main className="bg-[var(--component-bg)] shadow-md p-10 md:p-14 rounded-md">
           <div
-            className="grid grid-cols-2 gap-0"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0"
             style={{ alignItems: "stretch" }}
           >
             {/* LEFT SIDE — uses flex with flex-1 spacers to vertically center content */}
-            <div className="flex flex-col pr-12 border-r border-black/10">
+            <div className="flex flex-col md:pr-12 border-black/10 order-1 md:order-1 pb-8 md:pb-0 border-b md:border-b-0 md:border-r">
               <div className="flex-1" />
 
               <div className="flex flex-col space-y-6">
@@ -121,9 +121,9 @@ export default function ContactPage() {
             </div>
 
             {/* RIGHT SIDE: Contact Form */}
-            <div className="flex flex-col justify-center pl-12">
+            <div className="flex flex-col justify-center md:pl-12 order-2 md:order-2">
               <form onSubmit={handleMail} className="flex flex-col gap-5">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-base font-serif text-[var(--primary)]">
                       {t("firstName")}

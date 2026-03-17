@@ -11,7 +11,7 @@ export default function ProductsGrid({
   loading = false,
 }) {
   return (
-    <div className="grid grid-cols-4 gap-12 auto-rows-fr">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 auto-rows-fr">
       {loading ? (
         Array.from({ length: 24 }).map((_, index) => (
           <ProductCardSkeleton key={index} />

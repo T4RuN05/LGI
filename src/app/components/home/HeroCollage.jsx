@@ -9,12 +9,12 @@ export default function HeroCollage() {
   return (
     <section className="w-full flex justify-center bg-[#EBE2DB]">
 
-      <div className="w-full max-w-[1800px] aspect-[16/10]">
+      <div className="w-full max-w-[1800px] md:aspect-[16/10]">
 
-        <div className="grid grid-cols-2 h-full">
+        <div className="flex flex-col md:grid md:grid-cols-2 md:h-full">
 
           {/* LEFT COLUMN */}
-          <div className="grid grid-rows-2 h-full">
+          <div className="flex flex-col md:grid md:grid-rows-2">
 
             <GridItem
               title={t("rosary")}
@@ -23,7 +23,7 @@ export default function HeroCollage() {
               desc={t("rosaryDesc")}
             />
 
-            <div className="grid grid-cols-2 h-full">
+            <div className="flex flex-col sm:grid sm:grid-cols-2 md:h-full">
               <GridItem
                 title={t("pendant")}
                 slug="pendants"
@@ -41,7 +41,7 @@ export default function HeroCollage() {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="grid grid-rows-2 h-full">
+          <div className="flex flex-col md:grid md:grid-rows-2">
 
             <GridItem
               title={t("silverchain")}
@@ -50,7 +50,7 @@ export default function HeroCollage() {
               desc={t("silverchainDesc")}
             />
 
-            <div className="grid grid-rows-2 h-full">
+            <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-1 md:h-full">
               <GridItem
                 title={t("weddingearring")}
                 slug="earrings"
@@ -78,7 +78,7 @@ export default function HeroCollage() {
 function GridItem({ title, slug, image, desc }) {
   const { t } = useLocale();
   return (
-    <div className="relative w-full h-full overflow-hidden group">
+    <div className="relative w-full min-h-[220px] md:h-full overflow-hidden group">
 
       {/* Subtle zoom animation added */}
       <img
@@ -86,17 +86,17 @@ function GridItem({ title, slug, image, desc }) {
         alt={title}
         className="absolute inset-0 w-full h-full object-cover 
                    transition-transform duration-700 ease-out 
-                   group-hover:scale-105"
+                   md:group-hover:scale-105"
       />
 
       <div className="absolute inset-0 bg-black/40 transition delay-50 hover:bg-black/10 flex flex-col justify-center items-center text-white text-center">
 
-        <h2 className="text-[22px] font-medium tracking-wide">
+        <h2 className="text-[18px] md:text-[22px] font-medium tracking-wide">
           {title}
         </h2>
 
         {/* Slightly smaller subtext */}
-        <h4 className="text-[10px] font-extralight w-[22rem]">
+        <h4 className="text-[10px] md:text-[11px] font-extralight w-[80%] md:w-[22rem]">
           {desc}
         </h4>
 

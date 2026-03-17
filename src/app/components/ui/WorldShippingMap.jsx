@@ -139,9 +139,13 @@ export default function WorldShippingMap() {
 
         const svg = container.querySelector("svg");
 
+        svg.setAttribute("viewBox", "0 100 2000 650");
+
         // IMPORTANT: no transform on svg itself
         svg.style.width = "100%";
         svg.style.height = "100%";
+        svg.style.objectFit = "contain";
+        svg.style.display = "block";
 
         Object.values(highlighted).forEach((country) => {
           const elements = svg.querySelectorAll(country.selector);
@@ -262,7 +266,7 @@ export default function WorldShippingMap() {
     <div className="relative w-full bg-[#F2F1EC] rounded-md overflow-hidden">
       <div
         ref={wrapperRef}
-        className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing"
+        className="w-full h-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
       >
         <div
           ref={containerRef}
@@ -271,7 +275,6 @@ export default function WorldShippingMap() {
             transition: isDragging ? "none" : "transform 0.2s ease",
             transformOrigin: "center center",
             width: "100%",
-            height: "100%",
           }}
         />
       </div>
