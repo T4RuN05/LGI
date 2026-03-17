@@ -13,6 +13,15 @@ export default function FeaturedProducts() {
   const [currentPage, setCurrentPage] = useState(0);
   const { t } = useLocale();
   const ITEMS_PER_PAGE = 8;
+  const [isMobile, setIsMobile] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -33,7 +42,9 @@ export default function FeaturedProducts() {
   const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
 
   const startIndex = currentPage * ITEMS_PER_PAGE;
-  const currentItems = products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentItems = isMobile
+    ? products.slice(0, visibleCount)
+    : products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handlePrev = () => {
     if (currentPage > 0) {
@@ -53,44 +64,46 @@ export default function FeaturedProducts() {
         {/* Header Bar */}
         <div
           className="bg-[var(--component-bg)] 
-                flex items-center justify-between 
-                px-6 py-4 mb-12 
-                shadow-md rounded-md"
+  flex items-center justify-between 
+  px-4 md:px-6 py-4 mb-12 
+  shadow-md rounded-md"
         >
-          {/* LEFT ARROW */}
-          <button
-            onClick={handlePrev}
-            disabled={currentPage === 0}
-            className={`w-10 h-10 
-                     flex items-center justify-center 
-                     bg-[#EBE2DB] 
-                     transition
-                     ${currentPage === 0 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
-          >
-            <FiChevronLeft size={20} />
-          </button>
+          {/* LEFT ARROW (desktop only) */}
+          {!isMobile ? (
+            <button
+              onClick={handlePrev}
+              disabled={currentPage === 0}
+              className={`w-10 h-10 flex items-center justify-center bg-[#EBE2DB] transition
+      ${currentPage === 0 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
+            >
+              <FiChevronLeft size={20} />
+            </button>
+          ) : (
+            <div className="w-10" /> // spacer to keep title centered
+          )}
 
           {/* TITLE */}
-          <h2 className="tracking-[0.3em] text-2xl font-semibold text-center">
+          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-2xl font-semibold text-center flex-1">
             {t("featuredProducts")}
           </h2>
 
-          {/* RIGHT ARROW */}
-          <button
-            onClick={handleNext}
-            disabled={currentPage >= totalPages - 1}
-            className={`w-10 h-10 
-                     flex items-center justify-center  
-                     bg-[#EBE2DB] 
-                     transition
-                     ${currentPage >= totalPages - 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
-          >
-            <FiChevronRight size={20} />
-          </button>
+          {/* RIGHT ARROW (desktop only) */}
+          {!isMobile ? (
+            <button
+              onClick={handleNext}
+              disabled={currentPage >= totalPages - 1}
+              className={`w-10 h-10 flex items-center justify-center bg-[#EBE2DB] transition
+      ${currentPage >= totalPages - 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
+            >
+              <FiChevronRight size={20} />
+            </button>
+          ) : (
+            <div className="w-10" /> // spacer
+          )}
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
           {loading ? (
             Array.from({ length: 8 }).map((_, index) => (
               <ProductCardSkeleton key={index} />
@@ -103,8 +116,26 @@ export default function FeaturedProducts() {
             ))
           )}
         </div>
+
+        {/* MOBILE VIEW MORE */}
+        {isMobile && visibleCount < products.length && (
+          <div className="relative mt-6">
+            {/* Fade effect */}
+            <div className="absolute bottom-12 left-0 w-full h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+
+            <button
+              onClick={() =>
+                setVisibleCount((prev) => Math.min(prev + 4, products.length))
+              }
+              className="mx-auto block mt-6 px-6 py-2 border border-black text-sm tracking-wide hover:bg-black hover:text-white transition"
+            >
+              View More
+            </button>
+          </div>
+        )}
+
         {/* Pagination Indicator */}
-        {totalPages > 1 && (
+        {!isMobile && totalPages > 1 && (
           <div className="flex justify-center items-center gap-3 mt-10">
             {Array.from({ length: totalPages }).map((_, index) => (
               <button

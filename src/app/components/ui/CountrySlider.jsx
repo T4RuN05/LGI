@@ -68,7 +68,7 @@ export default function CountrySlider() {
         {duplicated.map((country, index) => (
           <div
             key={index}
-            className="w-[520px] h-[340px] flex-shrink-0 relative rounded-md overflow-hidden shadow-xl"
+            className="w-[260px] md:w-[520px] h-[180px] md:h-[340px] flex-shrink-0 relative rounded-md overflow-hidden shadow-xl"
           >
             <img
               src={country.img}
@@ -79,7 +79,7 @@ export default function CountrySlider() {
             {/* Bottom fade */}
             <div className="absolute bottom-0 left-0 w-full h-[45%] bg-gradient-to-t from-[#F2F1EC] via-[#F2F1EC]/90 to-transparent" />
 
-            <p className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[20px] font-medium text-black tracking-wide">
+            <p className="absolute bottom-2 md:bottom-8 left-1/2 -translate-x-1/2 text-[14px] md:text-[20px] font-medium text-black tracking-wide">
               {country.name}
             </p>
           </div>

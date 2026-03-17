@@ -6,14 +6,8 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function LanguageCurrencyPopup({ onClose }) {
-  const {
-    language,
-    currency,
-    rates,
-    updateLanguage,
-    updateCurrency,
-    t,
-  } = useLocale();
+  const { language, currency, rates, updateLanguage, updateCurrency, t } =
+    useLocale();
 
   const router = useRouter();
   const popupRef = useRef(null);
@@ -22,21 +16,6 @@ export default function LanguageCurrencyPopup({ onClose }) {
   const [selectedCurrency, setSelectedCurrency] = useState(currency);
 
   const currencyOptions = Object.keys(rates || {});
-
-  // CLOSE WHEN CLICKED OUTSIDE
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        onClose();
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onClose]);
 
   const handleSave = () => {
     updateLanguage(selectedLang);
@@ -53,11 +32,13 @@ export default function LanguageCurrencyPopup({ onClose }) {
   return (
     <div
       ref={popupRef}
-      className="absolute right-0 top-[120%] w-[340px]
+      className="fixed md:absolute right-2 md:right-0 top-[80px] md:top-[120%] 
+      w-[92vw] max-w-[340px]
+      z-[999] 
       bg-[var(--component-bg)]
       border border-black/10
       shadow-2xl rounded-lg
-      p-6 z-50"
+      p-4 md:p-6"
     >
       {/* Header */}
       <h3 className="text-lg font-medium mb-1">

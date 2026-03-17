@@ -57,12 +57,12 @@ export default function ProductCategories() {
             {/* BRIDAL BLOCK */}
             <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-[55%_45%] gap-3 md:h-full">
               {/* TOP IMAGE */}
-              <div className="relative overflow-hidden rounded-md order-3 md:order-1 h-[300px] md:h-full w-full">
+              <div className="relative overflow-hidden rounded-md order-3 md:order-1 min-h-[300px] md:h-full w-full">
                 <RevealHoverImage
                   src="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405876/Untitled_design_34_mqoubn.png"
                   hoverSrc="https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426857/Untitled_design_58_g2bgmf.png"
                   priority
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
 

@@ -11,10 +11,10 @@ export default function HeroCollage() {
 
       <div className="w-full max-w-[1800px] md:aspect-[16/10]">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 h-full">
+        <div className="flex flex-col md:grid md:grid-cols-2 md:h-full">
 
           {/* LEFT COLUMN */}
-          <div className="grid grid-rows-2 md:grid-rows-2">
+          <div className="flex flex-col md:grid md:grid-rows-2">
 
             <GridItem
               title={t("rosary")}
@@ -23,7 +23,7 @@ export default function HeroCollage() {
               desc={t("rosaryDesc")}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 h-full">
+            <div className="flex flex-col sm:grid sm:grid-cols-2 md:h-full">
               <GridItem
                 title={t("pendant")}
                 slug="pendants"
@@ -41,7 +41,7 @@ export default function HeroCollage() {
           </div>
 
           {/* RIGHT COLUMN */}
-          <div className="grid grid-rows-2 md:grid-rows-2">
+          <div className="flex flex-col md:grid md:grid-rows-2">
 
             <GridItem
               title={t("silverchain")}
@@ -50,7 +50,7 @@ export default function HeroCollage() {
               desc={t("silverchainDesc")}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 h-full">
+            <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-1 md:h-full">
               <GridItem
                 title={t("weddingearring")}
                 slug="earrings"
@@ -78,7 +78,7 @@ export default function HeroCollage() {
 function GridItem({ title, slug, image, desc }) {
   const { t } = useLocale();
   return (
-    <div className="relative w-full h-[220px] md:h-full overflow-hidden group">
+    <div className="relative w-full min-h-[220px] md:h-full overflow-hidden group">
 
       {/* Subtle zoom animation added */}
       <img

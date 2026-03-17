@@ -7,7 +7,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import LanguageCurrencyPopup from "../ui/LanguageCurrencyPopup";
 import { useLocale } from "@/context/LocaleContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sling as Hamburger } from "hamburger-react";
 
 export default function Navbar() {
@@ -18,6 +18,8 @@ export default function Navbar() {
   const [showLocalePopup, setShowLocalePopup] = useState(false);
   const { language, currency, t } = useLocale();
   const [mobileMenu, setMobileMenu] = useState(false);
+  const localeRefMobile = useRef(null);
+  const localeRefDesktop = useRef(null);
 
   const navItem = (href, label) => (
     <Link
@@ -32,23 +34,33 @@ export default function Navbar() {
     </Link>
   );
 
-  /* Close Profile Dropdown */
   useEffect(() => {
-    if (!hydrated) return;
-
     const handleClick = (e) => {
-      if (!e.target.closest(".profile-dropdown")) {
+      // CLOSE PROFILE
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
         setOpen(false);
+      }
+
+      // CLOSE LOCALE POPUP
+      if (
+        localeRefMobile.current &&
+        !localeRefMobile.current.contains(e.target) &&
+        localeRefDesktop.current &&
+        !localeRefDesktop.current.contains(e.target)
+      ) {
+        setShowLocalePopup(false);
       }
     };
 
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
-  }, [hydrated]);
+  }, []);
+
+  /* Close Profile Dropdown */
+  const profileRef = useRef(null);
 
   return (
     <div className="sticky top-0 z-50 bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg my-[1rem]">
-      {/* MOBILE HEADER (MERGED HEADER + NAV) */}
       {/* MOBILE HEADER (MERGED HEADER + NAV) */}
       <div className="md:hidden flex items-center justify-between px-4 h-[70px]">
         {/* HAMBURGER */}
@@ -75,9 +87,12 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {/* LANGUAGE SWITCH (mobile only icon) */}
           {!isAdmin && (
-            <div className="relative">
+            <div ref={localeRefMobile} className="relative">
               <button
-                onClick={() => setShowLocalePopup(!showLocalePopup)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowLocalePopup(!showLocalePopup);
+                }}
                 className="flex items-center justify-center"
               >
                 <HiOutlineGlobeAlt size={22} />
@@ -93,7 +108,7 @@ export default function Navbar() {
 
           {/* USER / SIGNIN */}
           {user ? (
-            <div className="relative profile-dropdown">
+            <div ref={profileRef} className="relative">
               <button onClick={() => setOpen(!open)}>
                 <FaUserCircle size={26} />
               </button>
@@ -159,14 +174,17 @@ export default function Navbar() {
         {/* RIGHT SIDE */}
         <div className="ml-auto flex items-center gap-6">
           {!isAdmin && (
-            <div className="relative flex items-center gap-2 cursor-pointer">
-              <div
-                onClick={() => setShowLocalePopup(!showLocalePopup)}
-                className="flex items-center gap-2"
+            <div ref={localeRefDesktop} className="relative flex items-center gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowLocalePopup(!showLocalePopup);
+                }}
+                className="flex items-center gap-2 cursor-pointer"
               >
                 <HiOutlineGlobeAlt />
                 {language.toUpperCase()} - {currency}
-              </div>
+              </button>
 
               {showLocalePopup && (
                 <LanguageCurrencyPopup

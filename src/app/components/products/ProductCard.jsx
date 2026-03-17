@@ -66,13 +66,13 @@ export default function ProductCard({
   return (
     <div
       className={`bg-[#F2F1EC] rounded-lg shadow-lg text-center flex flex-col
-  ${isCompact ? "p-6" : "p-6 h-full"}`}
+  ${isCompact ? "p-4 md:p-6" : "p-4 md:p-6 h-full"}`}
     >
       <Link href={`/products/${product.slug}`} className="flex-grow">
         <div className="cursor-pointer group h-full flex flex-col">
           <div
             className={`bg-white flex items-center justify-center overflow-hidden
-  ${isCompact ? "h-36 mb-3" : "aspect-square mb-6"}`}
+  ${isCompact ? "h-32 mb-2" : "aspect-square mb-4 md:mb-6"}`}
           >
             <img
               src={imageUrl}
@@ -83,17 +83,19 @@ export default function ProductCard({
 
           <p
             className={`text-gray-700 line-clamp-2
-  ${isCompact ? "text-xs mb-2 min-h-[30px]" : "text-sm mb-2 min-h-[40px]"}`}
+  ${isCompact ? "text-xs mb-1 min-h-[28px]" : "text-xs md:text-sm mb-1 md:mb-2 min-h-[32px] md:min-h-[40px]"}`}
           >
             {product.title}
           </p>
 
-          <p className={`${isCompact ? "text-base mb-2" : "text-lg"} font-semibold`}>
+          <p
+            className={`${isCompact ? "text-sm mb-1" : "text-sm md:text-lg"} font-semibold`}
+          >
             {priceDisplay}
           </p>
 
           {!isCompact && (
-            <p className="text-xs text-gray-500 mb-4">
+            <p className="text-[10px] md:text-xs text-gray-500 mb-2 md:mb-4">
               {t("MinOrder")}: {product.moq} {product.moqUnit}
             </p>
           )}
@@ -151,10 +153,15 @@ export default function ProductCard({
         <div className="mt-auto">
           <button
             onClick={handleChat}
-            className="inline-flex items-center justify-center gap-2 
-           border border-black px-8 py-2 
-           text-base tracking-wide 
-           hover:bg-black hover:text-white transition cursor-pointer"
+            className="
+              w-full md:w-auto 
+              inline-flex items-center justify-center gap-2 
+              border border-black 
+              px-3 md:px-6 py-1.5 md:py-2 
+              text-xs md:text-base 
+              transition 
+            hover:bg-black hover:text-white
+              "
           >
             <FaWhatsapp size={14} />
             {t("chatNow")}
