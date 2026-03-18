@@ -3,12 +3,22 @@
 import { Mail, Phone, Instagram, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocale } from "@/context/LocaleContext";
+import { useAuth } from "@/context/AuthContext";
+import AuthModal from "../components/AuthModal";
+import { useState } from "react";
 
 export default function ContactPage() {
-
   const { t } = useLocale();
+  const { user, hydrated } = useAuth();
+  const [showModal, setShowModal] = useState(false);
   const handleMail = async (e) => {
     e.preventDefault();
+    if (!hydrated) return;
+
+    if (!user) {
+      setShowModal(true);
+      return;
+    }
 
     const form = e.currentTarget;
     const formData = {
@@ -148,11 +158,14 @@ export default function ContactPage() {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-base font-serif text-[var(--primary)]">
-                   {t("email")}
+                    {t("email")}
                   </label>
                   <input
                     name="email"
                     type="email"
+                    value={user?.email || ""}
+                    readOnly={!!user}
+                    onChange={() => {}}
                     className="bg-[var(--page-bg)] border border-black/10 p-3 focus:outline-none focus:ring-1 focus:ring-[var(--primary)]/30 transition-all"
                   />
                 </div>
@@ -182,6 +195,12 @@ export default function ContactPage() {
             </div>
           </div>
         </main>
+        {showModal && (
+          <AuthModal
+            onClose={() => setShowModal(false)}
+            message="Please login to send a message"
+          />
+        )}
       </div>
     </div>
   );
