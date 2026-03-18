@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { FaWhatsapp, FaChevronUp, FaChevronDown } from "react-icons/fa";
+import { FiUpload, FiX } from "react-icons/fi";
 import AuthModal from "@/app/components/AuthModal";
 import { useAuth } from "@/context/AuthContext";
 import ProductCard from "./ProductCard";
@@ -22,13 +23,146 @@ export default function ProductDetails({ product }) {
   const { currency, rates, t } = useLocale();
   const minPrice = product?.priceRange?.min;
   const maxPrice = product?.priceRange?.max;
-
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [images, setImages] = useState([]);
+  const [authMessage, setAuthMessage] = useState("");
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [deletingIndex, setDeletingIndex] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [localImages, setLocalImages] = useState([]); // File previews
 
   const activeImage = product?.images?.[currentIndex]?.url;
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+
+  const [reviewModal, setReviewModal] = useState({
+    open: false,
+    images: [],
+    index: 0,
+  });
+
+  const handleReviewPrev = () => {
+    setReviewModal((prev) => ({
+      ...prev,
+      index: prev.index === 0 ? prev.images.length - 1 : prev.index - 1,
+    }));
+  };
+
+  const handleReviewNext = () => {
+    setReviewModal((prev) => ({
+      ...prev,
+      index: prev.index === prev.images.length - 1 ? 0 : prev.index + 1,
+    }));
+  };
+
+  const handleSubmitReview = async () => {
+    if (!user) {
+      setAuthMessage("You must be signed in to submit a review");
+      setShowAuthModal(true);
+      return;
+    }
+
+    const imageUrls = await uploadImages();
+    setImages(imageUrls);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: user?.name,
+            productId: product._id,
+            rating,
+            comment,
+            images: imageUrls,
+          }),
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setReviews([data, ...reviews]);
+        setComment("");
+        setImages([]);
+        setLocalImages([]);
+        setUploadedImages([]);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const uploadImages = async () => {
+    if (!localImages.length) return [];
+
+    const formData = new FormData();
+    localImages.forEach((file) => formData.append("images", file));
+
+    try {
+      setUploadingImages(true);
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/upload`,
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Upload failed");
+      }
+
+      // STORE uploaded images for cleanup
+      setUploadedImages((prev) => [...prev, ...data]);
+
+      return data;
+    } catch (err) {
+      console.error("Upload error:", err);
+      return [];
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  const uploadedImagesRef = useRef([]);
+
+  useEffect(() => {
+    uploadedImagesRef.current = uploadedImages;
+  }, [uploadedImages]);
+
+  useEffect(() => {
+    return () => {
+      if (uploadedImagesRef.current.length === 0) return;
+
+      const blob = new Blob(
+        [
+          JSON.stringify({
+            public_ids: uploadedImagesRef.current.map((img) => img.public_id),
+          }),
+        ],
+        { type: "application/json" },
+      );
+
+      navigator.sendBeacon(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/cleanup-images`,
+        blob,
+      );
+    };
+  }, []);
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.targetTouches[0].clientX;
@@ -44,8 +178,6 @@ export default function ProductDetails({ product }) {
     if (diff > 50) handleNextImage(); // swipe left
     if (diff < -50) handlePrevImage(); // swipe right
   };
-
-  const totalImages = product?.images?.length || 0;
 
   const scrollToSection = (ref) => {
     if (!ref.current) return;
@@ -90,6 +222,7 @@ export default function ProductDetails({ product }) {
       : formatCurrency(convertedMin, currency);
   const handleChat = async () => {
     if (!user) {
+      setAuthMessage("You must be signed in to chat with seller");
       setShowAuthModal(true);
       return;
     }
@@ -108,6 +241,17 @@ export default function ProductDetails({ product }) {
       console.error("WhatsApp redirect failed:", error);
     }
   };
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${product._id}`,
+      );
+      const data = await res.json();
+      setReviews(data);
+    };
+
+    fetchReviews();
+  }, [product._id]);
 
   useEffect(() => {
     const fetchRelated = async () => {
@@ -196,7 +340,7 @@ export default function ProductDetails({ product }) {
               </div>
 
               {/* MAIN IMAGE */}
-              <div className="relative w-full max-w-[450px] h-[300px] md:h-[450px] bg-white rounded-lg flex items-center justify-center shadow-inner overflow-hidden group">
+              <div className="relative w-full md:w-[450px] md:min-w-[450px] aspect-square bg-white rounded-lg shadow-inner overflow-hidden flex items-center justify-center group">
                 {/* LEFT ARROW */}
                 <button
                   onClick={handlePrevImage}
@@ -366,8 +510,203 @@ export default function ProductDetails({ product }) {
             ref={reviewsRef}
             className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-4 md:p-8"
           >
-            <h2 className="text-lg font-semibold mb-4">Reviews</h2>
-            <p>No reviews yet.</p>
+            <h2 className="text-lg md:text-xl font-semibold mb-6">
+              Reviews ({reviews.length})
+            </h2>
+
+            {/* ADD REVIEW */}
+            <div className="mb-10 border-b pb-8">
+              {/* Stars */}
+              <div className="flex items-center gap-2 mb-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    onClick={() => setRating(star)}
+                    className={`cursor-pointer text-2xl transition transform hover:scale-110 ${
+                      star <= rating ? "text-black" : "text-gray-400"
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+
+              {/* Textarea */}
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Share your experience with this product..."
+                className="w-full border border-gray-300 focus:border-black outline-none rounded-md p-3 text-sm resize-none mb-3 bg-white"
+                rows={3}
+              />
+
+              {/* UPLOAD BOX */}
+              <div className="mb-4">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files).slice(
+                      0,
+                      5 - localImages.length,
+                    );
+                    setLocalImages((prev) => [...prev, ...files]);
+                  }}
+                  className="hidden"
+                  id="reviewImageUpload"
+                />
+
+                <label
+                  htmlFor="reviewImageUpload"
+                  className={`flex flex-col items-center justify-center 
+                  border-2 border-dashed rounded-lg p-5 cursor-pointer transition bg-white
+                  shadow-sm hover:shadow-md
+                  ${
+                    localImages.length >= 5
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:border-black border-gray-300"
+                  }`}
+                >
+                  <FiUpload size={20} className="mb-2" />
+                  <p className="text-sm text-gray-600">
+                    Upload Images{" "}
+                    <span className="text-xs text-gray-400">(Max 5)</span>
+                  </p>
+                </label>
+              </div>
+
+              {localImages.length > 0 && (
+                <div className="flex gap-3 mt-4 mb-4 flex-wrap">
+                  {localImages.map((file, i) => (
+                    <div key={i} className="relative">
+                      {/* IMAGE */}
+                      <img
+                        src={URL.createObjectURL(file)}
+                        className="w-20 h-20 object-cover rounded-md border"
+                      />
+
+                      {/* ❌ DELETE BUTTON */}
+                      <button
+                        disabled={deletingIndex === i}
+                        onClick={async () => {
+                          const img = images[i] || null;
+
+                          // If not uploaded → just remove locally
+                          if (!img || !img.public_id) {
+                            setLocalImages((prev) =>
+                              prev.filter((_, index) => index !== i),
+                            );
+                            return;
+                          }
+                          setDeletingIndex(i); // START LOADING
+
+                          try {
+                            await fetch(
+                              `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/delete-image`,
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                credentials: "include",
+                                body: JSON.stringify({
+                                  public_id: img.public_id,
+                                }),
+                              },
+                            );
+
+                            setLocalImages(
+                              localImages.filter((_, index) => index !== i),
+                            );
+                            setImages(images.filter((_, index) => index !== i));
+                          } catch (err) {
+                            console.error("Delete failed", err);
+                          } finally {
+                            setDeletingIndex(null);
+                          }
+                        }}
+                        className="absolute -top-2 -right-2 
+                      bg-black text-white 
+                        w-5 h-5 rounded-full 
+                        flex items-center justify-center 
+                        text-xs transition
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        hover:scale-110"
+                      >
+                        {deletingIndex === i ? "…" : <FiX size={10} />}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Button */}
+              <button
+                onClick={handleSubmitReview}
+                disabled={uploadingImages}
+                className="bg-black text-white px-6 py-2 rounded-md hover:opacity-90 transition disabled:opacity-50 shadow-sm hover:shadow-md"
+              >
+                {uploadingImages ? "Uploading..." : "Submit Review"}
+              </button>
+            </div>
+
+            {/* REVIEW LIST */}
+            <div className="space-y-5">
+              {reviews.length === 0 ? (
+                <p className="text-gray-500 text-sm">No reviews yet.</p>
+              ) : (
+                reviews.map((rev) => (
+                  <div
+                    key={rev._id}
+                    className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition"
+                  >
+                    {/* Top Row */}
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="font-semibold text-sm tracking-wide">
+                        {rev.name}
+                      </p>
+                      <span className="text-xs text-gray-400">
+                        {new Date(rev.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    {/* Rating */}
+                    <div className="text-sm mb-3 tracking-wide">
+                      {"★".repeat(rev.rating)}
+                      <span className="text-gray-300">
+                        {"★".repeat(5 - rev.rating)}
+                      </span>
+                    </div>
+
+                    {/* Comment */}
+                    <p className="text-sm text-gray-700 leading-relaxed tracking-wide">
+                      {rev.comment}
+                    </p>
+
+                    {/* EVIEW IMAGES */}
+                    {rev.images?.length > 0 && (
+                      <div className="flex gap-3 mt-4 flex-wrap">
+                        {rev.images.map((img, i) => (
+                          <img
+                            key={i}
+                            src={img.url}
+                            onClick={() =>
+                              setReviewModal({
+                                open: true,
+                                images: rev.images,
+                                index: i,
+                              })
+                            }
+                            className="w-16 h-16 object-cover rounded-md border shadow-sm cursor-pointer hover:scale-110 transition"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
@@ -449,7 +788,85 @@ export default function ProductDetails({ product }) {
           </div>
         </div>
       )}
-      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          message={authMessage}
+        />
+      )}
+      {reviewModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() =>
+              setReviewModal({ open: false, images: [], index: 0 })
+            }
+          />
+
+          {/* Modal */}
+          <div className="relative w-[90%] max-w-[900px] h-[80vh] bg-[#F2F1EC] rounded-lg flex items-center justify-center p-6">
+            {/* Close */}
+            <button
+              onClick={() =>
+                setReviewModal({ open: false, images: [], index: 0 })
+              }
+              className="absolute top-4 right-4 text-black text-2xl"
+            >
+              ✕
+            </button>
+
+            {/* Left */}
+            {reviewModal.images.length > 1 && (
+              <button
+                onClick={handleReviewPrev}
+                className="absolute left-4 bg-white/90 hover:bg-white p-4 rounded-full shadow"
+              >
+                <FaChevronUp className="-rotate-90" size={18} />
+              </button>
+            )}
+
+            {/* Image */}
+            <img
+              src={reviewModal.images[reviewModal.index]?.url}
+              className="max-h-full max-w-full object-contain"
+            />
+
+            {/* Right */}
+            {reviewModal.images.length > 1 && (
+              <button
+                onClick={handleReviewNext}
+                className="absolute right-4 bg-white/90 hover:bg-white p-4 rounded-full shadow"
+              >
+                <FaChevronDown className="rotate-270" size={18} />
+              </button>
+            )}
+
+            {/* Thumbnails */}
+            {reviewModal.images.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 bg-white/80 backdrop-blur-md px-4 py-2 rounded-md">
+                {reviewModal.images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img.url}
+                    onClick={() =>
+                      setReviewModal((prev) => ({
+                        ...prev,
+                        index: idx,
+                      }))
+                    }
+                    className={`w-14 h-14 object-cover cursor-pointer border rounded-md ${
+                      reviewModal.index === idx
+                        ? "border-black"
+                        : "border-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

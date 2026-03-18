@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 
-export default function AuthModal({ onClose }) {
+export default function AuthModal({ onClose, message }) {
   // 🔥 Disable scroll when modal opens
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -15,7 +15,7 @@ export default function AuthModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* 🔥 Blurred Background */}
+      {/* Blurred Background */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
@@ -33,7 +33,7 @@ export default function AuthModal({ onClose }) {
         <h2 className="text-xl font-semibold mb-4">Please Sign In</h2>
 
         <p className="text-gray-500 mb-6">
-          You must be logged in to chat with the seller
+          {message || "You must be logged in to continue"}
         </p>
 
         <div className="flex gap-4 justify-center">

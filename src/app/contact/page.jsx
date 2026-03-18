@@ -50,7 +50,7 @@ export default function ContactPage() {
             px-6 py-4 mb-8
             shadow-md rounded-md"
         >
-          <h2 className="tracking-[0.3em] text-2xl font-semibold uppercase">
+          <h2 className="tracking-[0.3em] text-sm md:text-2xl font-semibold uppercase">
             {t("contact")}
           </h2>
         </div>
@@ -81,7 +81,7 @@ export default function ContactPage() {
                     className="flex w-fit items-center gap-3 text-[var(--primary)] hover:opacity-70 transition-opacity whitespace-nowrap"
                   >
                     <Phone size={16} strokeWidth={1.5} />
-                    <span className="text-sm w-fit underline underline-offset-4 whitespace-nowrap">
+                    <span className="text-sm w-fit underline underline-offset-4 break-words">
                       +91 82862 80499
                     </span>
                   </a>
@@ -91,26 +91,26 @@ export default function ContactPage() {
                     className="flex w-fit items-center gap-3 text-[var(--primary)] hover:opacity-70 transition-opacity whitespace-nowrap"
                   >
                     <Instagram size={16} strokeWidth={1.5} />
-                    <span className="text-sm w-fit underline underline-offset-4 whitespace-nowrap">
+                    <span className="text-sm w-fit underline underline-offset-4 break-words">
                       @lordganeshaimpex
                     </span>
                   </a>
                   <a
                     href="mailto:www.lordganeshaimpex1980@gmail.com"
-                    className="flex items-center w-fit gap-3 text-[var(--primary)] hover:opacity-70 transition-opacity whitespace-nowrap"
+                    className="flex items-center w-fit gap-3 text-[var(--primary)] hover:opacity-70 transition-opacity "
                   >
                     <Mail size={16} strokeWidth={1.5} />
-                    <span className="text-sm underline w-fit underline-offset-4 whitespace-nowrap">
+                    <span className="text-sm underline w-fit underline-offset-4 break-all">
                       www.lordganeshaimpex1980@gmail.com
                     </span>
                   </a>
                   <a
                     href="https://in900422812.trustpass.alibaba.com"
                     target="_blank"
-                    className="flex items-center w-fit gap-3 text-[var(--primary)] hover:opacity-70 transition-opacity whitespace-nowrap"
+                    className="flex items-center w-fit gap-3 text-[var(--primary)] hover:opacity-70 transition-opacity "
                   >
                     <ExternalLink size={16} strokeWidth={1.5} />
-                    <span className="text-sm underline w-fit underline-offset-4 break-all whitespace-nowrap">
+                    <span className="text-sm underline w-fit underline-offset-4 break-all">
                       https://in900422812.trustpass.alibaba.com
                     </span>
                   </a>

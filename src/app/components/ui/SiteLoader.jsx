@@ -7,48 +7,50 @@ export default function SiteLoader() {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
-useEffect(() => {
-  document.documentElement.classList.add("loading");
+  useEffect(() => {
+    document.documentElement.classList.add("loading");
 
-  let interval;
+    let interval;
 
-  const handleLoad = () => {
-    clearInterval(interval);
+    const handleLoad = () => {
+      clearInterval(interval);
 
-    setProgress(100);
+      setProgress(100);
 
-    setTimeout(() => {
-      document.documentElement.classList.remove("loading");
-      setLoading(false);
-    }, 700);
-  };
+      setTimeout(() => {
+        document.documentElement.classList.remove("loading");
+        setLoading(false);
+      }, 700);
+    };
 
-  interval = setInterval(() => {
-    setProgress((prev) => {
-      const next = prev + Math.random() * 6;
+    interval = setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + Math.random() * 6;
 
-      if (next >= 92) return 92; // never exceed until load event
-      return next;
-    });
-  }, 200);
+        if (next >= 92) return 92; // never exceed until load event
+        return next;
+      });
+    }, 200);
 
-  if (document.readyState === "complete") {
-    handleLoad();
-  } else {
-    window.addEventListener("load", handleLoad);
-  }
+    if (document.readyState === "complete") {
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+    }
 
-  return () => {
-    clearInterval(interval);
-    window.removeEventListener("load", handleLoad);
-  };
-}, []);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("load", handleLoad);
+    };
+  }, []);
 
   return (
     <AnimatePresence>
       {loading && (
         <motion.div
-          className="site-loader fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#EBE2DB]"
+          className={`site-loader fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#EBE2DB] ${
+            loading ? "pointer-events-auto" : "pointer-events-none"
+          }`}
           initial={{ y: 0, scale: 1 }}
           animate={{ y: 0 }}
           exit={{ y: "-110%", scale: 0.98 }}
