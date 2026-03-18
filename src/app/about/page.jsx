@@ -35,7 +35,7 @@ export default function AboutPage() {
              px-6 py-4 mb-8
              shadow-md"
           >
-            <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-2xl font-semibold text-center">
+            <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-sm md:text-2xl font-semibold text-center">
               {t("about")}
             </h2>
           </div>
@@ -114,7 +114,7 @@ export default function AboutPage() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-2xl font-semibold text-center">
+            <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-sm md:text-2xl font-semibold text-center">
               {t("countriesWeShip")}
             </h2>
           </motion.div>

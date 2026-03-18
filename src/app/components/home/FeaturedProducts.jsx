@@ -83,7 +83,7 @@ export default function FeaturedProducts() {
           )}
 
           {/* TITLE */}
-          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-2xl font-semibold text-center flex-1">
+          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-sm md:text-2xl font-semibold text-center flex-1">
             {t("featuredProducts")}
           </h2>
 
@@ -120,9 +120,6 @@ export default function FeaturedProducts() {
         {/* MOBILE VIEW MORE */}
         {isMobile && visibleCount < products.length && (
           <div className="relative mt-6">
-            {/* Fade effect */}
-            <div className="absolute bottom-12 left-0 w-full h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
-
             <button
               onClick={() =>
                 setVisibleCount((prev) => Math.min(prev + 4, products.length))

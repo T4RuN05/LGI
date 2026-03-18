@@ -92,6 +92,9 @@ export default function EditProductPage() {
   const [productId, setProductId] = useState(null);
   const [activeTab, setActiveTab] = useState("attributes");
   const thumbnailsRef = useRef(null);
+  const [productReviews, setProductReviews] = useState([]);
+  const [replyMap, setReplyMap] = useState({});
+  const [sendingMailId, setSendingMailId] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -119,7 +122,7 @@ export default function EditProductPage() {
         return;
       }
 
-      setProductId(data._id); 
+      setProductId(data._id);
 
       setForm({
         title: data.title || "",
@@ -157,6 +160,20 @@ export default function EditProductPage() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    if (!productId) return;
+
+    const fetchReviews = async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${productId}`,
+      );
+      const data = await res.json();
+      setProductReviews(data);
+    };
+
+    fetchReviews();
+  }, [productId]);
+
   // ================= IMAGE UPLOAD =================
   const uploadImages = async (files) => {
     const formData = new FormData();
@@ -187,18 +204,18 @@ export default function EditProductPage() {
     }
   };
 
-const handleRemoveImage = (index) => {
-  const updated = images.filter((_, i) => i !== index);
-  const removedImage = images[index];
+  const handleRemoveImage = (index) => {
+    const updated = images.filter((_, i) => i !== index);
+    const removedImage = images[index];
 
-  setImages(updated);
+    setImages(updated);
 
-  if (activeImage === removedImage.url) {
-    setActiveImage(updated[0]?.url || null);
-  }
+    if (activeImage === removedImage.url) {
+      setActiveImage(updated[0]?.url || null);
+    }
 
-  toast.success("Image removed");
-};
+    toast.success("Image removed");
+  };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -210,6 +227,55 @@ const handleRemoveImage = (index) => {
 
     const updated = arrayMove(images, oldIndex, newIndex);
     setImages(updated);
+  };
+
+  const handleDeleteReview = async (id) => {
+    if (!confirm("Delete this review?")) return;
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
+
+    if (res.ok) {
+      setProductReviews((prev) => prev.filter((r) => r._id !== id));
+      toast.success("Review deleted");
+    } else {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const handleMailReview = async (id) => {
+    const reply = replyMap[id] || "";
+
+    setSendingMailId(id);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}/mail`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ reply }),
+        },
+      );
+
+      if (res.ok) {
+        toast.success("Mail sent with reply");
+      } else {
+        toast.error("Failed to send mail");
+      }
+    } catch (err) {
+      toast.error("Error sending mail");
+    } finally {
+      setSendingMailId(null);
+    }
   };
 
   // ================= FORM =================
@@ -272,7 +338,7 @@ const handleRemoveImage = (index) => {
   };
 
   if (loading) {
-    return <EditProductSkeleton />;;
+    return <EditProductSkeleton />;
   }
 
   return (
@@ -428,7 +494,7 @@ const handleRemoveImage = (index) => {
         {/* EDITOR SECTION */}
         <div className="bg-[#F2F1EC] shadow-md p-6 rounded-md">
           <div className="flex gap-12 border-b mb-6">
-            {["attributes", "description", "faq"].map((tab) => (
+            {["attributes", "description", "faq", "reviews"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -443,10 +509,90 @@ const handleRemoveImage = (index) => {
             ))}
           </div>
 
-          <MinimalEditor
-            content={form[activeTab]}
-            onChange={handleEditorChange}
-          />
+          {activeTab === "reviews" ? (
+            <div className="space-y-4">
+              {productReviews.length === 0 ? (
+                <p>No reviews</p>
+              ) : (
+                productReviews.map((rev) => (
+                  <div
+                    key={rev._id}
+                    className="bg-white p-5 rounded-lg shadow-md border border-gray-200"
+                  >
+                    {/* HEADER */}
+                    <div className="flex justify-between items-center mb-3">
+                      <p className="font-semibold text-sm tracking-wide">
+                        {rev.name}
+                      </p>
+                      <span className="text-sm">
+                        {"★".repeat(rev.rating)}
+                        <span className="text-gray-300">
+                          {"★".repeat(5 - rev.rating)}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* COMMENT */}
+                    <p className="text-sm text-gray-700 mb-4">{rev.comment}</p>
+
+                    {/* IMAGES */}
+                    {rev.images?.length > 0 && (
+                      <div className="flex gap-2 mb-4 flex-wrap">
+                        {rev.images.map((img, i) => (
+                          <img
+                            key={i}
+                            src={img.url}
+                            className="w-14 h-14 object-cover rounded-md border hover:scale-105 transition"
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* ADMIN REPLY */}
+                    <textarea
+                      placeholder="Write admin reply..."
+                      value={replyMap[rev._id] || ""}
+                      onChange={(e) =>
+                        setReplyMap((prev) => ({
+                          ...prev,
+                          [rev._id]: e.target.value,
+                        }))
+                      }
+                      className="w-full border border-gray-300 rounded-md p-2 text-sm mb-4 focus:border-black outline-none bg-[#fafafa]"
+                      rows={2}
+                    />
+
+                    {/* ACTIONS */}
+                    <div className="flex gap-3">
+                      {/* DELETE */}
+                      <button
+                        onClick={() => handleDeleteReview(rev._id)}
+                        className="flex items-center gap-1 px-4 py-1.5 text-sm rounded-md border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition"
+                      >
+                        Delete
+                      </button>
+
+                      {/* MAIL */}
+                      <button
+                        onClick={() => handleMailReview(rev._id)}
+                        disabled={sendingMailId === rev._id}
+                        className="flex items-center gap-1 px-4 py-1.5 text-sm rounded-md bg-black text-white hover:opacity-90 transition disabled:opacity-50"
+                      >
+                        {sendingMailId === rev._id
+                          ? "Sending..."
+                          : "Send Reply"}
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <MinimalEditor
+              content={form[activeTab]}
+              onChange={handleEditorChange}
+            />
+          )}
         </div>
 
         <div className="text-right">

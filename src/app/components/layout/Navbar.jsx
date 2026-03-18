@@ -20,6 +20,8 @@ export default function Navbar() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const localeRefMobile = useRef(null);
   const localeRefDesktop = useRef(null);
+  const profileRefMobile = useRef(null);
+  const profileRefDesktop = useRef(null);
 
   const navItem = (href, label) => (
     <Link
@@ -34,33 +36,38 @@ export default function Navbar() {
     </Link>
   );
 
-  useEffect(() => {
-    const handleClick = (e) => {
-      // CLOSE PROFILE
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
-        setOpen(false);
-      }
+useEffect(() => {
+  const handleClick = (e) => {
+    const clickedInsideMobileProfile =
+      profileRefMobile.current?.contains(e.target);
 
-      // CLOSE LOCALE POPUP
-      if (
-        localeRefMobile.current &&
-        !localeRefMobile.current.contains(e.target) &&
-        localeRefDesktop.current &&
-        !localeRefDesktop.current.contains(e.target)
-      ) {
-        setShowLocalePopup(false);
-      }
-    };
+    const clickedInsideDesktopProfile =
+      profileRefDesktop.current?.contains(e.target);
 
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, []);
+    if (!clickedInsideMobileProfile && !clickedInsideDesktopProfile) {
+      setOpen(false);
+    }
+
+    const clickedInsideMobile =
+      localeRefMobile.current?.contains(e.target);
+
+    const clickedInsideDesktop =
+      localeRefDesktop.current?.contains(e.target);
+
+    if (!clickedInsideMobile && !clickedInsideDesktop) {
+      setShowLocalePopup(false);
+    }
+  };
+
+  document.addEventListener("click", handleClick);
+  return () => document.removeEventListener("click", handleClick);
+}, []);
 
   /* Close Profile Dropdown */
   const profileRef = useRef(null);
 
   return (
-    <div className="sticky top-0 z-50 bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg my-[1rem]">
+    <div className="sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg my-[1rem]">
       {/* MOBILE HEADER (MERGED HEADER + NAV) */}
       <div className="md:hidden flex items-center justify-between px-4 h-[70px]">
         {/* HAMBURGER */}
@@ -84,18 +91,21 @@ export default function Navbar() {
         </Link>
 
         {/* RIGHT SIDE */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 h-full">
           {/* LANGUAGE SWITCH (mobile only icon) */}
           {!isAdmin && (
-            <div ref={localeRefMobile} className="relative">
+            <div
+              ref={localeRefMobile}
+              className="relative h-full flex items-center"
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setShowLocalePopup(!showLocalePopup);
                 }}
-                className="flex items-center justify-center"
+                className="flex items-center justify-center h-full"
               >
-                <HiOutlineGlobeAlt size={22} />
+                <HiOutlineGlobeAlt size={26} />
               </button>
 
               {showLocalePopup && (
@@ -108,8 +118,13 @@ export default function Navbar() {
 
           {/* USER / SIGNIN */}
           {user ? (
-            <div ref={profileRef} className="relative">
-              <button onClick={() => setOpen(!open)}>
+            <div ref={profileRefMobile} className="relative h-full flex items-center">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen((prev) => !prev);
+                }}
+              >
                 <FaUserCircle size={26} />
               </button>
 
@@ -174,7 +189,10 @@ export default function Navbar() {
         {/* RIGHT SIDE */}
         <div className="ml-auto flex items-center gap-6">
           {!isAdmin && (
-            <div ref={localeRefDesktop} className="relative flex items-center gap-2">
+            <div
+              ref={localeRefDesktop}
+              className="relative flex items-center gap-2"
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -195,8 +213,13 @@ export default function Navbar() {
           )}
 
           {user ? (
-            <div className="relative profile-dropdown">
-              <button onClick={() => setOpen(!open)}>
+            <div ref={profileRefDesktop} className="relative profile-dropdown">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen((prev) => !prev);
+                }}
+              >
                 <FaUserCircle size={26} className="cursor-pointer" />
               </button>
 

@@ -8,7 +8,7 @@ export default function ProductCategories() {
     <section className="w-full py-10 flex justify-center">
       <div className="w-full max-w-[1850px] px-6">
         {/* HEADER */}
-        <div className="w-full bg-[var(--component-bg)] rounded-md text-center py-4 text-2xl font-semibold tracking-widest mb-8 shadow">
+        <div className="w-full bg-[var(--component-bg)] rounded-md text-center py-4 text-sm md:text-2xl font-semibold tracking-widest mb-8 shadow">
           PRODUCT CATEGORIES
         </div>
         <StaggerContainer>

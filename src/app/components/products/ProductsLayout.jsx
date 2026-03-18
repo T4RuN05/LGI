@@ -79,7 +79,7 @@ export default function ProductsLayout({
 
   return (
     <section className="bg-[#EBE2DB] min-h-screen py-3">
-      <div className="max-w-[1850px] mx-auto px-8">
+      <div className="max-w-[1850px] mx-auto px-6">
         {/* HEADER STRIP (STICKY) */}
         <div className="sticky top-[80px] z-40 bg-[#F2F1EC]/75 backdrop-blur-lg flex items-center justify-between px-4 md:px-6 py-4 mb-8 md:mb-12 shadow-lg border-y border-[#e3e1dc] rounded-md">
           {/* LEFT */}
@@ -97,7 +97,7 @@ export default function ProductsLayout({
           )}
 
           {/* TITLE */}
-          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-lg md:text-2xl font-semibold text-center flex-1">
+          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-sm md:text-2xl font-semibold text-center flex-1">
             {selectedCategoryName}
           </h2>
 
