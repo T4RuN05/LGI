@@ -29,7 +29,6 @@ const googleCls =
 const switchBtnCls =
   "underline text-[#2D2319] text-xs bg-transparent border-none p-0 cursor-pointer font-[inherit] transition hover:opacity-60";
 
-// FormCard is defined OUTSIDE AuthPage — prevents remount on every parent re-render
 function FormCard({
   isRegister,
   t,
@@ -43,6 +42,12 @@ function FormCard({
   showPassword,
   setShowPassword,
   switchMode,
+  step,
+  otp,
+  setOtp,
+  handleVerifyOtp,
+  displayStep,
+  cooldown,
 }) {
   return (
     <div className="w-full max-w-[420px] bg-[#f2f1ec] rounded-2xl px-6 py-8 lg:px-10 lg:py-10 shadow-[0_8px_48px_rgba(45,35,25,0.11)] box-border">
@@ -50,84 +55,171 @@ function FormCard({
         {isRegister ? t("register") : t("login")}
       </h1>
       <form
-        onSubmit={isRegister ? handleRegisterSubmit : handleLoginSubmit}
+        onSubmit={
+          isRegister
+            ? displayStep === "otp"
+              ? handleVerifyOtp
+              : handleRegisterSubmit
+            : handleLoginSubmit
+        }
         className="flex flex-col gap-4"
       >
-        {isRegister && (
-          <div>
-            <label className={labelCls}>{t("fullName")}</label>
-            <input
-              type="text"
-              name="name"
-              placeholder={t("enterYourName")}
-              value={registerForm.name}
-              onChange={handleRegisterChange}
-              required
-              className={inputCls}
-            />
-          </div>
-        )}
-        <div>
-          <label className={labelCls}>{t("email")}</label>
-          <input
-            type="email"
-            name="email"
-            placeholder={t("enterYourEmail")}
-            value={isRegister ? registerForm.email : loginForm.email}
-            onChange={isRegister ? handleRegisterChange : handleLoginChange}
-            required
-            className={inputCls}
-          />
-        </div>
-        <div>
-          <label className={labelCls}>{t("password")}</label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder={
-                isRegister ? t("createPassword") : t("enterYourPassword")
-              }
-              value={isRegister ? registerForm.password : loginForm.password}
-              onChange={isRegister ? handleRegisterChange : handleLoginChange}
-              required
-              className={inputCls + " pr-10"}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a8e84] bg-transparent border-none p-0 cursor-pointer flex items-center"
-            >
-              {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
+        {isRegister ? (
+          displayStep === "otp" ? (
+            <>
+              <label className={labelCls + " text-center"}>
+                Enter Verification Code
+              </label>
+              <div className="flex justify-center gap-2 mt-2">
+                {[...Array(6)].map((_, i) => (
+                  <input
+                    key={i}
+                    type="text"
+                    maxLength="1"
+                    value={otp[i] || ""}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, "");
+                      const newOtp = otp.split("");
+                      newOtp[i] = val;
+                      setOtp(newOtp.join(""));
+                      if (val && e.target.nextSibling) {
+                        e.target.nextSibling.focus();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (
+                        e.key === "Backspace" &&
+                        !otp[i] &&
+                        e.target.previousSibling
+                      ) {
+                        e.target.previousSibling.focus();
+                      }
+                    }}
+                    className="w-10 h-12 text-center border border-[#e0dad2] rounded-md bg-[#ebe2db] text-lg tracking-widest focus:border-[#2D2319] focus:ring-1 focus:ring-[#2D2319]/20 outline-none"
+                  />
+                ))}
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className={btnCls + " mt-4"}
+              >
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+              <p className="text-xs text-[#7a6e65] text-center mt-2">
+                Didn't receive OTP?{" "}
+                <button
+                  onClick={handleRegisterSubmit}
+                  disabled={cooldown > 0}
+                  className={`${switchBtnCls} ${cooldown > 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
+                </button>
+              </p>
+            </>
+          ) : (
+            <>
+              <div>
+                <label className={labelCls}>{t("fullName")}</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder={t("enterYourName")}
+                  value={registerForm.name}
+                  onChange={handleRegisterChange}
+                  required
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>{t("email")}</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={t("enterYourEmail")}
+                  value={registerForm.email}
+                  onChange={handleRegisterChange}
+                  required
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>{t("password")}</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder={t("createPassword")}
+                  value={registerForm.password}
+                  onChange={handleRegisterChange}
+                  required
+                  className={inputCls}
+                />
+              </div>
+              <button type="submit" disabled={loading} className={btnCls}>
+                {loading ? t("registering") : t("register")}
+              </button>
+            </>
+          )
+        ) : (
+          <>
+            <div>
+              <label className={labelCls}>{t("email")}</label>
+              <input
+                type="email"
+                name="email"
+                placeholder={t("enterYourEmail")}
+                value={loginForm.email}
+                onChange={handleLoginChange}
+                required
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>{t("password")}</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder={t("enterYourPassword")}
+                  value={loginForm.password}
+                  onChange={handleLoginChange}
+                  required
+                  className={inputCls + " pr-10"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a8e84]"
+                >
+                  {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
+                </button>
+              </div>
+            </div>
+            <button type="submit" disabled={loading} className={btnCls}>
+              {loading ? t("loggingIn") : t("logIn")}
             </button>
-          </div>
-        </div>
-        <button type="submit" disabled={loading} className={btnCls}>
-          {loading
-            ? isRegister
-              ? t("registering")
-              : t("loggingIn")
-            : isRegister
-              ? t("register")
-              : t("logIn")}
-        </button>
-        <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-[#ddd7d0]" />
-          <span className="text-[11px] text-[#a09488]">{t("or")}</span>
-          <div className="flex-1 h-px bg-[#ddd7d0]" />
-        </div>
-        <a
-          href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`}
-          className={googleCls}
-        >
-          <img
-            src="https://developers.google.com/identity/images/g-logo.png"
-            alt="Google"
-            className="w-4 h-4"
-          />
-          {t("continueWithGoogle")}
-        </a>
+          </>
+        )}
       </form>
+
+      <div className="flex items-center gap-3 mt-4">
+        <div className="flex-1 h-px bg-[#ddd7d0]" />
+        <span className="text-[11px] text-[#a09488]">{t("or")}</span>
+        <div className="flex-1 h-px bg-[#ddd7d0]" />
+      </div>
+
+      <a
+        href={`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`}
+        className={googleCls + " mt-4"}
+      >
+        <img
+          src="https://developers.google.com/identity/images/g-logo.png"
+          alt="Google"
+          className="w-4 h-4"
+        />
+        {t("continueWithGoogle")}
+      </a>
+
       <p className="mt-5 text-center text-xs text-[#7a6e65]">
         {isRegister ? t("alreadyHaveAccount") : t("newUser")}
         <button
@@ -150,6 +242,7 @@ export default function AuthPage() {
   const { login } = useAuth();
   const router = useRouter();
   const { t } = useLocale();
+  const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -167,12 +260,23 @@ export default function AuthPage() {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [step, setStep] = useState("form");
+  const [otp, setOtp] = useState("");
+  // displayStep drives what the register card RENDERS — decoupled from `step`
+  // so we can keep showing OTP during the slide-out transition
+  const [displayStep, setDisplayStep] = useState("form");
 
   const isLogin = mode === "login";
 
   const switchMode = (next) => {
     setTransitioning(true);
     setMode(next);
+    setStep("form");
+    setOtp("");
+    // Always reset register form when leaving register mode
+    if (next === "login") {
+      setRegisterForm({ name: "", email: "", password: "" });
+    }
     setTimeout(() => setTransitioning(false), 750);
   };
 
@@ -180,6 +284,17 @@ export default function AuthPage() {
     setLoginForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   const handleRegisterChange = (e) =>
     setRegisterForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+
+  // ── KEY FIX: sync displayStep only when NOT mid-transition ──────────────
+  // During the 750ms slide, displayStep stays frozen at whatever it was.
+  // This means OTP form stays visible while the register card slides out.
+  useEffect(() => {
+    if (!transitioning) {
+      setDisplayStep(step);
+    }
+  }, [step, transitioning]);
+
+  // ────────────────────────────────────────────────────────────────────────
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -226,7 +341,7 @@ export default function AuthPage() {
     try {
       setLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -235,13 +350,68 @@ export default function AuthPage() {
       );
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.message || t("registrationFailed"));
+        if (res.status === 429) {
+          toast.error(data.message); // rate limit message
+        } else {
+          toast.error(data.message || t("registrationFailed"));
+        }
         return;
       }
-      toast.success(t("registeredSuccess"));
-      setMode("login");
+      toast.success("OTP sent to email");
+      setCooldown(60);
+
+      const interval = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      setStep("otp");
+      setDisplayStep("otp"); // show OTP form immediately
     } catch {
       toast.error(t("somethingWrong"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-otp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: registerForm.email, otp }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message);
+        return;
+      }
+      toast.success("Registration successful!");
+
+      // 1. Lock displayStep on "otp" BEFORE starting transition — OTP form
+      //    stays rendered inside the register card as it slides OUT.
+      setDisplayStep("otp");
+
+      // 2. Start slide transition to login and reset form immediately
+      setTransitioning(true);
+      setMode("login");
+      setStep("form");
+      setOtp("");
+      setRegisterForm({ name: "", email: "", password: "" });
+
+      // 3. After slide completes, release the lock
+      setTimeout(() => setTransitioning(false), 750);
+    } catch {
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -259,6 +429,12 @@ export default function AuthPage() {
     showPassword,
     setShowPassword,
     switchMode,
+    step,
+    otp,
+    setOtp,
+    handleVerifyOtp,
+    displayStep,
+    cooldown,
   };
 
   const panelColor = "#f2f1ec";
@@ -280,20 +456,7 @@ export default function AuthPage() {
   if (isMobile) {
     return (
       <div className="min-h-screen bg-[#ebe2db] flex items-center justify-center px-4">
-        <FormCard
-          isRegister={mode === "register"}
-          t={t}
-          loginForm={loginForm}
-          registerForm={registerForm}
-          handleLoginChange={handleLoginChange}
-          handleRegisterChange={handleRegisterChange}
-          handleLoginSubmit={handleLoginSubmit}
-          handleRegisterSubmit={handleRegisterSubmit}
-          loading={loading}
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
-          switchMode={switchMode}
-        />
+        <FormCard isRegister={mode === "register"} {...sharedCardProps} />
       </div>
     );
   }
@@ -312,7 +475,9 @@ export default function AuthPage() {
       >
         {/* ── SLIDING PANEL ── */}
         <div
-          className={`slide-panel absolute top-0 h-full w-[60%] z-[2] ${isLogin ? "left-0" : "left-[40%]"}`}
+          className={`slide-panel absolute top-0 h-full w-[60%] z-[2] ${
+            isLogin ? "left-0" : "left-[40%]"
+          }`}
         >
           <div className="absolute inset-0 bg-[#f2f1ec]" />
 
@@ -412,8 +577,10 @@ export default function AuthPage() {
 
         {/* ── LOGIN card ── */}
         <motion.div
-          className={`absolute top-0 h-full w-[40%] flex items-center justify-center px-3 md:px-6 lg:px-8 box-border overflow-y-auto ${isLogin ? "login-card-active" : "login-card-inactive"}`}
-          style={{ zIndex: transitioning ? 1 : isLogin ? 3 : 1 }}
+          className={`absolute top-0 h-full w-[40%] flex items-center justify-center px-3 md:px-6 lg:px-8 box-border overflow-y-auto ${
+            isLogin ? "login-card-active" : "login-card-inactive"
+          }`}
+          style={{ zIndex: transitioning ? 1 : isLogin ? 3 : 0 }}
           variants={blurReveal}
           initial="hidden"
           animate="visible"
@@ -424,7 +591,9 @@ export default function AuthPage() {
 
         {/* ── REGISTER card ── */}
         <div
-          className={`absolute top-0 h-full w-[40%] flex items-center justify-center px-3 md:px-6 lg:px-8 box-border overflow-y-auto ${!isLogin ? "reg-card-active" : "reg-card-inactive"}`}
+          className={`absolute top-0 h-full w-[40%] flex items-center justify-center px-3 md:px-6 lg:px-8 box-border overflow-y-auto ${
+            !isLogin ? "reg-card-active" : "reg-card-inactive"
+          }`}
           style={{ zIndex: transitioning ? 1 : !isLogin ? 3 : 1 }}
         >
           <FormCard isRegister={true} {...sharedCardProps} />

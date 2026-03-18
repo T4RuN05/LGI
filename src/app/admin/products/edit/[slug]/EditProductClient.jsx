@@ -95,6 +95,7 @@ export default function EditProductPage() {
   const [productReviews, setProductReviews] = useState([]);
   const [replyMap, setReplyMap] = useState({});
   const [sendingMailId, setSendingMailId] = useState(null);
+  const [updating, setUpdating] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -289,13 +290,13 @@ export default function EditProductPage() {
 
   const handleUpdate = async () => {
     try {
+      setUpdating(true);
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/products/slug/${slug}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
             title: form.title,
@@ -315,10 +316,6 @@ export default function EditProductPage() {
       );
 
       const data = await res.json();
-      if (!res.ok) {
-        router.push("/admin/products");
-        return;
-      }
 
       if (!res.ok) {
         toast.error(data.message || "Failed to update product");
@@ -327,13 +324,14 @@ export default function EditProductPage() {
 
       toast.success("Product updated successfully");
 
-      // Optional redirect after small delay
       setTimeout(() => {
         router.push("/admin/products");
       }, 1000);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
+    } finally {
+      setUpdating(false); // 🔥 CRITICAL
     }
   };
 
@@ -598,9 +596,17 @@ export default function EditProductPage() {
         <div className="text-right">
           <button
             onClick={handleUpdate}
-            className="bg-black text-white px-8 py-3 cursor-pointer hover:opacity-90 transition"
+            disabled={updating}
+            className={`
+    bg-black text-white px-8 py-3 transition
+    ${
+      updating
+        ? "opacity-50 cursor-not-allowed"
+        : "hover:opacity-90 cursor-pointer"
+    }
+  `}
           >
-            UPDATE PRODUCT
+            {updating ? "UPDATING..." : "UPDATE PRODUCT"}
           </button>
         </div>
       </div>
