@@ -78,8 +78,8 @@ export default function ProductsLayout({
   };
 
   return (
-    <section className="bg-[#EBE2DB] min-h-screen py-3">
-      <div className="max-w-[1850px] mx-auto px-6">
+    <section className="bg-[#EBE2DB] min-h-screen py-2 md:py-3">
+      <div className="max-w-[1850px] mx-auto px-3 md:px-6">
         {/* HEADER STRIP (STICKY) */}
         <div className="sticky top-[80px] z-40 bg-[#F2F1EC]/75 backdrop-blur-lg flex items-center justify-between px-4 md:px-6 py-4 mb-8 md:mb-12 shadow-lg border-y border-[#e3e1dc] rounded-md">
           {/* LEFT */}

@@ -4,41 +4,78 @@ import { useLocale } from "@/context/LocaleContext";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { createPortal } from "react-dom";
 
-export default function LanguageCurrencyPopup({ onClose }) {
+export default function LanguageCurrencyPopup({ onClose, anchorRef }) {
   const { language, currency, rates, updateLanguage, updateCurrency, t } =
     useLocale();
 
   const router = useRouter();
-  const popupRef = useRef(null);
-
   const [selectedLang, setSelectedLang] = useState(language);
   const [selectedCurrency, setSelectedCurrency] = useState(currency);
+  const [desktopRight, setDesktopRight] = useState(16);
+  const [desktopTop, setDesktopTop] = useState(80);
+  const [isMobile, setIsMobile] = useState(false);
 
   const currencyOptions = Object.keys(rates || {});
+
+  useEffect(() => {
+    const mobile = window.innerWidth < 768;
+    setIsMobile(mobile);
+
+    if (!mobile && anchorRef?.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      setDesktopRight(window.innerWidth - rect.right);
+      setDesktopTop(rect.bottom + 8);
+    }
+
+    const handleScroll = () => {
+      if (!mobile && anchorRef?.current) {
+        const rect = anchorRef.current.getBoundingClientRect();
+        setDesktopRight(window.innerWidth - rect.right);
+        setDesktopTop(rect.bottom + 8);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [anchorRef]);
 
   const handleSave = () => {
     updateLanguage(selectedLang);
     updateCurrency(selectedCurrency);
-
     toast.success(t("preferencesUpdated") || "Preferences updated");
-
     onClose();
-
-    // Refresh the current page
     router.refresh();
   };
 
-  return (
+  // Navbar is sticky with my-[1rem] (16px top margin) and 70px height
+  // So on mobile the navbar bottom is always at ~102px from viewport top
+  const MOBILE_TOP = 102;
+
+  const popup = (
     <div
-      ref={popupRef}
-      className="fixed md:absolute right-2 md:right-0 top-[80px] md:top-[120%] 
-      w-[92vw] max-w-[340px]
-      z-[999] 
-      bg-[var(--component-bg)]
-      border border-black/10
-      shadow-2xl rounded-lg
-      p-4 md:p-6"
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position: "fixed",
+        zIndex: 9999,
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        ...(isMobile
+          ? {
+              top: 78, // shifted up from 102
+              left: 12,
+              right: 12,
+              width: 340, // same as desktop
+              margin: "0 auto",
+            }
+          : {
+              top: desktopTop,
+              right: desktopRight,
+              width: 340,
+            }),
+      }}
+      className="bg-[#F2F1EC]/80 border border-black/10 shadow-2xl rounded-lg p-4 md:p-6"
     >
       {/* Header */}
       <h3 className="text-lg font-medium mb-1">
@@ -56,13 +93,11 @@ export default function LanguageCurrencyPopup({ onClose }) {
           <label className="text-sm font-medium">
             {t("language") || "Language"}
           </label>
-
           <select
             value={selectedLang}
             onChange={(e) => setSelectedLang(e.target.value)}
-            className="w-full mt-2 bg-white border border-black/20
-                       p-3 text-sm focus:outline-none
-                       focus:border-black transition"
+            className="w-full mt-2 bg-white/60 border border-black/20
+                       p-3 text-sm focus:outline-none focus:border-black transition"
           >
             <option value="en">English</option>
             <option value="es">Spanish</option>
@@ -81,13 +116,11 @@ export default function LanguageCurrencyPopup({ onClose }) {
           <label className="text-sm font-medium">
             {t("currency") || "Currency"}
           </label>
-
           <select
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value)}
-            className="w-full mt-2 bg-white border border-black/20
-                       p-3 text-sm focus:outline-none
-                       focus:border-black transition"
+            className="w-full mt-2 bg-white/60 border border-black/20
+                       p-3 text-sm focus:outline-none focus:border-black transition"
           >
             {currencyOptions.map((cur) => (
               <option key={cur} value={cur}>
@@ -100,15 +133,14 @@ export default function LanguageCurrencyPopup({ onClose }) {
         {/* Save Button */}
         <button
           onClick={handleSave}
-          className="w-full mt-4
-            bg-black text-white
-            py-3 text-sm tracking-wide
-            hover:bg-[#2D2319]
-            transition"
+          className="w-full mt-4 bg-black text-white
+            py-3 text-sm tracking-wide hover:bg-[#2D2319] transition"
         >
           {t("save") || "Save"}
         </button>
       </div>
     </div>
   );
+
+  return createPortal(popup, document.body);
 }
