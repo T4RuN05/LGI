@@ -59,8 +59,8 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="py-16">
-      <div className="max-w-[1850px] mx-auto px-6">
+    <section className="py-8 md:py-16">
+      <div className="max-w-[1850px] mx-auto px-3 md:px-6">
         {/* Header Bar */}
         <div
           className="bg-[var(--component-bg)] 
@@ -83,7 +83,7 @@ export default function FeaturedProducts() {
           )}
 
           {/* TITLE */}
-          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-sm md:text-2xl font-semibold text-center flex-1">
+          <h2 className="tracking-[0.25em] md:tracking-[0.3em] text-xs md:text-2xl font-semibold text-center flex-1">
             {t("featuredProducts")}
           </h2>
 
@@ -103,7 +103,7 @@ export default function FeaturedProducts() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-8">
           {loading ? (
             Array.from({ length: 8 }).map((_, index) => (
               <ProductCardSkeleton key={index} />

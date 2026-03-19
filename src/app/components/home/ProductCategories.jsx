@@ -223,7 +223,7 @@ export default function ProductCategories() {
                 </button>
               </BlurReveal>
 
-              <BlurReveal className="bg-[#3b2412] text-white text-sm p-5 mt-4 h-[200px] flex flex-col items-center justify-center rounded-md">
+              <BlurReveal className="bg-[#3b2412] text-white text-sm p-5 mt-4 flex flex-col items-center justify-center rounded-md">
                 Discover an exquisite range of earrings, featuring everything
                 from delicate everyday studs to ornate three-tone hoops and
                 high-fashion statement drops. Each pair is meticulously crafted
