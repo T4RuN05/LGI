@@ -28,7 +28,7 @@ export default function ProductCategories() {
 
               {/* TITLE + DESC CELL */}
               <div className="grid grid-rows-2 order-1 md:order-2 col-span-1">
-                <BlurReveal className="bg-[var(--component-bg)] flex flex-col items-center justify-center shadow-md rounded-md p-6">
+                <BlurReveal className="bg-[var(--component-bg)] light-select flex flex-col items-center justify-center shadow-md rounded-md p-6">
                   <h3 className="tracking-[3px] text-lg">BANGLES</h3>
 
                   <button className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
@@ -36,7 +36,7 @@ export default function ProductCategories() {
                   </button>
                 </BlurReveal>
 
-                <BlurReveal className="bg-[#3b2412] text-white text-sm font-extralight p-4 flex items-center rounded-md">
+                <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-center rounded-md">
                   Built to shine and crafted to last, each bangle in our
                   collection is precision-engineered with premium 14k–18k gold
                   finishes. These pieces offer a perfect balance of exceptional
@@ -68,7 +68,7 @@ export default function ProductCategories() {
 
               {/* DESC + TITLE */}
               <div className="grid grid-rows-2 shadow-md order-1 md:order-2">
-                <BlurReveal className="bg-[#3b2412] text-white text-sm font-extralight p-4 flex items-center rounded-md">
+                <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-center rounded-md">
                   Our bridal collections are defined by a dedication to quality
                   and design that has been our hallmark for over three decades.
                   Discover exquisite, high-end jewelry crafted to provide a
@@ -110,7 +110,7 @@ export default function ProductCategories() {
                 </button>
               </BlurReveal>
 
-              <BlurReveal className="bg-[#3b2412] text-white text-sm p-6 mt-[-20px] md:mt-6 mx-3 text-center w-full md:w-[920px] rounded-md relative z-10">
+              <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-6 mt-[-20px] md:mt-6 mx-3 text-center w-full md:w-[920px] rounded-md relative z-10">
                 Explore our refined collection of necklaces, ranging from
                 timeless classic links and heavy-duty chains to intricate modern
                 designs crafted specifically for the global market. Each piece
@@ -153,7 +153,7 @@ export default function ProductCategories() {
                 </button>
               </BlurReveal>
 
-              <BlurReveal className="bg-[#3b2412] text-white text-sm p-5 mt-4 flex flex-col items-center justify-center h-[200px] rounded-md">
+              <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-5 mt-4 flex flex-col items-center justify-center h-[200px] rounded-md">
                 Our master-crafted rosaries are designed for both devotion and
                 beauty, featuring beautiful stones and detailed metalwork. This
                 collection offers quality you can trust, providing a durable and
@@ -223,7 +223,7 @@ export default function ProductCategories() {
                 </button>
               </BlurReveal>
 
-              <BlurReveal className="bg-[#3b2412] text-white text-sm p-5 mt-4 flex flex-col items-center justify-center rounded-md">
+              <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-5 mt-4 flex flex-col items-center justify-center rounded-md">
                 Discover an exquisite range of earrings, featuring everything
                 from delicate everyday studs to ornate three-tone hoops and
                 high-fashion statement drops. Each pair is meticulously crafted

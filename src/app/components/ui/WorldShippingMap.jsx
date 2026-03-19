@@ -266,7 +266,7 @@ export default function WorldShippingMap() {
     <div className="relative w-full bg-[#F2F1EC] rounded-md overflow-hidden">
       <div
         ref={wrapperRef}
-        className="w-full h-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
+        className="w-full md:h-full overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
       >
         <div
           ref={containerRef}

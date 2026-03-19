@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import ProductCard from "./ProductCard";
 import { useLocale } from "@/context/LocaleContext";
 import { convertPrice, formatCurrency } from "@/utils/currency";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductDetails({ product }) {
   const attributesRef = useRef(null);
@@ -340,49 +341,68 @@ export default function ProductDetails({ product }) {
               </div>
 
               {/* MAIN IMAGE */}
-              <div className="relative w-full md:w-[450px] md:min-w-[450px] aspect-square bg-white rounded-lg shadow-inner overflow-hidden flex items-center justify-center group">
+              <div className="relative w-full md:w-[450px] md:min-w-[450px] aspect-square bg-white rounded-lg shadow-inner overflow-hidden group">
+                {/* SLIDING STRIP */}
+                <div
+                  className="flex h-full w-full transition-transform duration-300 ease-in-out pointer-events-none"
+                  style={{
+                    transform: `translateX(-${currentIndex * 100}%)`,
+                  }}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  {product.images?.map((img, index) => (
+                    <div
+                      key={index}
+                      className="w-full h-full flex-shrink-0 flex items-center justify-center pointer-events-auto"
+                    >
+                      <img
+                        src={img.url}
+                        onClick={() => setShowGallery(true)}
+                        className="max-w-full max-h-full object-contain cursor-zoom-in"
+                      />
+                    </div>
+                  ))}
+                </div>
+
                 {/* LEFT ARROW */}
                 <button
                   onClick={handlePrevImage}
-                  className="absolute left-4 z-10 bg-white/90 hover:bg-white 
-               p-3 rounded-full shadow-md 
-               opacity-0 group-hover:opacity-100 
-               transition duration-300"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 z-10
+      bg-white/90 hover:bg-white
+      p-3 rounded-full shadow-md
+      opacity-0 group-hover:opacity-100
+      transition duration-300"
                 >
                   <FaChevronUp className="-rotate-90" size={14} />
                 </button>
 
-                {/* IMAGE */}
-                <img
-                  src={activeImage}
-                  onClick={() => setShowGallery(true)}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                  className="max-w-full max-h-full object-contain transition duration-500 md:hover:scale-105 cursor-zoom-in"
-                />
+                {/* RIGHT ARROW */}
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 z-10
+      bg-white/90 hover:bg-white
+      p-3 rounded-full shadow-md
+      opacity-0 group-hover:opacity-100
+      transition duration-300"
+                >
+                  <FaChevronDown className="rotate-270" size={14} />
+                </button>
 
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 md:hidden">
+                {/* DOTS */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 md:hidden z-10">
                   {product.images?.map((_, index) => (
                     <div
                       key={index}
-                      className={`h-2 w-2 rounded-full transition ${
-                        currentIndex === index ? "bg-black w-4" : "bg-gray-400"
+                      className={`h-2 rounded-full transition-all ${
+                        currentIndex === index
+                          ? "bg-black w-4"
+                          : "bg-gray-400 w-2"
                       }`}
                     />
                   ))}
                 </div>
-
-                {/* RIGHT ARROW */}
-                <button
-                  onClick={handleNextImage}
-                  className="absolute right-4 z-10 bg-white/90 hover:bg-white 
-               p-3 rounded-full shadow-md 
-               opacity-0 group-hover:opacity-100 
-               transition duration-300"
-                >
-                  <FaChevronDown className="rotate-270" size={14} />
-                </button>
               </div>
             </div>
 
@@ -402,7 +422,7 @@ export default function ProductDetails({ product }) {
 
               <button
                 onClick={handleChat}
-                className="w-full md:w-auto inline-flex justify-center items-center gap-2 border border-black px-6 py-2"
+                className="w-full md:w-auto inline-flex justify-center items-center gap-2 border border-black px-6 py-2 hover:bg-black hover:text-white transition"
               >
                 <FaWhatsapp />
                 {t("chatNow")}
@@ -732,62 +752,93 @@ export default function ProductDetails({ product }) {
           </div>
         </div>
       </div>
-      {showGallery && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Dark Overlay */}
-          <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setShowGallery(false)}
-          />
-
-          {/* Modal Content */}
-          <div className="relative w-[90%] max-w-[1200px] h-[85vh] bg-[#F2F1EC] rounded-lg flex items-center justify-center p-6">
-            {/* Close Button */}
-            <button
+      <AnimatePresence>
+        {showGallery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-50 flex items-center justify-center"
+          >
+            {/* Dark Overlay */}
+            <div
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => setShowGallery(false)}
-              className="absolute top-4 right-4 text-black text-2xl"
-            >
-              ✕
-            </button>
-
-            {/* Left Arrow */}
-            <button
-              onClick={handlePrevImage}
-              className="absolute left-4 bg-white/90 hover:bg-white p-4 rounded-full shadow"
-            >
-              <FaChevronUp className="-rotate-90" size={18} />
-            </button>
-
-            {/* Main Large Image */}
-            <img
-              src={activeImage}
-              className="max-h-full max-w-full object-contain"
             />
 
-            {/* Right Arrow */}
-            <button
-              onClick={handleNextImage}
-              className="absolute right-4 bg-white/90 hover:bg-white p-4 rounded-full shadow"
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              className="relative w-[90%] max-w-[1200px] h-[85vh] bg-[#F2F1EC] rounded-lg p-6 overflow-hidden"
             >
-              <FaChevronDown className="rotate-270" size={18} />
-            </button>
+              {/* Close Button */}
+              <button
+                onClick={() => setShowGallery(false)}
+                className="absolute top-4 right-4 text-black text-2xl z-10"
+              >
+                ✕
+              </button>
 
-            {/* Bottom Thumbnails */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 bg-white/80 backdrop-blur-md px-4 py-2 rounded-md">
-              {product.images?.map((img, index) => (
-                <img
-                  key={index}
-                  src={img.url}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-16 h-16 object-contain cursor-pointer border rounded-md ${
-                    currentIndex === index ? "border-black" : "border-gray-300"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+              {/* Left Arrow */}
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-4 rounded-full shadow z-10"
+              >
+                <FaChevronUp className="-rotate-90" size={18} />
+              </button>
+
+              {/* SLIDING STRIP WRAPPER — this is the key: full size, overflow hidden */}
+              <div className="absolute inset-0 overflow-hidden rounded-lg">
+                <div
+                  className="flex h-full w-full transition-transform duration-300 ease-in-out"
+                  style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+                >
+                  {product.images?.map((img, index) => (
+                    <div
+                      key={index}
+                      className="w-full h-full flex-shrink-0 flex items-center justify-center pb-24 pt-12"
+                    >
+                      <img
+                        src={img.url}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                onClick={handleNextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-4 rounded-full shadow z-10"
+              >
+                <FaChevronDown className="rotate-270" size={18} />
+              </button>
+
+              {/* Bottom Thumbnails */}
+              <div className="absolute bottom-4 left-4 right-4 flex gap-3 justify-center bg-white/80 backdrop-blur-md px-4 py-2 rounded-md overflow-x-auto z-10">
+                {product.images?.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img.url}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-16 h-16 flex-shrink-0 object-contain cursor-pointer border rounded-md ${
+                      currentIndex === index
+                        ? "border-black"
+                        : "border-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {showAuthModal && (
         <AuthModal
           onClose={() => setShowAuthModal(false)}

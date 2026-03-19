@@ -145,15 +145,28 @@ function FormCard({
               </div>
               <div>
                 <label className={labelCls}>{t("password")}</label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder={t("createPassword")}
-                  value={registerForm.password}
-                  onChange={handleRegisterChange}
-                  required
-                  className={inputCls}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder={t("createPassword")}
+                    value={registerForm.password}
+                    onChange={handleRegisterChange}
+                    required
+                    className={inputCls + " pr-10"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9a8e84]"
+                  >
+                    {showPassword ? (
+                      <FiEyeOff size={15} />
+                    ) : (
+                      <FiEye size={15} />
+                    )}
+                  </button>
+                </div>
               </div>
               <button type="submit" disabled={loading} className={btnCls}>
                 {loading ? t("registering") : t("register")}
@@ -467,8 +480,7 @@ export default function AuthPage() {
       <div
         className="relative overflow-hidden bg-[#ebe2db] flex items-stretch"
         style={{
-          width: "100vw",
-          marginLeft: "calc(50% - 50vw)",
+          width: "100%",
           minHeight: "calc(100vh - 120px)",
           marginTop: 0,
         }}

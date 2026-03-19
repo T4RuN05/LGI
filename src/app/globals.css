@@ -161,3 +161,26 @@ button {
   background-size: 1400px 100%;
   animation: shimmer 1.6s infinite linear;
 }
+
+/* In globals.css — replace all the selection rules with just these two */
+::selection {
+  background-color: #312517;
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background-color: #312517;
+  color: #ffffff;
+}
+
+.light-select::selection,
+.light-select *::selection {
+  background-color: #f2f1ec;
+  color: #312517;
+}
+
+.light-select::-moz-selection,
+.light-select *::-moz-selection {
+  background-color: #f2f1ec;
+  color: #312517;
+}
