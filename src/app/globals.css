@@ -184,3 +184,9 @@ button {
   background-color: #f2f1ec;
   color: #312517;
 }
+
+/* Swipe to dismiss toasts */
+[data-sonner-toast], 
+.react-hot-toast > div {
+  touch-action: pan-y;
+}

@@ -14,6 +14,8 @@ export default function ToastProvider() {
           border: "1px solid #000",
           padding: "14px 18px",
           fontSize: "14px",
+          cursor: "grab",
+          userSelect: "none",
         },
         success: {
           iconTheme: {

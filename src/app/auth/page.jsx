@@ -68,7 +68,7 @@ function FormCard({
           displayStep === "otp" ? (
             <>
               <label className={labelCls + " text-center"}>
-                Enter Verification Code
+                {t("enterVerificationCode")}
               </label>
               <div className="flex justify-center gap-2 mt-2">
                 {[...Array(6)].map((_, i) => (
@@ -104,16 +104,16 @@ function FormCard({
                 disabled={loading}
                 className={btnCls + " mt-4"}
               >
-                {loading ? "Verifying..." : "Verify OTP"}
+                {loading ? t("verifying") : t("verifyOtp")}
               </button>
               <p className="text-xs text-[#7a6e65] text-center mt-2">
-                Didn't receive OTP?{" "}
+                {t("didntReceiveOtp")}{" "}
                 <button
                   onClick={handleRegisterSubmit}
                   disabled={cooldown > 0}
                   className={`${switchBtnCls} ${cooldown > 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
-                  {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
+                  {cooldown > 0 ? `${t("resendIn")} ${cooldown}s` :t("resend")}
                 </button>
               </p>
             </>
@@ -370,7 +370,7 @@ export default function AuthPage() {
         }
         return;
       }
-      toast.success("OTP sent to email");
+      toast.success(t("otpSent"));
       setCooldown(60);
 
       const interval = setInterval(() => {
@@ -408,7 +408,7 @@ export default function AuthPage() {
         toast.error(data.message);
         return;
       }
-      toast.success("Registration successful!");
+      toast.success(t("registrationSuccess"));
 
       // 1. Lock displayStep on "otp" BEFORE starting transition — OTP form
       //    stays rendered inside the register card as it slides OUT.
@@ -424,7 +424,7 @@ export default function AuthPage() {
       // 3. After slide completes, release the lock
       setTimeout(() => setTransitioning(false), 750);
     } catch {
-      toast.error("Something went wrong");
+      toast.error(t("somethingWrong"));
     } finally {
       setLoading(false);
     }
