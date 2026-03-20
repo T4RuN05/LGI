@@ -125,7 +125,7 @@ export default function AboutPage() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <div className="h-[300px] md:h-[700px] flex items-center justify-center">
+            <div className="h-auto md:h-[700px] flex items-center justify-center">
               <WorldShippingMap />
             </div>
           </motion.div>

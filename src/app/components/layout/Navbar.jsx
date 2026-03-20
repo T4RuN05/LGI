@@ -67,7 +67,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className="sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg my-[1rem]">
+      <div className={`sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg mt-[1rem] ${pathname === "/auth" ? "my-0" : "my-[1rem]"}`}>
         {/* MOBILE HEADER */}
         <div className="md:hidden flex items-center justify-between px-4 h-[70px]">
           {/* HAMBURGER */}

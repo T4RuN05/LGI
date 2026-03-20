@@ -8,7 +8,6 @@ import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 
 export default function CategoryAccordion({ categories }) {
-
   const [isOpen, setIsOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(null);
   const pathname = usePathname();
@@ -25,16 +24,14 @@ export default function CategoryAccordion({ categories }) {
     };
 
     document.addEventListener("click", handleClickOutside);
-    return () =>
-      document.removeEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   return (
     <div className="relative w-[260px] category-dropdown">
-
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-[#F2F1EC] flex items-center justify-between px-5 py-3 shadow-sm rounded-md w-full"
+        className="bg-[#F2F1EC]/75 backdrop-blur-sm flex items-center justify-between px-5 py-3 shadow-sm rounded-md w-full"
       >
         <div className="flex items-center gap-3">
           <HiAdjustmentsHorizontal size={18} />
@@ -48,14 +45,13 @@ export default function CategoryAccordion({ categories }) {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 bg-[#F2F1EC] shadow-lg rounded-md w-full z-50 p-4 space-y-4">
-
+        <div className="absolute top-full left-0 mt-2 bg-[#F2F1EC]/75 backdrop-blur-sm shadow-lg rounded-md w-full z-20 p-4 space-y-4">
           {/* ALL PRODUCTS */}
           <div className="border-b pb-2">
             <Link
               href={baseRoute}
               onClick={() => setIsOpen(false)}
-              className="block py-2 px-3 hover:bg-[#f3eee8] rounded-sm text-sm"
+              className="block py-2 px-3 hover:bg-[#312517] hover:text-white rounded-sm text-sm transition"
             >
               All Products
             </Link>
@@ -67,7 +63,7 @@ export default function CategoryAccordion({ categories }) {
               <Link
                 href={`${baseRoute}?featured=true`}
                 onClick={() => setIsOpen(false)}
-                className="block py-2 px-3 hover:bg-[#f3eee8] rounded-sm text-sm font-medium"
+                className="block py-2 px-3 hover:bg-[#312517] hover:text-white rounded-sm text-sm font-medium transition"
               >
                 Featured
               </Link>
@@ -77,13 +73,12 @@ export default function CategoryAccordion({ categories }) {
           {/* CATEGORIES */}
           {categories.map((cat) => (
             <div key={cat._id} className="space-y-1">
-
               {/* PARENT */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between hover:bg-[#312517] hover:text-white rounded-sm transition group">
                 <Link
                   href={`${baseRoute}?category=${cat.slug}`}
                   onClick={() => setIsOpen(false)}
-                  className="text-sm hover:text-black"
+                  className="text-sm px-2 py-1 flex-1 group-hover:text-white"
                 >
                   {cat.name}
                 </Link>
@@ -91,10 +86,9 @@ export default function CategoryAccordion({ categories }) {
                 {cat.children?.length > 0 && (
                   <button
                     onClick={() =>
-                      setOpenCategory(
-                        openCategory === cat._id ? null : cat._id
-                      )
+                      setOpenCategory(openCategory === cat._id ? null : cat._id)
                     }
+                    className="px-2 py-1"
                   >
                     <FiChevronRight
                       size={14}
@@ -113,15 +107,13 @@ export default function CategoryAccordion({ categories }) {
                     key={child._id}
                     href={`${baseRoute}?category=${child.slug}`}
                     onClick={() => setIsOpen(false)}
-                    className="block ml-4 text-xs py-1 hover:text-black"
+                    className="block ml-4 text-xs py-1 px-2 hover:bg-[#312517] hover:text-white rounded-sm transition"
                   >
                     └ {child.name}
                   </Link>
                 ))}
-
             </div>
           ))}
-
         </div>
       )}
     </div>
