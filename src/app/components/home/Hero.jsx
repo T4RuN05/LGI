@@ -34,13 +34,15 @@ const slides = [
     img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774034517/Untitled_design_68_qcdbxc.png",
     titleKey: "heroTitle2",
     subtitleKey: "heroSubtitle2",
-    fit: "cover",
+    scale: "scale-100",
+    position: "object-center",
   },
   {
     img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032682/Untitled_design_66_kb0txv.png",
     titleKey: "heroTitle1",
     subtitleKey: "heroSubtitle1",
-    fit: "cover",
+    scale: "scale-100",
+    position: "object-center",
   },
   {
     img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032792/Untitled_design_67_x9pivj.png",

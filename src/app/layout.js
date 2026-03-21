@@ -35,6 +35,10 @@ export default function RootLayout({ children }) {
         <SiteLoader />
         <ImagePrefetcher
           images={[
+            "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774091919/Untitled_design_69_ohrfwq.png",
+            "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032792/Untitled_design_67_x9pivj.png",
+            "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032682/Untitled_design_66_kb0txv.png",
+            "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774034517/Untitled_design_68_qcdbxc.png",
             "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773407909/Untitled_design_53_bml2dh.png",
             "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773426537/Untitled_design_57_fotae0.png",
             "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1773405883/Gemini_Generated_Image_ogsa6zogsa6zogsa_aygxqf.png",
