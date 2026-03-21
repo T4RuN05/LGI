@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { preloadImages } from "@/utils/preloadImages";
 
 export default function SiteLoader() {
   const [loading, setLoading] = useState(true);
@@ -12,9 +13,26 @@ export default function SiteLoader() {
 
     let interval;
 
-    const handleLoad = () => {
-      clearInterval(interval);
+    const startFakeProgress = () => {
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          const next = prev + Math.random() * 6;
+          return next >= 92 ? 92 : next;
+        });
+      }, 200);
+    };
 
+    const loadEverything = async () => {
+      startFakeProgress();
+
+      await preloadImages([
+        "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774034517/Untitled_design_68_qcdbxc.png",
+        "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774032682/Untitled_design_66_kb0txv.png",
+        "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774032792/Untitled_design_67_x9pivj.png",
+        "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774091919/Untitled_design_69_ohrfwq.png",
+      ]);
+
+      clearInterval(interval);
       setProgress(100);
 
       setTimeout(() => {
@@ -23,25 +41,9 @@ export default function SiteLoader() {
       }, 700);
     };
 
-    interval = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + Math.random() * 6;
+    loadEverything();
 
-        if (next >= 92) return 92; // never exceed until load event
-        return next;
-      });
-    }, 200);
-
-    if (document.readyState === "complete") {
-      handleLoad();
-    } else {
-      window.addEventListener("load", handleLoad);
-    }
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener("load", handleLoad);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (

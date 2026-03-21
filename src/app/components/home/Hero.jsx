@@ -31,28 +31,28 @@ const textVariants = {
 
 const slides = [
   {
-    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774034517/Untitled_design_68_qcdbxc.png",
+    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774034517/Untitled_design_68_qcdbxc.png",
     titleKey: "heroTitle2",
     subtitleKey: "heroSubtitle2",
     scale: "scale-100",
     position: "object-center",
   },
   {
-    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032682/Untitled_design_66_kb0txv.png",
+    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774032682/Untitled_design_66_kb0txv.png",
     titleKey: "heroTitle1",
     subtitleKey: "heroSubtitle1",
     scale: "scale-100",
     position: "object-center",
   },
   {
-    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032792/Untitled_design_67_x9pivj.png",
+    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774032792/Untitled_design_67_x9pivj.png",
     titleKey: "heroTitle1",
     subtitleKey: "heroSubtitle1",
     scale: "scale-100",
     position: "object-[30%_center]",
   },
   {
-    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774091919/Untitled_design_69_ohrfwq.png",
+    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/f_auto,q_auto/v1774091919/Untitled_design_69_ohrfwq.png",
     titleKey: "heroTitle1",
     subtitleKey: "heroSubtitle1",
     scale: "scale-125",
@@ -78,6 +78,7 @@ export default function HeroSection() {
       {slides.map((slide, index) => (
         <img
           key={index}
+          loading="eager"
           src={slide.img}
           alt="Hero"
           className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${
