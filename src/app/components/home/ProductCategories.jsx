@@ -3,6 +3,7 @@ import BlurReveal from "../animations/BlurReveal";
 import RevealHoverImage from "../animations/RevealHoverImage";
 import StaggerContainer from "../animations/StaggerContainer";
 import { useLocale } from "@/context/LocaleContext";
+import Link from "next/link";
 
 export default function ProductCategories() {
   const { t } = useLocale();
@@ -32,9 +33,9 @@ export default function ProductCategories() {
               <div className="flex flex-col gap-3 order-1 md:order-2 md:grid md:grid-rows-2 md:h-full">
                 <BlurReveal className="bg-[var(--component-bg)] light-select flex flex-col items-center justify-center shadow-md rounded-md p-6">
                   <h3 className="tracking-[3px] text-lg">{t("bangles")}</h3>
-                  <button className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                  <Link href={`\products?category=gold-plated-bangles`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
                      {t("viewProducts")}
-                  </button>
+                  </Link>
                 </BlurReveal>
                 <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-center rounded-md">
                   {t("banglesLongDesc")}
@@ -70,9 +71,9 @@ export default function ProductCategories() {
                 </BlurReveal>
                 <BlurReveal className="bg-[#f3f1ee] flex flex-col items-center justify-center rounded-md p-6">
                   <h3 className="tracking-[3px] text-lg">{t("bridal")}</h3>
-                  <button className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                  <Link href={`\products?category=bridal`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
                     {t("viewProducts")}
-                  </button>
+                  </Link>
                 </BlurReveal>
               </div>
 
@@ -97,9 +98,9 @@ export default function ProductCategories() {
               <BlurReveal className="bg-[var(--component-bg)] w-full md:w-[420px] py-10 text-center shadow-md rounded-md">
                 <h3 className="tracking-[3px] text-lg">{t("chains")}</h3>
 
-                <button className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                <Link href={`\products?category=silver-chains`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
                   {t("viewProducts")}
-                </button>
+                </Link>
               </BlurReveal>
 
               <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-6 mt-[-20px] md:mt-6 mx-3 text-center w-full md:w-[920px] rounded-md relative z-10">
@@ -134,9 +135,9 @@ export default function ProductCategories() {
               <BlurReveal className="bg-[var(--component-bg)] py-10 text-center shadow-md h-[220px] flex flex-col items-center justify-center rounded-md">
                 <h3 className="tracking-widest text-lg">{t("rosary")}</h3>
 
-                <button className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                <Link href={`\products?category=rosary`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
                   {t("viewProducts")}
-                </button>
+                </Link>
               </BlurReveal>
 
               <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-5 mt-4 flex flex-col items-center justify-center h-[200px] rounded-md">
@@ -201,9 +202,9 @@ export default function ProductCategories() {
               <BlurReveal className="bg-[var(--component-bg)] py-10 text-center shadow-md h-[220px] flex flex-col items-center justify-center rounded-md">
                 <h3 className="tracking-widest text-lg">{t("earrings")}</h3>
 
-                <button className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                <Link href={`\products?category=basket-earrings`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
                   {t("viewProducts")}
-                </button>
+                </Link>
               </BlurReveal>
 
               <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-5 mt-4 flex flex-col items-center justify-center rounded-md">

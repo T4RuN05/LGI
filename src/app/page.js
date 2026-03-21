@@ -1,12 +1,13 @@
-import HeroCollage from "./components/home/HeroCollage";
+//import HeroCollage from "./components/home/HeroCollage";
+import HeroSection from "./components/home/Hero";
 import ProductCategories from "./components/home/ProductCategories";
 import FeaturedProducts from "./components/home/FeaturedProducts";
-import ImagePrefetcher from "./components/ui/ImagePrefetcher";
+
 
 export default function Home() {
   return (
     <>
-      <HeroCollage />
+      <HeroSection />
       <ProductCategories />
       <FeaturedProducts />
     </>

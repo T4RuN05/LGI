@@ -5,7 +5,7 @@ import { useLocale } from "@/context/LocaleContext";
 
 export default function HeroCollage() {
   const { t } = useLocale();
-
+ 
   return (
     <section className="w-full flex justify-center bg-[#EBE2DB]">
 

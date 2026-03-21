@@ -67,7 +67,7 @@ export default function Navbar() {
 
   return (
     <>
-      <div className={`sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-lg border-y border-[#e3e1dc] shadow-lg mt-[1rem] ${pathname === "/auth" ? "my-0" : "my-[1rem]"}`}>
+      <div className={`sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-sm border-y border-[#e3e1dc] shadow-lg mt-[1rem] ${pathname === "/auth" ? "my-0" : "my-[1rem]"}`}>
         {/* MOBILE HEADER */}
         <div className="md:hidden flex items-center justify-between px-4 h-[70px]">
           {/* HAMBURGER */}
@@ -276,7 +276,7 @@ export default function Navbar() {
         className={`md:hidden fixed left-0 right-0 top-[calc(70px+0.10rem)] z-70
           overflow-hidden transition-all duration-400 ease-in-out
           ${mobileMenu ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"}
-          border-b border-[#e3e1dc] bg-[#F2F1EC]/75 backdrop-blur-lg`}
+          border-b border-[#e3e1dc] bg-[#F2F1EC]/75 backdrop-blur-sm`}
       >
         <div className="flex flex-col">
           {[
