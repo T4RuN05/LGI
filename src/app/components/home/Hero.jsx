@@ -34,16 +34,27 @@ const slides = [
     img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774034517/Untitled_design_68_qcdbxc.png",
     titleKey: "heroTitle2",
     subtitleKey: "heroSubtitle2",
+    fit: "cover",
   },
   {
     img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032682/Untitled_design_66_kb0txv.png",
     titleKey: "heroTitle1",
     subtitleKey: "heroSubtitle1",
+    fit: "cover",
   },
   {
     img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774032792/Untitled_design_67_x9pivj.png",
     titleKey: "heroTitle1",
     subtitleKey: "heroSubtitle1",
+    scale: "scale-100",
+    position: "object-[30%_center]",
+  },
+  {
+    img: "https://res.cloudinary.com/dc2qtmg05/image/upload/v1774091919/Untitled_design_69_ohrfwq.png",
+    titleKey: "heroTitle1",
+    subtitleKey: "heroSubtitle1",
+    scale: "scale-125",
+    position: "object-[35%_center]",
   },
 ];
 
@@ -67,9 +78,9 @@ export default function HeroSection() {
           key={index}
           src={slide.img}
           alt="Hero"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${
             index === current ? "opacity-100" : "opacity-0"
-          }`}
+          } ${slide.scale || ""} ${slide.position || "object-center"}`}
         />
       ))}
 
