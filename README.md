@@ -80,15 +80,6 @@ frontend/
 https://tinyurl.com/lgi-frontend-ui
 ```
 
-## 🔗 Backend Repository
-
-This frontend connects to the Express backend API:
-
-👉 **Backend Repo:**  
-```
-https://github.com/T4RuN05/LGI-backend
-```
-
 ### Backend Handles:
 
 - Authentication  
@@ -99,88 +90,6 @@ https://github.com/T4RuN05/LGI-backend
 - Database operations  
 
 ---
-
-## ⚙️ Installation & Setup
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/your-username/frontend-repo.git
-cd frontend-repo
-```
-
----
-
-### 2️⃣ Install Dependencies
-
-```bash
-npm install
-```
-
----
-
-### 3️⃣ Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```env
-NEXT_PUBLIC_API_URL=https://api.lordganeshaimpex.com
-```
-
-For local development:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
-```
-
----
-
-### 4️⃣ Run Development Server
-
-```bash
-npm run dev
-```
-
-App will run at:
-
-```
-http://localhost:3000
-```
-
----
-
-### 5️⃣ Build for Production
-
-```bash
-npm run build
-npm start
-```
-
----
-
-## 🛠 Admin Access
-
-Admin panel available at:
-
-```
-/admin/products
-```
-
-Access requires:
-
-- Valid admin account  
-- Verified backend JWT cookie  
-- `role === "admin"`  
-
----
-
-## 🌍 Deployment
-
-### Recommended Platforms
-
-- Vercel  
-- Custom VPS  
-- Cloudflare + Node server  
 
 ### Deployment Checklist
 
