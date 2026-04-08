@@ -1,6 +1,10 @@
 import { fetchProducts, fetchCategories } from "@/lib/api";
 import ProductsLayout from "../components/products/ProductsLayout";
 
+export const metadata = {
+  title: "Products",
+};
+
 export default async function ProductsPage({ searchParams }) {
 const params = await searchParams;
 

@@ -21,10 +21,10 @@ export const metadata = {
   title: "Lord Ganesha Impex | Premium Jewelry Manufacturer & Global Supplier",
   description:
     "Lord Ganesha Impex is a global supplier of premium gold-finished jewelry including bangles, bridal collections, rosaries, chains, and earrings crafted with over three decades of expertise.",
-    icons: {
-      icon: "/favicon.ico",
-      shortcut: "/favicon.ico",
-      apple: "/favicon.ico",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 };
 
@@ -59,6 +59,30 @@ export default function RootLayout({ children }) {
             <Footer />
           </AuthProvider>
         </LocaleProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Lord Ganesha Impex",
+              url: "https://lordganeshaimpex.com",
+              logo: "https://res.cloudinary.com/dijssimbb/image/upload/v1771186076/LGI_1_awfgfe.png",
+            }),
+          }}
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Lord Ganesha Impex",
+              url: "https://lordganeshaimpex.com",
+            }),
+          }}
+        />
       </body>
     </html>
   );
