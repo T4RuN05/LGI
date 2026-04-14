@@ -16,9 +16,9 @@ export default function ProductCategories() {
         </div>
         <StaggerContainer>
           {/* ROW 1 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:h-[55vh] mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 md:h-[580px]">
             {/* BANGLES BLOCK */}
-            <div className="flex flex-col md:grid md:grid-cols-2 md:grid-rows-[45%_55%] gap-3 md:h-full">
+            <div className="flex flex-col md:grid md:grid-cols-2 md:grid-rows-[35%_65%] gap-3 min-h-[500px] md:min-h-0 md:h-full">
               {/* TOP IMAGE */}
               <div className="md:col-span-2 relative overflow-hidden rounded-md order-3 md:order-1 h-[300px] md:h-full">
                 <RevealHoverImage
@@ -30,14 +30,17 @@ export default function ProductCategories() {
               </div>
 
               {/* TITLE + DESC CELL */}
-              <div className="flex flex-col gap-3 order-1 md:order-2 md:grid md:grid-rows-2 md:h-full">
-                <BlurReveal className="bg-[var(--component-bg)] light-select flex flex-col items-center justify-center shadow-md rounded-md p-6">
+              <div className="flex flex-col gap-3 order-1 md:order-2 md:grid md:grid-rows-2 md:h-full min-h-0">
+                <BlurReveal className="bg-[var(--component-bg)] light-select flex flex-col items-center justify-center shadow-md rounded-md p-6 min-h-0">
                   <h3 className="tracking-[3px] text-lg">{t("bangles")}</h3>
-                  <Link href={`\products?category=gold-plated-bangles`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
-                     {t("viewProducts")}
+                  <Link
+                    href={`\products?category=gold-plated-bangles`}
+                    className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition"
+                  >
+                    {t("viewProducts")}
                   </Link>
                 </BlurReveal>
-                <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-center rounded-md">
+                <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-start rounded-md min-h-0">
                   {t("banglesLongDesc")}
                 </BlurReveal>
               </div>
@@ -53,7 +56,7 @@ export default function ProductCategories() {
             </div>
 
             {/* BRIDAL BLOCK */}
-            <div className="flex flex-col md:grid md:grid-cols-2 md:grid-rows-[55%_45%] gap-3 md:h-full">
+            <div className="flex flex-col md:grid md:grid-cols-2 md:grid-rows-[55%_45%] gap-3 min-h-[500px] md:min-h-0 md:h-full">
               {/* TOP IMAGE */}
               <div className="relative overflow-hidden rounded-md order-3 md:order-1 h-[300px] md:h-full w-full">
                 <RevealHoverImage
@@ -65,13 +68,16 @@ export default function ProductCategories() {
               </div>
 
               {/* DESC + TITLE */}
-              <div className="flex flex-col gap-3 order-1 md:order-2 md:grid md:grid-rows-2 md:h-full">
-                <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-center rounded-md">
+              <div className="flex flex-col gap-3 order-1 md:order-2 md:grid md:grid-rows-[1fr_auto] md:h-full min-h-0">
+                <BlurReveal className="bg-[#3b2412] text-white light-select text-sm font-extralight p-4 flex items-start rounded-md min-h-0">
                   {t("bridalDesc")}
                 </BlurReveal>
-                <BlurReveal className="bg-[#f3f1ee] flex flex-col items-center justify-center rounded-md p-6">
+                <BlurReveal className="bg-[#f3f1ee] flex flex-col items-center justify-center rounded-md p-6 min-h-0">
                   <h3 className="tracking-[3px] text-lg">{t("bridal")}</h3>
-                  <Link href={`\products?category=bridal`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                  <Link
+                    href={`\products?category=bridal`}
+                    className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition"
+                  >
                     {t("viewProducts")}
                   </Link>
                 </BlurReveal>
@@ -98,7 +104,10 @@ export default function ProductCategories() {
               <BlurReveal className="bg-[var(--component-bg)] w-full md:w-[420px] py-10 text-center shadow-md rounded-md">
                 <h3 className="tracking-[3px] text-lg">{t("chains")}</h3>
 
-                <Link href={`\products?category=silver-chains`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                <Link
+                  href={`\products?category=silver-chains`}
+                  className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition"
+                >
                   {t("viewProducts")}
                 </Link>
               </BlurReveal>
@@ -135,12 +144,15 @@ export default function ProductCategories() {
               <BlurReveal className="bg-[var(--component-bg)] py-10 text-center shadow-md h-[220px] flex flex-col items-center justify-center rounded-md">
                 <h3 className="tracking-widest text-lg">{t("rosary")}</h3>
 
-                <Link href={`\products?category=rosary`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                <Link
+                  href={`\products?category=rosary`}
+                  className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition"
+                >
                   {t("viewProducts")}
                 </Link>
               </BlurReveal>
 
-              <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-5 mt-4 flex flex-col items-center justify-center h-[200px] rounded-md">
+              <BlurReveal className="bg-[#3b2412] text-white light-select text-sm p-5 mt-4 flex flex-col items-center justify-center rounded-md">
                 {t("rosaryLongDesc")}
               </BlurReveal>
             </div>
@@ -202,7 +214,10 @@ export default function ProductCategories() {
               <BlurReveal className="bg-[var(--component-bg)] py-10 text-center shadow-md h-[220px] flex flex-col items-center justify-center rounded-md">
                 <h3 className="tracking-widest text-lg">{t("earrings")}</h3>
 
-                <Link href={`\products?category=basket-earrings`} className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition">
+                <Link
+                  href={`\products?category=basket-earrings`}
+                  className="mt-3 border border-[#3b2412] px-5 py-1 text-sm tracking-wide hover:bg-[#3b2412] hover:text-white transition"
+                >
                   {t("viewProducts")}
                 </Link>
               </BlurReveal>

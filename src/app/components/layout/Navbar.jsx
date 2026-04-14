@@ -22,6 +22,16 @@ export default function Navbar() {
   const localeRefDesktop = useRef(null);
   const profileRefMobile = useRef(null);
   const profileRefDesktop = useRef(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navItem = (href, label) => (
     <Link
@@ -67,7 +77,9 @@ export default function Navbar() {
 
   return (
     <>
-      <div className={`sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-sm border-y border-[#e3e1dc] shadow-lg mt-[1rem] ${pathname === "/auth" ? "my-0" : "my-[1rem]"}`}>
+      <div
+        className={`sticky top-0 z-50 pointer-events-auto bg-[#F2F1EC]/75 backdrop-blur-sm border-y border-[#e3e1dc] shadow-lg mt-[1rem] ${pathname === "/auth" ? "my-0" : "my-[1rem]"}`}
+      >
         {/* MOBILE HEADER */}
         <div className="md:hidden flex items-center justify-between px-4 h-[70px]">
           {/* HAMBURGER */}
@@ -173,6 +185,24 @@ export default function Navbar() {
 
         {/* DESKTOP NAVBAR */}
         <div className="hidden md:flex relative w-full mx-auto px-6 h-[70px] items-center">
+          {/* LOGO (animated) */}
+          <div
+            className={`hidden md:block absolute z-[60] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
+    ${
+      scrolled
+        ? "left-6 top-1/2 -translate-y-1/2 scale-75"
+        : "left-1/2 -translate-x-1/2 -top-[110px] scale-120"
+    }
+  `}
+          >
+            <Link href="/">
+              <img
+                src="https://res.cloudinary.com/dijssimbb/image/upload/v1771186076/LGI_1_awfgfe.png"
+                className="h-[70px]"
+              />
+            </Link>
+          </div>
+
           {/* CENTER NAV */}
           <div className="absolute left-1/2 -translate-x-1/2 flex gap-6 md:gap-10 text-[15px] md:text-[17px] font-medium whitespace-nowrap">
             {isAdmin ? (
