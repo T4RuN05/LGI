@@ -7,6 +7,7 @@ import CategoryAccordion from "./CategoryAccordion";
 import Link from "next/link";
 import SearchBar from "../SearchBar";
 import ProductCardSkeleton from "../ui/ProductCardSkeleton";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ProductsLayout({
   products = [],
@@ -16,7 +17,12 @@ export default function ProductsLayout({
   onDelete,
   onToggleFeatured,
   loading = false,
+  totalPages,
+  currentPage,
+  isServerPaginated = false,
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isMobile, setIsMobile] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
   const observerRef = useRef(null);
@@ -29,6 +35,11 @@ export default function ProductsLayout({
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  useEffect(() => {
+    setVisibleCount(8);
+    setLoadingMore(false);
+  }, [products.length]);
 
   useEffect(() => {
     if (!isMobile) return;
@@ -54,25 +65,47 @@ export default function ProductsLayout({
   }, [isMobile, products.length]);
 
   const ITEMS_PER_PAGE = 24;
-  const [currentPage, setCurrentPage] = useState(0);
+  const [localPage, setLocalPage] = useState(0);
 
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
+  const resolvedTotalPages = isServerPaginated
+    ? totalPages || 1
+    : Math.ceil(products.length / ITEMS_PER_PAGE) || 1;
 
-  const startIndex = currentPage * ITEMS_PER_PAGE;
+  const resolvedCurrentPage = isServerPaginated
+    ? currentPage || 1
+    : localPage + 1;
+
+  const startIndex = localPage * ITEMS_PER_PAGE;
   const currentProducts = isMobile
     ? products.slice(0, visibleCount)
-    : products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    : isServerPaginated
+      ? products
+      : products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const buildPageUrl = (pageNumber) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(pageNumber));
+    return `/products?${params.toString()}`;
+  };
 
   const handlePrev = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
+    if (resolvedCurrentPage > 1) {
+      if (isServerPaginated) {
+        router.push(buildPageUrl(resolvedCurrentPage - 1));
+      } else {
+        setLocalPage((prev) => prev - 1);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((prev) => prev + 1);
+    if (resolvedCurrentPage < resolvedTotalPages) {
+      if (isServerPaginated) {
+        router.push(buildPageUrl(resolvedCurrentPage + 1));
+      } else {
+        setLocalPage((prev) => prev + 1);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -86,9 +119,9 @@ export default function ProductsLayout({
           {!isMobile ? (
             <button
               onClick={handlePrev}
-              disabled={currentPage === 0}
+              disabled={resolvedCurrentPage === 1}
               className={`w-10 h-10 flex items-center justify-center border border-[#d8d3cc] bg-[#EBE2DB] rounded-sm transition
-              ${currentPage === 0 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
+              ${resolvedCurrentPage === 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
             >
               <FiChevronLeft size={20} />
             </button>
@@ -105,9 +138,9 @@ export default function ProductsLayout({
           {!isMobile ? (
             <button
               onClick={handleNext}
-              disabled={currentPage >= totalPages - 1}
+              disabled={resolvedCurrentPage >= resolvedTotalPages}
               className={`w-10 h-10 flex items-center justify-center border border-[#d8d3cc] bg-[#EBE2DB] rounded-sm transition
-      ${currentPage >= totalPages - 1 ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
+      ${resolvedCurrentPage >= resolvedTotalPages ? "opacity-40 cursor-not-allowed" : "hover:bg-[#e2dbd3]"}`}
             >
               <FiChevronRight size={20} />
             </button>
@@ -166,18 +199,22 @@ export default function ProductsLayout({
         )}
 
         {/* Pagination Indicator */}
-        {!isMobile && totalPages > 1 && (
+        {!isMobile && resolvedTotalPages > 1 && (
           <div className="flex justify-center items-center gap-3 mt-10">
-            {Array.from({ length: totalPages }).map((_, index) => (
+            {Array.from({ length: resolvedTotalPages }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => {
-                  setCurrentPage(index);
+                  if (isServerPaginated) {
+                    router.push(buildPageUrl(index + 1));
+                  } else {
+                    setLocalPage(index);
+                  }
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`w-8 h-8 text-sm flex items-center justify-center border transition
           ${
-            currentPage === index
+            resolvedCurrentPage === index + 1
               ? "bg-black text-white border-black"
               : "bg-[#EBE2DB] hover:bg-[#e2dbd3] border-gray-300"
           }`}

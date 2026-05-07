@@ -4,8 +4,6 @@ import { Mail, Phone, Instagram, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocale } from "@/context/LocaleContext";
 import { useAuth } from "@/context/AuthContext";
-import AuthModal from "../components/AuthModal";
-import { useState } from "react";
 import { motion } from "framer-motion";
 
 const blurReveal = {
@@ -25,16 +23,10 @@ const blurReveal = {
 export default function ContactPageClient() {
   const { t } = useLocale();
   const { user, hydrated } = useAuth();
-  const [showModal, setShowModal] = useState(false);
 
   const handleMail = async (e) => {
     e.preventDefault();
     if (!hydrated) return;
-
-    if (!user) {
-      setShowModal(true);
-      return;
-    }
 
     const form = e.currentTarget;
     const formData = {
@@ -227,12 +219,6 @@ export default function ContactPageClient() {
           </div>
         </motion.main>
 
-        {showModal && (
-          <AuthModal
-            onClose={() => setShowModal(false)}
-            message="Please login to send a message"
-          />
-        )}
       </div>
     </div>
   );

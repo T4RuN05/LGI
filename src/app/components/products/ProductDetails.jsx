@@ -286,12 +286,6 @@ export default function ProductDetails({ product }) {
       ? `${formatCurrency(convertedMin, currency)} - ${formatCurrency(convertedMax, currency)}`
       : formatCurrency(convertedMin, currency);
   const handleChat = async () => {
-    if (!user) {
-      setAuthMessage("You must be signed in to chat with seller");
-      setShowAuthModal(true);
-      return;
-    }
-
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/products/${product._id}/whatsapp`,

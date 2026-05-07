@@ -5,11 +5,13 @@ export const fetchFeaturedProducts = async () => {
   return res.json();
 };
 
-export async function fetchProducts(categorySlug, search) {
+export async function fetchProducts(categorySlug, search, page = 1, limit = 24) {
   let url = `${process.env.NEXT_PUBLIC_API_URL}/api/products?`;
 
   if (categorySlug) url += `category=${categorySlug}&`;
   if (search) url += `search=${search}&`;
+  if (page) url += `page=${page}&`;
+  if (limit) url += `limit=${limit}&`;
 
   const res = await fetch(url, {
     cache: "no-store",
