@@ -63,17 +63,39 @@ const slides = [
 export default function HeroSection() {
   const { t } = useLocale();
   const [current, setCurrent] = useState(0);
+  const [progressKey, setProgressKey] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
+      setProgressKey((prev) => prev + 1);
     }, 5000); // 8 seconds
 
     return () => clearInterval(interval);
   }, []);
 
+  const handlePrev = () => {
+    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+    setProgressKey((prev) => prev + 1);
+  };
+
+  const handleNext = () => {
+    setCurrent((prev) => (prev + 1) % slides.length);
+    setProgressKey((prev) => prev + 1);
+  };
+
   return (
     <section className="relative w-full h-[calc(100vh-120px)] overflow-hidden">
+      <style jsx global>{`
+        @keyframes heroProgress {
+          from {
+            width: 0%;
+          }
+          to {
+            width: 100%;
+          }
+        }
+      `}</style>
       {/* IMAGES */}
       {slides.map((slide, index) => (
         <img
@@ -89,6 +111,27 @@ export default function HeroSection() {
 
       {/* GRADIENT OVERLAY */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-10" />
+
+      {/* ARROWS */}
+      <div className="absolute inset-0 z-20 flex items-center justify-between px-4 md:px-8">
+        <button
+          type="button"
+          aria-label="Previous slide"
+          onClick={handlePrev}
+          className="group h-10 w-10 md:h-12 md:w-12 flex items-center justify-center transition opacity-80 hover:opacity-100 drop-shadow-[0_6px_12px_rgba(0,0,0,0.45)]"
+        >
+          <span className="block h-2.5 w-2.5 md:h-3 md:w-3 rotate-45 border-l-2 border-b-2 border-white/90 transition group-hover:translate-x-[-1px]" />
+        </button>
+
+        <button
+          type="button"
+          aria-label="Next slide"
+          onClick={handleNext}
+          className="group h-10 w-10 md:h-12 md:w-12 flex items-center justify-center transition opacity-80 hover:opacity-100 drop-shadow-[0_6px_12px_rgba(0,0,0,0.45)]"
+        >
+          <span className="block h-2.5 w-2.5 md:h-3 md:w-3 rotate-45 border-r-2 border-t-2 border-white/90 transition group-hover:translate-x-[1px]" />
+        </button>
+      </div>
 
       {/* TEXT */}
       <div className="absolute bottom-10 md:bottom-16 left-1/2 -translate-x-1/2 w-full text-center text-white z-20 px-10">
@@ -119,6 +162,35 @@ export default function HeroSection() {
             </motion.p>
           </motion.div>
         </AnimatePresence>
+      </div>
+
+      {/* INDICATORS */}
+      <div className="absolute bottom-3 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            type="button"
+            aria-label={`Go to slide ${index + 1}`}
+            onClick={() => {
+              setCurrent(index);
+              setProgressKey((prev) => prev + 1);
+            }}
+            className={`relative overflow-hidden transition-all duration-300 ease-out
+              ${
+                index === current
+                  ? "h-1.5 w-10 md:w-12 rounded-full bg-white/25"
+                  : "h-2 w-2 rounded-full bg-white/60"
+              }`}
+          >
+            {index === current && (
+              <span
+                key={progressKey}
+                className="absolute left-0 top-0 h-full bg-white/90"
+                style={{ animation: "heroProgress 5s linear" }}
+              />
+            )}
+          </button>
+        ))}
       </div>
     </section>
   );

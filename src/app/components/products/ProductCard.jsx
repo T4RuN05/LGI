@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import toast from "react-hot-toast";
 import { useLocale } from "@/context/LocaleContext";
 import { convertPrice, formatCurrency } from "@/utils/currency";
-import AuthModal from "../AuthModal";
 
 export default function ProductCard({
   product,
@@ -19,8 +17,6 @@ export default function ProductCard({
 }) {
   if (!product) return null;
 
-  const { user } = useAuth();
-  const [showModal, setShowModal] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const imageUrl = product?.images?.[0]?.url;
   const minPrice = product?.priceRange?.min;
@@ -52,10 +48,6 @@ export default function ProductCard({
   };
 
   const handleChat = async () => {
-    if (!user) {
-      setShowModal(true);
-      return;
-    }
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/products/${product._id}/whatsapp`,
     );
@@ -169,7 +161,6 @@ export default function ProductCard({
         </div>
       )}
 
-      {showModal && <AuthModal onClose={() => setShowModal(false)} />}
       {showConfirm && (
         <ConfirmModal
           title="Delete Product"

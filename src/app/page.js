@@ -2,6 +2,7 @@
 import HeroSection from "./components/home/Hero";
 import ProductCategories from "./components/home/ProductCategories";
 import FeaturedProducts from "./components/home/FeaturedProducts";
+import GoldPlatedBangles from "./components/home/GoldPlatedBangles";
 import Link from "next/link";
 
 export const metadata = {
@@ -15,6 +16,7 @@ export default function Home() {
       <HeroSection />
       <ProductCategories />
       <FeaturedProducts />
+      <GoldPlatedBangles />
 
       <div className="hidden">
         <Link href="/products">Products</Link>
