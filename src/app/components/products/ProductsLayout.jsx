@@ -8,6 +8,7 @@ import Link from "next/link";
 import SearchBar from "../SearchBar";
 import ProductCardSkeleton from "../ui/ProductCardSkeleton";
 import { useRouter, useSearchParams } from "next/navigation";
+import { fetchProducts } from "@/lib/api";
 
 export default function ProductsLayout({
   products = [],
@@ -23,46 +24,15 @@ export default function ProductsLayout({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const categorySlug = searchParams.get("category");
+  const search = searchParams.get("search");
   const [isMobile, setIsMobile] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
   const observerRef = useRef(null);
   const loaderRef = useRef(null);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  useEffect(() => {
-    setVisibleCount(8);
-    setLoadingMore(false);
-  }, [products.length]);
-
-  useEffect(() => {
-    if (!isMobile) return;
-
-    if (observerRef.current) observerRef.current.disconnect();
-
-    observerRef.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !loadingMore) {
-        setLoadingMore(true);
-
-        setTimeout(() => {
-          setVisibleCount((prev) => Math.min(prev + 8, products.length));
-          setLoadingMore(false);
-        }, 300);
-      }
-    });
-
-    if (loaderRef.current) {
-      observerRef.current.observe(loaderRef.current);
-    }
-
-    return () => observerRef.current?.disconnect();
-  }, [isMobile, products.length]);
+  const [mobileProducts, setMobileProducts] = useState(products);
+  const [mobilePage, setMobilePage] = useState(currentPage || 1);
 
   const ITEMS_PER_PAGE = 24;
   const [localPage, setLocalPage] = useState(0);
@@ -77,7 +47,9 @@ export default function ProductsLayout({
 
   const startIndex = localPage * ITEMS_PER_PAGE;
   const currentProducts = isMobile
-    ? products.slice(0, visibleCount)
+    ? isServerPaginated
+      ? mobileProducts
+      : products.slice(0, visibleCount)
     : isServerPaginated
       ? products
       : products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -87,6 +59,72 @@ export default function ProductsLayout({
     params.set("page", String(pageNumber));
     return `/products?${params.toString()}`;
   };
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    if (!isServerPaginated) return;
+    setMobileProducts(products);
+    setMobilePage(currentPage || 1);
+  }, [isServerPaginated, products, currentPage]);
+
+  useEffect(() => {
+    setVisibleCount(8);
+    setLoadingMore(false);
+  }, [products.length]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    if (observerRef.current) observerRef.current.disconnect();
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting || loadingMore) return;
+
+      if (isServerPaginated) {
+        if (mobilePage >= resolvedTotalPages) return;
+
+        setLoadingMore(true);
+        fetchProducts(categorySlug, search, mobilePage + 1, ITEMS_PER_PAGE)
+          .then((data) => {
+            setMobileProducts((prev) => [
+              ...prev,
+              ...(data?.products || []),
+            ]);
+            setMobilePage((prev) => prev + 1);
+          })
+          .finally(() => setLoadingMore(false));
+
+        return;
+      }
+
+      setLoadingMore(true);
+      setTimeout(() => {
+        setVisibleCount((prev) => Math.min(prev + 8, products.length));
+        setLoadingMore(false);
+      }, 300);
+    });
+
+    if (loaderRef.current) {
+      observerRef.current.observe(loaderRef.current);
+    }
+
+    return () => observerRef.current?.disconnect();
+  }, [
+    isMobile,
+    products.length,
+    isServerPaginated,
+    mobilePage,
+    resolvedTotalPages,
+    loadingMore,
+    categorySlug,
+    search,
+  ]);
 
   const handlePrev = () => {
     if (resolvedCurrentPage > 1) {
@@ -190,13 +228,16 @@ export default function ProductsLayout({
           loading={loading}
         />
 
-        {isMobile && visibleCount < products.length && (
-          <div ref={loaderRef} className="grid grid-cols-2 gap-4 mt-4">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <ProductCardSkeleton key={i} />
-            ))}
-          </div>
-        )}
+        {isMobile &&
+          (isServerPaginated
+            ? mobilePage < resolvedTotalPages
+            : visibleCount < products.length) && (
+            <div ref={loaderRef} className="grid grid-cols-2 gap-4 mt-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
 
         {/* Pagination Indicator */}
         {!isMobile && resolvedTotalPages > 1 && (
