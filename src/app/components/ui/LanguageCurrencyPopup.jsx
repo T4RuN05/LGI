@@ -108,6 +108,8 @@ export default function LanguageCurrencyPopup({ onClose, anchorRef }) {
             <option value="nl">Dutch</option>
             <option value="tr">Turkish</option>
             <option value="ru">Russian</option>
+            <option value="ja">Japanese</option>
+            <option value="zh">Chinese</option>
           </select>
         </div>
 

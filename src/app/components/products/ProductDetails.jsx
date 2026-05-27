@@ -597,32 +597,113 @@ export default function ProductDetails({ product }) {
             ref={reviewsRef}
             className="bg-[#F2F1EC] mt-8 shadow-md rounded-md p-4 md:p-8"
           >
-            <h2 className="text-lg md:text-xl font-semibold mb-6">
-              Reviews ({reviews.length})
-            </h2>
-
-            {/* ADD REVIEW */}
-            {hasReviewed ? (
-              <div className="mb-10 border-b pb-8 text-center">
-                <p className="text-gray-600 text-sm">
-                  You have already reviewed this product
+            {/* ─── REVIEW SUMMARY HEADER ─── */}
+            <div className="flex flex-col sm:flex-row gap-6 sm:items-center mb-8 pb-6 border-b border-[#e0dbd4]">
+              {/* Left: Big rating */}
+              <div className="flex flex-col items-center sm:items-start sm:min-w-[120px]">
+                <p className="text-4xl font-bold text-[#2D2319] leading-none">
+                  {reviews.length > 0
+                    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+                    : "0.0"}
                 </p>
-              </div>
-            ) : (
-              <div className="mb-10 border-b pb-8">
-                {/* Stars */}
-                <div className="flex items-center gap-2 mb-3">
-                  {[1, 2, 3, 4, 5].map((star) => (
+                <div className="flex items-center gap-0.5 mt-1.5">
+                  {[1, 2, 3, 4, 5].map((s) => (
                     <span
-                      key={star}
-                      onClick={() => setRating(star)}
-                      className={`cursor-pointer text-2xl transition transform hover:scale-110 ${
-                        star <= rating ? "text-black" : "text-gray-400"
+                      key={s}
+                      className={`text-sm ${
+                        s <= Math.round(reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0)
+                          ? "text-amber-500"
+                          : "text-[#d8d3cc]"
                       }`}
                     >
                       ★
                     </span>
                   ))}
+                </div>
+                <p className="text-xs text-[#8a7d71] mt-1">
+                  {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                </p>
+              </div>
+
+              {/* Right: Star breakdown bars */}
+              <div className="flex-1 flex flex-col gap-1.5">
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const count = reviews.filter((r) => r.rating === star).length;
+                  const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                  return (
+                    <div key={star} className="flex items-center gap-2 text-xs">
+                      <span className="w-3 text-right text-[#6b5e52] font-medium">{star}</span>
+                      <span className="text-amber-500 text-[10px]">★</span>
+                      <div className="flex-1 h-2 bg-[#e6e1da] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-amber-500 rounded-full transition-all duration-700 ease-out"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="w-5 text-right text-[#8a7d71]">{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ─── ADD REVIEW FORM ─── */}
+            {!user ? (
+              <div className="mb-8 bg-white border border-[#e6e1da] rounded-lg p-6 text-center">
+                <div className="w-10 h-10 rounded-full bg-[#EBE2DB] flex items-center justify-center mx-auto mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b5e52" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-[#2D2319] mb-1">
+                  Sign in to write a review
+                </p>
+                <p className="text-xs text-[#8a7d71] mb-4">
+                  Share your experience with this product by signing in first
+                </p>
+                <button
+                  onClick={() => {
+                    setAuthMessage("Sign in to submit a review");
+                    setShowAuthModal(true);
+                  }}
+                  className="inline-flex items-center gap-2 bg-[#2D2319] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#3d3428] transition shadow-sm hover:shadow-md"
+                >
+                  Sign In
+                </button>
+              </div>
+            ) : hasReviewed ? (
+              <div className="mb-8 bg-[#f9f7f4] border border-[#e0dbd4] rounded-lg p-5 text-center">
+                <p className="text-[#6b5e52] text-sm">
+                  ✓ You have already reviewed this product
+                </p>
+              </div>
+            ) : (
+              <div className="mb-8 bg-white border border-[#e6e1da] rounded-lg p-5 md:p-6">
+                <p className="text-sm font-medium text-[#2D2319] mb-3">
+                  Write a Review
+                </p>
+
+                {/* Interactive Stars */}
+                <div className="flex items-center gap-1 mb-4">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setRating(star)}
+                      className={`text-2xl transition-all duration-150 hover:scale-125 ${
+                        star <= rating ? "text-amber-500" : "text-[#d8d3cc] hover:text-amber-300"
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                  <span className="ml-2 text-xs text-[#8a7d71]">
+                    {rating === 1 && "Poor"}
+                    {rating === 2 && "Fair"}
+                    {rating === 3 && "Good"}
+                    {rating === 4 && "Very Good"}
+                    {rating === 5 && "Excellent"}
+                  </span>
                 </div>
 
                 {/* Textarea */}
@@ -630,159 +711,194 @@ export default function ProductDetails({ product }) {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="Share your experience with this product..."
-                  className="w-full border border-gray-300 focus:border-black outline-none rounded-md p-3 text-sm resize-none mb-3 bg-white"
+                  className="w-full border border-[#e0dbd4] focus:border-[#2D2319] outline-none rounded-lg p-3.5 text-sm resize-none mb-4 bg-[#fafaf8] transition"
                   rows={3}
                 />
 
-                {/* UPLOAD BOX */}
-                <div className="mb-4">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files).slice(
-                        0,
-                        5 - localImages.length,
-                      );
-                      setLocalImages((prev) => [...prev, ...files]);
-                    }}
-                    className="hidden"
-                    id="reviewImageUpload"
-                  />
+                {/* Upload + Submit row */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Upload */}
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files).slice(
+                          0,
+                          5 - localImages.length,
+                        );
+                        setLocalImages((prev) => [...prev, ...files]);
+                      }}
+                      className="hidden"
+                      id="reviewImageUpload"
+                    />
 
-                  <label
-                    htmlFor="reviewImageUpload"
-                    className={`flex flex-col items-center justify-center 
-                  border-2 border-dashed rounded-lg p-5 cursor-pointer transition bg-white
-                  shadow-sm hover:shadow-md
-                  ${
-                    localImages.length >= 5
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:border-black border-gray-300"
-                  }`}
+                    <label
+                      htmlFor="reviewImageUpload"
+                      className={`flex items-center justify-center gap-2
+                      border border-dashed rounded-lg py-2.5 px-4 cursor-pointer transition text-sm
+                      ${
+                        localImages.length >= 5
+                          ? "opacity-50 cursor-not-allowed border-[#d8d3cc] text-[#b0a89e]"
+                          : "hover:border-[#2D2319] border-[#d8d3cc] text-[#6b5e52] hover:text-[#2D2319]"
+                      }`}
+                    >
+                      <FiUpload size={16} />
+                      <span>Add Photos</span>
+                      <span className="text-xs text-[#b0a89e]">
+                        ({localImages.length}/5)
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={uploadingImages || submitting}
+                    className="bg-[#2D2319] text-white px-6 py-2.5 rounded-lg text-sm font-medium
+                    hover:bg-[#3d3428] transition disabled:opacity-50 shadow-sm hover:shadow-md"
                   >
-                    <FiUpload size={20} className="mb-2" />
-                    <p className="text-sm text-gray-600">
-                      Upload Images{" "}
-                      <span className="text-xs text-gray-400">(Max 5)</span>
-                    </p>
-                  </label>
+                    {uploadingImages ? "Uploading..." : submitting ? "Submitting..." : "Submit Review"}
+                  </button>
                 </div>
 
+                {/* Image previews */}
                 {localImages.length > 0 && (
-                  <div className="flex gap-3 mt-4 mb-4 flex-wrap">
+                  <div className="flex gap-2.5 mt-4 flex-wrap">
                     {localImages.map((file, i) => (
-                      <div key={i} className="relative">
-                        {/* IMAGE */}
+                      <div key={i} className="relative group">
                         <img
                           src={URL.createObjectURL(file)}
-                          className="w-20 h-20 object-cover rounded-md border"
+                          className="w-16 h-16 object-cover rounded-lg border border-[#e0dbd4]"
                         />
-
-                        {/* DELETE BUTTON */}
                         <button
                           disabled={deletingIndex === i}
                           onClick={async () => {
                             const img = images[i] || null;
-
-                            // If not uploaded → just remove locally
                             if (!img || !img.public_id) {
                               setLocalImages((prev) =>
                                 prev.filter((_, index) => index !== i),
                               );
                               return;
                             }
-                            setDeletingIndex(i); // START LOADING
-
+                            setDeletingIndex(i);
                             try {
                               await fetch(
                                 `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/delete-image`,
                                 {
                                   method: "POST",
-                                  headers: {
-                                    "Content-Type": "application/json",
-                                  },
+                                  headers: { "Content-Type": "application/json" },
                                   credentials: "include",
-                                  body: JSON.stringify({
-                                    public_id: img.public_id,
-                                  }),
+                                  body: JSON.stringify({ public_id: img.public_id }),
                                 },
                               );
-
-                              setLocalImages(
-                                localImages.filter((_, index) => index !== i),
-                              );
-                              setImages(
-                                images.filter((_, index) => index !== i),
-                              );
+                              setLocalImages(localImages.filter((_, index) => index !== i));
+                              setImages(images.filter((_, index) => index !== i));
                             } catch (err) {
                               console.error("Delete failed", err);
                             } finally {
                               setDeletingIndex(null);
                             }
                           }}
-                          className="absolute -top-2 -right-2 
-                      bg-black text-white 
-                        w-5 h-5 rounded-full 
-                        flex items-center justify-center 
-                        text-xs transition
-                        disabled:opacity-50 disabled:cursor-not-allowed
-                        hover:scale-110"
+                          className="absolute -top-1.5 -right-1.5
+                            bg-[#2D2319] text-white
+                            w-5 h-5 rounded-full
+                            flex items-center justify-center
+                            text-xs transition
+                            opacity-0 group-hover:opacity-100
+                            disabled:opacity-50 disabled:cursor-not-allowed
+                            hover:bg-red-600 hover:scale-110"
                         >
-                          {deletingIndex === i ? "…" : <FiX size={16} />}
+                          {deletingIndex === i ? "…" : <FiX size={12} />}
                         </button>
                       </div>
                     ))}
                   </div>
                 )}
-
-                {/* Button */}
-                <button
-                  onClick={handleSubmitReview}
-                  disabled={uploadingImages || submitting}
-                  className="bg-black text-white px-6 py-2 rounded-md hover:opacity-90 transition disabled:opacity-50 shadow-sm hover:shadow-md"
-                >
-                  {uploadingImages ? "Uploading..." : "Submit Review"}
-                </button>
               </div>
             )}
-            {/* REVIEW LIST */}
-            <div className="space-y-5">
+
+            {/* ─── REVIEW LIST ─── */}
+            <div className="space-y-4">
               {reviews.length === 0 ? (
-                <p className="text-gray-500 text-sm">No reviews yet.</p>
+                <div className="text-center py-10">
+                  <p className="text-[#8a7d71] text-sm">
+                    No reviews yet. Be the first to review this product!
+                  </p>
+                </div>
               ) : (
                 reviews.map((rev) => (
                   <div
                     key={rev._id}
-                    className="relative bg-white p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition"
+                    className="relative bg-white rounded-lg border border-[#e6e1da] p-5 transition-shadow hover:shadow-md group/card"
                   >
-                    {/* Top Row */}
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="font-semibold text-sm tracking-wide">
-                        {rev.name}
-                      </p>
-                      <span className="text-xs text-gray-400">
-                        {new Date(rev.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
+                    {/* Header: Avatar + Name + Date */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {/* Avatar */}
+                        <div className="w-9 h-9 rounded-full bg-[#2D2319] flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                          {(rev.name || "?").charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm text-[#2D2319]">
+                            {rev.name}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {/* Stars */}
+                            <div className="flex items-center gap-px">
+                              {[1, 2, 3, 4, 5].map((s) => (
+                                <span
+                                  key={s}
+                                  className={`text-xs ${
+                                    s <= rev.rating ? "text-amber-500" : "text-[#d8d3cc]"
+                                  }`}
+                                >
+                                  ★
+                                </span>
+                              ))}
+                            </div>
+                            <span className="text-[10px] text-[#b0a89e]">•</span>
+                            <span className="text-[11px] text-[#8a7d71]">
+                              {new Date(rev.createdAt).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* Rating */}
-                    <div className="text-sm mb-3 tracking-wide">
-                      {"★".repeat(rev.rating)}
-                      <span className="text-gray-300">
-                        {"★".repeat(5 - rev.rating)}
-                      </span>
+                      {/* Delete button (own review only) */}
+                      {user && (rev.user?._id || rev.user) === user._id && (
+                        <button
+                          onClick={() => {
+                            setReviewToDelete(rev._id);
+                            setConfirmOpen(true);
+                          }}
+                          className="opacity-0 group-hover/card:opacity-100
+                            bg-white hover:bg-red-50
+                            text-[#b0a89e] hover:text-red-500
+                            p-2 rounded-full
+                            border border-[#e6e1da] hover:border-red-200
+                            shadow-sm hover:shadow-md
+                            transition-all duration-200"
+                          title="Delete review"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      )}
                     </div>
 
                     {/* Comment */}
-                    <p className="text-sm text-gray-700 leading-relaxed tracking-wide">
+                    <p className="text-sm text-[#4a3f33] leading-relaxed">
                       {rev.comment}
                     </p>
 
-                    {/* EVIEW IMAGES */}
+                    {/* Review Images */}
                     {rev.images?.length > 0 && (
-                      <div className="flex gap-3 mt-4 flex-wrap">
+                      <div className="flex gap-2 mt-3.5 flex-wrap">
                         {rev.images.map((img, i) => (
                           <img
                             key={i}
@@ -794,28 +910,11 @@ export default function ProductDetails({ product }) {
                                 index: i,
                               })
                             }
-                            className="w-16 h-16 object-cover rounded-md border shadow-sm cursor-pointer hover:scale-110 transition"
+                            className="w-14 h-14 object-cover rounded-lg border border-[#e6e1da] cursor-pointer
+                              hover:scale-105 hover:shadow-md transition-all duration-200"
                           />
                         ))}
                       </div>
-                    )}
-
-                    {user && (rev.user?._id || rev.user) === user._id && (
-                      <button
-                        onClick={() => {
-                          setReviewToDelete(rev._id);
-                          setConfirmOpen(true);
-                        }}
-                        className="absolute top-12 right-3 
-               bg-white hover:bg-red-50 
-               text-gray-600 hover:text-red-500 
-               p-2 rounded-full 
-               shadow-sm hover:shadow-md
-               transition duration-200"
-                        title="Delete review"
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
                     )}
                   </div>
                 ))

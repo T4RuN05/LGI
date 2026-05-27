@@ -35,8 +35,31 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <section className="bg-[#EBE2DB] min-h-screen py-20 text-center">
-        Loading users...
+      <section className="bg-[#EBE2DB] min-h-screen py-10">
+        <div className="max-w-[1200px] mx-auto bg-[#F2F1EC] p-10 rounded-lg shadow-md">
+          <div className="h-7 w-52 skeleton-shimmer rounded mb-8" />
+          <div className="overflow-hidden rounded-md border border-gray-300">
+            <div className="bg-[#e8ded5] flex">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex-1 px-6 py-4">
+                  <div className="h-4 w-20 skeleton-shimmer rounded" />
+                </div>
+              ))}
+            </div>
+            {[1, 2, 3, 4, 5, 6].map((row) => (
+              <div key={row} className="flex border-t border-gray-200">
+                {[1, 2, 3, 4].map((col) => (
+                  <div key={col} className="flex-1 px-6 py-4">
+                    <div
+                      className="h-4 skeleton-shimmer rounded"
+                      style={{ width: `${50 + Math.random() * 40}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     );
   }

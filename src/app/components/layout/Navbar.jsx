@@ -208,6 +208,8 @@ export default function Navbar() {
             {isAdmin ? (
               <>
                 {navItem("/admin/products", "Products")}
+                {navItem("/admin/reviews", "Reviews")}
+                {navItem("/admin/mails", "Mails")}
                 {navItem("/admin/users", "Users")}
               </>
             ) : (
