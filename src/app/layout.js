@@ -20,6 +20,7 @@ const notoSerif = Noto_Serif({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://www.lordganeshaimpex.com"),
   title: "Lord Ganesha Impex | Premium Jewelry Manufacturer & Global Supplier",
   description:
     "Lord Ganesha Impex is a global supplier of premium gold-finished jewelry including bangles, bridal collections, rosaries, chains, and earrings crafted with over three decades of expertise.",

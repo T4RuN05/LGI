@@ -20,11 +20,11 @@ export async function generateMetadata({ params }) {
   
   if (!cart) {
     return {
-      title: "Cart Not Found | The Curated Decor",
+      title: "Cart Not Found",
     };
   }
 
-  const title = `Shared Cart (${cart.items.length} items) | The Curated Decor`;
+  const title = `Shared Cart (${cart.items.length} items)`;
   const description = `View this shared cart with an estimated total of $${cart.totals.min.toFixed(2)} - $${cart.totals.max.toFixed(2)}.`;
 
   return {
@@ -34,7 +34,21 @@ export async function generateMetadata({ params }) {
       title,
       description,
       type: "website",
+      images: [
+        {
+          url: `/cart/share/${id}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: title,
+        }
+      ]
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`/cart/share/${id}/opengraph-image`],
+    }
   };
 }
 
