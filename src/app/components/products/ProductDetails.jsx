@@ -301,6 +301,10 @@ export default function ProductDetails({ product }) {
     }
   };
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const fetchReviews = async () => {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${product._id}`,
