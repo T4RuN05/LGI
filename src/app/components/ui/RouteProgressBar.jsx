@@ -13,18 +13,41 @@ export default function RouteProgressBar() {
 
     const handleClick = (e) => {
       const target = e.target.closest("a");
-
       if (!target) return;
 
       const href = target.getAttribute("href");
-
       if (!href) return;
 
-      // Ignore external links
-      if (href.startsWith("http")) return;
+      const targetAttr = target.getAttribute("target");
+      if (targetAttr === "_blank") return;
 
-      // Ignore same page links
-      if (href === window.location.pathname) return;
+      // Ignore external or specialized links
+      if (
+        href.startsWith("http") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:")
+      ) {
+        return;
+      }
+
+      try {
+        const currentUrl = new URL(window.location.href);
+        const targetUrl = new URL(target.href, window.location.href);
+
+        // Ignore hash links on the same page
+        if (
+          currentUrl.pathname === targetUrl.pathname &&
+          currentUrl.search === targetUrl.search &&
+          targetUrl.hash
+        ) {
+          return;
+        }
+
+        // Ignore exact same URL clicks
+        if (currentUrl.href === targetUrl.href) return;
+      } catch (err) {
+        // Fallback for invalid URLs
+      }
 
       NProgress.start();
     };
