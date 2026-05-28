@@ -16,6 +16,7 @@ export default function SiteLoader() {
     const startFakeProgress = () => {
       interval = setInterval(() => {
         setProgress((prev) => {
+          if (prev >= 100) return 100;
           const next = prev + Math.random() * 6;
           return next >= 92 ? 92 : next;
         });

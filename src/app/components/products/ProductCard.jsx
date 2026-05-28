@@ -100,7 +100,7 @@ export default function ProductCard({
 
       {isAdmin ? (
         <div className="space-y-2 mt-auto">
-          <div className="flex gap-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <Link
               href={`/admin/products/edit/${product.slug}`}
               className="flex-1 border py-2 text-base hover:bg-black hover:text-white transition cursor-pointer"
@@ -146,7 +146,7 @@ export default function ProductCard({
           </button>
         </div>
       ) : (
-        <div className="mt-auto flex gap-2">
+        <div className="mt-auto flex flex-col md:flex-row gap-2">
           <button
             onClick={handleChat}
             className="
