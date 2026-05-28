@@ -296,11 +296,9 @@ export default function AdminReviewsPage() {
                     <div className="flex items-start gap-3">
                       {review.product?.images?.[0]?.url && (
                         <div className="w-14 h-14 rounded-md overflow-hidden flex-shrink-0 border border-[#e0dbd4]">
-                          <Image
+                          <img
                             src={review.product.images[0].url}
                             alt={review.product.title || "Product"}
-                            width={56}
-                            height={56}
                             className="w-full h-full object-cover"
                           />
                         </div>

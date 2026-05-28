@@ -2,11 +2,12 @@
 
 import { useRef, useState, useEffect } from "react";
 import { FaWhatsapp, FaChevronUp, FaChevronDown } from "react-icons/fa";
-import { FiUpload, FiX, FiTrash2 } from "react-icons/fi";
+import { FiUpload, FiX, FiTrash2, FiShoppingBag } from "react-icons/fi";
 import AuthModal from "@/app/components/AuthModal";
 import { useAuth } from "@/context/AuthContext";
 import ProductCard from "./ProductCard";
 import { useLocale } from "@/context/LocaleContext";
+import { useCart } from "@/context/CartContext";
 import { convertPrice, formatCurrency } from "@/utils/currency";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -18,6 +19,8 @@ export default function ProductDetails({ product }) {
   const reviewsRef = useRef(null);
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { addToCart, isInCart } = useCart();
+  const inCart = isInCart(product?._id);
   const thumbnailsRef = useRef(null);
   const faqRef = useRef(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -491,13 +494,28 @@ export default function ProductDetails({ product }) {
                 {priceDisplay}
               </p>
 
-              <button
-                onClick={handleChat}
-                className="w-full md:w-auto inline-flex justify-center items-center gap-2 border border-black px-6 py-2 hover:bg-black hover:text-white transition"
-              >
-                <FaWhatsapp />
-                {t("chatNow")}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleChat}
+                  className="flex-1 inline-flex justify-center items-center gap-2 border border-black px-6 py-2.5 hover:bg-black hover:text-white transition"
+                >
+                  <FaWhatsapp />
+                  {t("chatNow")}
+                </button>
+                {user?.role !== "admin" && (
+                  <button
+                    onClick={() => addToCart(product)}
+                    className={`flex-1 inline-flex justify-center items-center gap-2 border px-6 py-2.5 transition
+                      ${inCart
+                        ? "border-green-600 text-green-700 bg-green-50"
+                        : "border-black hover:bg-black hover:text-white"
+                      }`}
+                  >
+                    <FiShoppingBag size={16} />
+                    {inCart ? t("addedToCart") : t("addToCart")}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

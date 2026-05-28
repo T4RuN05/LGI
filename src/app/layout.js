@@ -9,8 +9,10 @@ import RouteProgressBar from "./components/ui/RouteProgressBar";
 import Footer from "./components/layout/Footer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LocaleProvider } from "@/context/LocaleContext";
+import { CartProvider } from "@/context/CartContext";
 import SiteLoader from "./components/ui/SiteLoader";
 import ImagePrefetcher from "./components/ui/ImagePrefetcher";
+import CartModal from "./components/cart/CartModal";
 
 const notoSerif = Noto_Serif({
   subsets: ["latin"],
@@ -49,14 +51,17 @@ export default function RootLayout({ children }) {
 
         <LocaleProvider>
           <AuthProvider>
-            <TopHeader />
-            <Navbar />
-            <RouteProgressBar />
-            <ToastProvider />
-            <SpeedInsights />
-            <Analytics />
-            {children}
-            <Footer />
+            <CartProvider>
+              <TopHeader />
+              <Navbar />
+              <RouteProgressBar />
+              <ToastProvider />
+              <SpeedInsights />
+              <Analytics />
+              <CartModal />
+              {children}
+              <Footer />
+            </CartProvider>
           </AuthProvider>
         </LocaleProvider>
         <script

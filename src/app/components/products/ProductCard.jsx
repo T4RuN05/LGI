@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
+import { FiShoppingBag } from "react-icons/fi";
 import { useState } from "react";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import toast from "react-hot-toast";
 import { useLocale } from "@/context/LocaleContext";
+import { useCart } from "@/context/CartContext";
 import { convertPrice, formatCurrency } from "@/utils/currency";
 
 export default function ProductCard({
@@ -25,6 +27,8 @@ export default function ProductCard({
   const [deleting, setDeleting] = useState(false);
   const isCompact = variant === "compact";
   const { currency, rates, t } = useLocale();
+  const { addToCart, isInCart } = useCart();
+  const inCart = isInCart(product?._id);
 
   const convertedMin = convertPrice(minPrice, currency, rates);
   const convertedMax = convertPrice(maxPrice, currency, rates);
@@ -142,21 +146,42 @@ export default function ProductCard({
           </button>
         </div>
       ) : (
-        <div className="mt-auto">
+        <div className="mt-auto flex gap-2">
           <button
             onClick={handleChat}
             className="
-              w-full md:w-auto 
-              inline-flex items-center justify-center gap-2 
-              border border-black 
-              px-3 md:px-6 py-1.5 md:py-2 
-              text-xs md:text-base 
-              transition 
-            hover:bg-black hover:text-white
-              "
+              flex-1
+              inline-flex items-center justify-center gap-1.5
+              border border-black
+              px-2 md:px-4 py-1.5 md:py-2
+              text-xs md:text-sm
+              transition
+              hover:bg-black hover:text-white
+            "
           >
             <FaWhatsapp size={14} />
             {t("chatNow")}
+          </button>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              addToCart(product);
+            }}
+            className={`
+              flex-1
+              inline-flex items-center justify-center gap-1.5
+              border px-2 md:px-4 py-1.5 md:py-2
+              text-xs md:text-sm
+              transition
+              ${inCart
+                ? "border-green-600 text-green-700 bg-green-50"
+                : "border-black hover:bg-black hover:text-white"
+              }
+            `}
+          >
+            <FiShoppingBag size={14} />
+            {inCart ? t("addedToCart") : t("addToCart")}
           </button>
         </div>
       )}
