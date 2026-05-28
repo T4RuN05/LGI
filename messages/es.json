@@ -96,5 +96,15 @@
   "heroTitle1": "Brazaletes de 6 mm en Tres Tonos",
   "heroTitle2": "Pendientes Tipo Cesta",
   "heroSubtitle1": "Experimente la armonía perfecta de los tonos oro, plata y rosa en estos versátiles brazaletes de 6 mm diseñados para una elegancia sin esfuerzo.",
-  "heroSubtitle2": "Tejidos magistralmente para un atractivo atemporal, estos pendientes tipo cesta ofrecen un diseño texturizado y sofisticado que realza su estilo."
+  "heroSubtitle2": "Tejidos magistralmente para un atractivo atemporal, estos pendientes tipo cesta ofrecen un diseño texturizado y sofisticado que realza su estilo.",
+  "addToCart": "Añadir al carrito",
+  "addedToCart": "Añadido ✓",
+  "yourCart": "Tu carrito",
+  "cartEmpty": "Tu carrito está vacío",
+  "browseProducts": "Descubre nuestra colección de joyería premium",
+  "clearCart": "Vaciar carrito",
+  "estimatedTotal": "Total estimado",
+  "chatOnWhatsApp": "Chatear en WhatsApp",
+  "cartGuestMessage": "Crea una cuenta para guardar tu carrito en todos tus dispositivos. Tu carrito se almacena en este navegador por ahora.",
+  "quantity": "Cant."
 }

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HiOutlineGlobeAlt } from "react-icons/hi";
 import { FaUserCircle } from "react-icons/fa";
+import { FiShoppingBag } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import LanguageCurrencyPopup from "../ui/LanguageCurrencyPopup";
 import { useLocale } from "@/context/LocaleContext";
 import { useState, useEffect, useRef } from "react";
@@ -13,11 +15,13 @@ import { Sling as Hamburger } from "hamburger-react";
 export default function Navbar() {
   const pathname = usePathname();
   const { user, logout, hydrated } = useAuth();
+  const { cartCount, toggleCart } = useCart();
   const [open, setOpen] = useState(false);
   const isAdmin = user?.role === "admin";
   const [showLocalePopup, setShowLocalePopup] = useState(false);
   const { language, currency, t } = useLocale();
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [badgeKey, setBadgeKey] = useState(0);
   const localeRefMobile = useRef(null);
   const localeRefDesktop = useRef(null);
   const profileRefMobile = useRef(null);
@@ -33,6 +37,13 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Re-trigger badge animation when cartCount changes
+  useEffect(() => {
+    if (cartCount > 0) {
+      setBadgeKey((prev) => prev + 1);
+    }
+  }, [cartCount]);
+
   const navItem = (href, label) => (
     <Link
       href={href}
@@ -44,6 +55,24 @@ export default function Navbar() {
     >
       {label}
     </Link>
+  );
+
+  const CartButton = ({ size = 22 }) => (
+    <button
+      onClick={toggleCart}
+      className="relative cart-icon-hover nav-icon-hover flex items-center justify-center"
+      aria-label="Cart"
+    >
+      <FiShoppingBag size={size} />
+      {cartCount > 0 && (
+        <span
+          key={badgeKey}
+          className="absolute -top-1.5 -right-1.5 bg-[#2D2319] text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full cart-badge-pop leading-none"
+        >
+          {cartCount > 99 ? "99+" : cartCount}
+        </span>
+      )}
+    </button>
   );
 
   useEffect(() => {
@@ -115,7 +144,7 @@ export default function Navbar() {
                     e.stopPropagation();
                     setShowLocalePopup(!showLocalePopup);
                   }}
-                  className="flex items-center justify-center h-full"
+                  className="flex items-center justify-center h-full nav-icon-hover"
                 >
                   <HiOutlineGlobeAlt size={26} />
                 </button>
@@ -128,6 +157,9 @@ export default function Navbar() {
                 )}
               </div>
             )}
+
+            {/* CART ICON */}
+            {!isAdmin && <CartButton size={24} />}
 
             {/* USER / SIGNIN */}
             {user ? (
@@ -209,6 +241,7 @@ export default function Navbar() {
               <>
                 {navItem("/admin/products", "Products")}
                 {navItem("/admin/reviews", "Reviews")}
+                {navItem("/admin/carts", "Carts")}
                 {navItem("/admin/mails", "Mails")}
                 {navItem("/admin/users", "Users")}
               </>
@@ -234,7 +267,7 @@ export default function Navbar() {
                     e.stopPropagation();
                     setShowLocalePopup(!showLocalePopup);
                   }}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex items-center gap-2 cursor-pointer nav-icon-hover"
                 >
                   <HiOutlineGlobeAlt />
                   {language.toUpperCase()} - {currency}
@@ -248,6 +281,9 @@ export default function Navbar() {
                 )}
               </div>
             )}
+
+            {/* CART ICON */}
+            {!isAdmin && <CartButton size={22} />}
 
             {user ? (
               <div

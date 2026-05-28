@@ -97,5 +97,15 @@
   "heroTitle1": "6 mm Tri Color Bangles",
   "heroTitle2" : "Basket Earrings",
   "heroSubtitle1": "Experience the perfect harmony of gold, silver, and rose tones in these versatile 6 mm bangles designed for effortless elegance.",
-  "heroSubtitle2": "Masterfully woven for timeless appeal, these basket earrings offer a textured, sophisticated design that elevates your style with effortless grace."
+  "heroSubtitle2": "Masterfully woven for timeless appeal, these basket earrings offer a textured, sophisticated design that elevates your style with effortless grace.",
+  "addToCart": "Add to Cart",
+  "addedToCart": "Added ✓",
+  "yourCart": "Your Cart",
+  "cartEmpty": "Your cart is empty",
+  "browseProducts": "Discover our premium jewelry collection",
+  "clearCart": "Clear Cart",
+  "estimatedTotal": "Estimated Total",
+  "chatOnWhatsApp": "Chat on WhatsApp",
+  "cartGuestMessage": "Create an account to save your cart across devices. Your cart is stored in this browser for now.",
+  "quantity": "Qty"
 }
