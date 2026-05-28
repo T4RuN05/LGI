@@ -55,7 +55,7 @@ export default async function Image({ params }) {
       
       // Satori crashes on WebP and large images. Cloudinary allows us to force JPG and downscale.
       if (url.includes("res.cloudinary.com")) {
-        url = url.replace("/upload/", "/upload/w_300,h_300,c_pad,b_white,f_jpg,q_80/");
+        url = url.replace("/upload/", "/upload/w_600,h_600,c_fill,f_jpg,q_80/");
         url = url.replace("f_auto,q_auto/", "");
         url = url.replace("f_auto/", "");
       }
@@ -66,61 +66,62 @@ export default async function Image({ params }) {
   const totalProducts = cart.items.length;
   const moreCount = totalProducts > 4 ? totalProducts - 4 : 0;
   
-  // Create a base white background container
+  // Create a base background container
   const containerStyle = {
-    background: "#F9F7F4", // match site theme
+    background: "#ffffff",
     width: "100%",
     height: "100%",
     display: "flex",
+    padding: "8px",
     position: "relative",
   };
 
   const imageStyle = {
     width: "100%",
     height: "100%",
-    objectFit: "contain",
+    objectFit: "cover",
   };
 
   const imageWrapperStyle = {
     display: "flex",
-    background: "white",
+    background: "#f0f0f0",
     alignItems: "center",
     justifyContent: "center",
-    padding: "20px",
+    overflow: "hidden",
   };
 
   let content;
 
   if (images.length === 1) {
     content = (
-      <div style={{ ...imageWrapperStyle, width: "100%", height: "100%" }}>
+      <div style={{ ...imageWrapperStyle, width: "100%", height: "100%", borderRadius: "16px" }}>
         <img src={images[0]} style={imageStyle} />
       </div>
     );
   } else if (images.length === 2) {
     content = (
-      <div style={{ display: "flex", width: "100%", height: "100%", gap: "4px", padding: "4px" }}>
-        <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+      <div style={{ display: "flex", width: "100%", height: "100%", gap: "8px" }}>
+        <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
           <img src={images[0]} style={imageStyle} />
         </div>
-        <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+        <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
           <img src={images[1]} style={imageStyle} />
         </div>
       </div>
     );
   } else if (images.length === 3) {
     content = (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", gap: "4px", padding: "4px" }}>
-        <div style={{ display: "flex", width: "100%", height: "50%", gap: "4px" }}>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", gap: "8px" }}>
+        <div style={{ display: "flex", width: "100%", height: "50%", gap: "8px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
             <img src={images[0]} style={imageStyle} />
           </div>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
             <img src={images[1]} style={imageStyle} />
           </div>
         </div>
         <div style={{ display: "flex", width: "100%", height: "50%", justifyContent: "center" }}>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
             <img src={images[2]} style={imageStyle} />
           </div>
         </div>
@@ -129,55 +130,48 @@ export default async function Image({ params }) {
   } else {
     // 4 or more
     content = (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", gap: "4px", padding: "4px", position: "relative" }}>
-        <div style={{ display: "flex", width: "100%", height: "50%", gap: "4px" }}>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", gap: "8px" }}>
+        <div style={{ display: "flex", width: "100%", height: "50%", gap: "8px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
             <img src={images[0]} style={imageStyle} />
           </div>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
             <img src={images[1]} style={imageStyle} />
           </div>
         </div>
-        <div style={{ display: "flex", width: "100%", height: "50%", gap: "4px" }}>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+        <div style={{ display: "flex", width: "100%", height: "50%", gap: "8px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px" }}>
             <img src={images[2]} style={imageStyle} />
           </div>
-          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "12px" }}>
+          <div style={{ ...imageWrapperStyle, width: "50%", height: "100%", borderRadius: "16px", position: "relative" }}>
             {images[3] ? <img src={images[3]} style={imageStyle} /> : null}
+            {moreCount > 0 && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: 64,
+                  fontWeight: "bold",
+                }}
+              >
+                +{moreCount}
+              </div>
+            )}
           </div>
         </div>
       </div>
     );
   }
 
-  const badge = moreCount > 0 ? (
-    <div
-      style={{
-        position: "absolute",
-        bottom: 40,
-        right: 40,
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
-        color: "white",
-        width: 120,
-        height: 120,
-        borderRadius: "60px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 42,
-        fontWeight: "bold",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-      }}
-    >
-      +{moreCount}
-    </div>
-  ) : null;
-
   return new ImageResponse(
     (
       <div style={containerStyle}>
         {content}
-        {badge}
       </div>
     ),
     { ...size }
