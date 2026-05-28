@@ -27,6 +27,9 @@ export async function generateMetadata({ params }) {
   const title = `Shared Cart (${cart.items.length} items)`;
   const description = `View this shared cart with an estimated total of $${cart.totals.min.toFixed(2)} - $${cart.totals.max.toFixed(2)}.`;
 
+  const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || "https://www.lordganeshaimpex.com";
+  const imageUrl = `${baseUrl}/cart/share/${id}/opengraph-image`;
+
   return {
     title,
     description,
@@ -36,7 +39,7 @@ export async function generateMetadata({ params }) {
       type: "website",
       images: [
         {
-          url: `/cart/share/${id}/opengraph-image`,
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -47,7 +50,7 @@ export async function generateMetadata({ params }) {
       card: "summary_large_image",
       title,
       description,
-      images: [`/cart/share/${id}/opengraph-image`],
+      images: [imageUrl],
     }
   };
 }

@@ -47,10 +47,21 @@ export default async function Image({ params }) {
     );
   }
 
-  // Extract first image from each product
+  // Extract first image from each product and forcefully optimize for Satori (must be JPG, small size)
   const images = cart.items
-    .map((item) => item.image)
-    .filter((img) => img && img !== "");
+    .map((item) => {
+      let url = item.image;
+      if (!url) return null;
+      
+      // Satori crashes on WebP and large images. Cloudinary allows us to force JPG and downscale.
+      if (url.includes("res.cloudinary.com")) {
+        url = url.replace("/upload/", "/upload/w_300,h_300,c_pad,b_white,f_jpg,q_80/");
+        url = url.replace("f_auto,q_auto/", "");
+        url = url.replace("f_auto/", "");
+      }
+      return url;
+    })
+    .filter(Boolean);
 
   const totalProducts = cart.items.length;
   const moreCount = totalProducts > 4 ? totalProducts - 4 : 0;
