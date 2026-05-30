@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ConfirmModal from "@/app/components/ConfirmModal";
 import toast from "react-hot-toast";
 import { useLocale } from "@/context/LocaleContext";
@@ -21,14 +21,19 @@ export default function ProductCard({
 
   const [showConfirm, setShowConfirm] = useState(false);
   const imageUrl = product?.images?.[0]?.url;
+  const rawVideoUrl = product?.video?.url;
+  const videoUrl = rawVideoUrl ? rawVideoUrl.replace("/upload/", "/upload/f_auto,q_auto/") : null;
   const minPrice = product?.priceRange?.min;
   const maxPrice = product?.priceRange?.max;
   const [updatingFeatured, setUpdatingFeatured] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const isCompact = variant === "compact";
   const { currency, rates, t } = useLocale();
   const { addToCart, isInCart } = useCart();
   const inCart = isInCart(product?._id);
+  const hoverTimerRef = useRef(null);
+  const videoRef = useRef(null);
 
   const convertedMin = convertPrice(minPrice, currency, rates);
   const convertedMax = convertPrice(maxPrice, currency, rates);
@@ -37,6 +42,31 @@ export default function ProductCard({
     minPrice !== maxPrice
       ? `${formatCurrency(convertedMin, currency)} - ${formatCurrency(convertedMax, currency)}`
       : formatCurrency(convertedMin, currency);
+
+  const handleMouseEnter = () => {
+    if (!videoUrl) return;
+    hoverTimerRef.current = setTimeout(() => {
+      setShowVideo(true);
+      // Start playback after state update
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().catch(() => {});
+        }
+      }, 50);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    setShowVideo(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -65,9 +95,13 @@ export default function ProductCard({
         ${isCompact ? "p-4 md:p-6" : "p-4 md:p-6 h-full"}`}
     >
       <Link href={`/products/${product.slug}`} className="flex-grow">
-        <div className="cursor-pointer group h-full flex flex-col">
+        <div
+          className="cursor-pointer group h-full flex flex-col"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <div
-            className={`bg-white flex items-center justify-center overflow-hidden
+            className={`bg-white flex items-center justify-center overflow-hidden relative
              ${isCompact ? "h-32 mb-2" : "aspect-square mb-4 md:mb-6"}`}
           >
             <img
@@ -75,6 +109,30 @@ export default function ProductCard({
               alt={product.title}
               className="max-h-full max-w-full object-contain transition-transform duration-300 ease-in-out group-hover:scale-110"
             />
+
+            {/* Video overlay on hover */}
+            {videoUrl && (
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                muted
+                loop
+                playsInline
+                preload="none"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${
+                  showVideo ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+              />
+            )}
+
+            {/* Video indicator badge */}
+            {videoUrl && !showVideo && (
+              <div className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor">
+                  <polygon points="0,0 10,6 0,12" />
+                </svg>
+              </div>
+            )}
           </div>
 
           <p

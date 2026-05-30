@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { FaWhatsapp, FaChevronUp, FaChevronDown } from "react-icons/fa";
+import { FaWhatsapp, FaChevronUp, FaChevronDown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FiUpload, FiX, FiTrash2, FiShoppingBag } from "react-icons/fi";
 import AuthModal from "@/app/components/AuthModal";
 import { useAuth } from "@/context/AuthContext";
@@ -46,6 +46,10 @@ export default function ProductDetails({ product }) {
   const [deletingReview, setDeletingReview] = useState(false);
 
   const activeImage = product?.images?.[currentIndex]?.url;
+  const rawVideoUrl = product?.video?.url;
+  const videoUrl = rawVideoUrl ? rawVideoUrl.replace("/upload/", "/upload/f_auto,q_auto/") : null;
+  const totalSlides = (product?.images?.length || 0) + (videoUrl ? 1 : 0);
+  const isVideoSlide = videoUrl && currentIndex === (product?.images?.length || 0);
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -271,13 +275,13 @@ export default function ProductDetails({ product }) {
 
   const handlePrevImage = () => {
     setCurrentIndex((prev) =>
-      prev === 0 ? product.images.length - 1 : prev - 1,
+      prev === 0 ? totalSlides - 1 : prev - 1,
     );
   };
 
   const handleNextImage = () => {
     setCurrentIndex((prev) =>
-      prev === product.images.length - 1 ? 0 : prev + 1,
+      prev === totalSlides - 1 ? 0 : prev + 1,
     );
   };
 
@@ -397,12 +401,30 @@ export default function ProductDetails({ product }) {
                       onMouseEnter={() => setCurrentIndex(index)}
                       onClick={() => setCurrentIndex(index)}
                       className={`w-20 h-20 object-contain border rounded-md cursor-pointer transition hover:shadow-md ${
-                        activeImage === img.url
+                        activeImage === img.url && !isVideoSlide
                           ? "border-black"
                           : "border-gray-300"
                       }`}
                     />
                   ))}
+
+                  {/* Video Thumbnail */}
+                  {videoUrl && (
+                    <div
+                      onMouseEnter={() => setCurrentIndex(product.images?.length || 0)}
+                      onClick={() => setCurrentIndex(product.images?.length || 0)}
+                      className={`w-20 h-20 border rounded-md cursor-pointer transition hover:shadow-md relative flex items-center justify-center bg-gray-900 ${
+                        isVideoSlide ? "border-black" : "border-gray-300"
+                      }`}
+                    >
+                      <div className="text-white flex flex-col items-center">
+                        <svg width="16" height="18" viewBox="0 0 10 12" fill="currentColor">
+                          <polygon points="0,0 10,6 0,12" />
+                        </svg>
+                        <span className="text-[9px] mt-1 tracking-wide">VIDEO</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* DOWN ARROW */}
@@ -438,6 +460,19 @@ export default function ProductDetails({ product }) {
                       />
                     </div>
                   ))}
+
+                  {/* Video Slide */}
+                  {videoUrl && (
+                    <div className="w-full h-full flex-shrink-0 flex items-center justify-center pointer-events-auto bg-black">
+                      <video
+                        src={videoUrl}
+                        controls
+                        muted
+                        playsInline
+                        className="max-w-full max-h-full"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* LEFT ARROW */}
@@ -466,7 +501,7 @@ export default function ProductDetails({ product }) {
 
                 {/* DOTS */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 md:hidden z-10">
-                  {product.images?.map((_, index) => (
+                  {Array.from({ length: totalSlides }).map((_, index) => (
                     <div
                       key={index}
                       className={`h-2 rounded-full transition-all ${
@@ -974,82 +1009,99 @@ export default function ProductDetails({ product }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md"
           >
-            {/* Dark Overlay */}
-            <div
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            {/* Close Button */}
+            <button
               onClick={() => setShowGallery(false)}
-            />
-
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              className="relative w-[90%] max-w-[1200px] h-[85vh] bg-[#F2F1EC] rounded-lg p-6 overflow-hidden"
+              className="absolute top-6 right-6 text-white/70 hover:text-white transition p-2 z-10 cursor-pointer"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setShowGallery(false)}
-                className="absolute top-4 right-4 text-black text-2xl z-10"
+              <FiX size={32} />
+            </button>
+
+            {/* Left Arrow */}
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition p-4 z-10 cursor-pointer"
+            >
+              <FaChevronLeft size={36} />
+            </button>
+
+            {/* SLIDING STRIP WRAPPER */}
+            <div className="relative w-full flex-1 overflow-hidden">
+              <div
+                className="flex h-full w-full transition-transform duration-300 ease-in-out items-center"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
               >
-                ✕
-              </button>
-
-              {/* Left Arrow */}
-              <button
-                onClick={handlePrevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-4 rounded-full shadow z-10"
-              >
-                <FaChevronUp className="-rotate-90" size={18} />
-              </button>
-
-              {/* SLIDING STRIP WRAPPER — this is the key: full size, overflow hidden */}
-              <div className="absolute inset-0 overflow-hidden rounded-lg">
-                <div
-                  className="flex h-full w-full transition-transform duration-300 ease-in-out"
-                  style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-                >
-                  {product.images?.map((img, index) => (
-                    <div
-                      key={index}
-                      className="w-full h-full flex-shrink-0 flex items-center justify-center pb-24 pt-12"
-                    >
-                      <img
-                        src={img.url}
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Arrow */}
-              <button
-                onClick={handleNextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-4 rounded-full shadow z-10"
-              >
-                <FaChevronDown className="rotate-270" size={18} />
-              </button>
-
-              {/* Bottom Thumbnails */}
-              <div className="absolute bottom-4 left-4 right-4 flex gap-3 justify-center bg-white/80 backdrop-blur-md px-4 py-2 rounded-md overflow-x-auto z-10">
                 {product.images?.map((img, index) => (
-                  <img
+                  <div
                     key={index}
-                    src={img.url}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`w-16 h-16 flex-shrink-0 object-contain cursor-pointer border rounded-md ${
-                      currentIndex === index
-                        ? "border-black"
-                        : "border-gray-300"
-                    }`}
-                  />
+                    className="w-full h-full flex-shrink-0 flex items-center justify-center p-4 md:p-12"
+                  >
+                    <img
+                      src={img.url}
+                      className="max-h-full max-w-full object-contain drop-shadow-2xl"
+                    />
+                  </div>
                 ))}
+
+                {/* Video Slide in Modal */}
+                {videoUrl && (
+                  <div className="w-full h-full flex-shrink-0 flex items-center justify-center p-4 md:p-12">
+                    <video
+                      src={videoUrl}
+                      controls
+                      muted
+                      playsInline
+                      className="max-h-full max-w-full rounded-md shadow-2xl bg-black"
+                    />
+                  </div>
+                )}
               </div>
-            </motion.div>
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={handleNextImage}
+              className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition p-4 z-10 cursor-pointer"
+            >
+              <FaChevronRight size={36} />
+            </button>
+
+            {/* Bottom Thumbnails */}
+            <div className="h-24 w-full flex gap-3 justify-center items-center px-4 overflow-x-auto z-10 mb-4">
+              {product.images?.map((img, index) => (
+                <img
+                  key={index}
+                  src={img.url}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`h-16 w-16 flex-shrink-0 object-cover cursor-pointer rounded-md transition duration-200 ${
+                    currentIndex === index && !isVideoSlide
+                      ? "ring-2 ring-white scale-110 opacity-100"
+                      : "opacity-50 hover:opacity-100"
+                  }`}
+                />
+              ))}
+
+              {/* Video Thumbnail in Modal */}
+              {videoUrl && (
+                <div
+                  onClick={() => setCurrentIndex(product.images?.length || 0)}
+                  className={`h-16 w-16 flex-shrink-0 cursor-pointer rounded-md transition duration-200 relative flex items-center justify-center bg-gray-900 border border-white/20 ${
+                    isVideoSlide 
+                      ? "ring-2 ring-white scale-110 opacity-100" 
+                      : "opacity-50 hover:opacity-100"
+                  }`}
+                >
+                  <div className="text-white flex flex-col items-center">
+                    <svg width="14" height="16" viewBox="0 0 10 12" fill="currentColor">
+                      <polygon points="0,0 10,6 0,12" />
+                    </svg>
+                    <span className="text-[8px] mt-1 tracking-wide font-medium">VIDEO</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
