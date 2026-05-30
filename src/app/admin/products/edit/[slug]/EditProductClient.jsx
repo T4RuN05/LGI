@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import MinimalEditor from "@/app/components/admin/MinimalEditor";
-import { FiUpload, FiX } from "react-icons/fi";
+import { FiUpload, FiX, FiVideo } from "react-icons/fi";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import EditProductSkeleton from "@/app/components/admin/EditProductSkeleton";
 import toast from "react-hot-toast";
@@ -96,6 +96,11 @@ export default function EditProductPage() {
   const [replyMap, setReplyMap] = useState({});
   const [sendingMailId, setSendingMailId] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [video, setVideo] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [videoProgress, setVideoProgress] = useState(0);
+  const videoXhrRef = useRef(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -109,6 +114,46 @@ export default function EditProductPage() {
     faq: "",
   });
   const sensors = useSensors(useSensor(PointerSensor));
+
+  // ================= PREVENT REFRESH =================
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (uploading || uploadingVideo || updating) {
+        e.preventDefault();
+        e.returnValue = "Are you sure you want to leave? Upload is in progress.";
+        return e.returnValue;
+      }
+    };
+
+    const handleGlobalClick = (e) => {
+      if (uploading || uploadingVideo || updating) {
+        const target = e.target.closest("a");
+        if (target && target.href && !target.href.startsWith("javascript:") && target.target !== "_blank") {
+          if (!window.confirm("An upload or update is in progress. Are you sure you want to leave?")) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleGlobalClick, { capture: true });
+    
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleGlobalClick, { capture: true });
+    };
+  }, [uploading, uploadingVideo, updating]);
+
+  // ================= ABORT ON UNMOUNT =================
+  useEffect(() => {
+    return () => {
+      if (videoXhrRef.current) {
+        videoXhrRef.current.abort();
+      }
+    };
+  }, []);
 
   // ================= FETCH PRODUCT =================
   useEffect(() => {
@@ -139,6 +184,7 @@ export default function EditProductPage() {
 
       setImages(data.images || []);
       setActiveImage(data.images?.[0]?.url || null);
+      setVideo(data.video?.url ? data.video : null);
       setTimeout(() => setLoading(false), 200);
     };
 
@@ -183,25 +229,32 @@ export default function EditProductPage() {
       formData.append("images", file);
     }
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
-      {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      },
-    );
+    try {
+      setUploading(true);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/upload`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        },
+      );
 
-    const data = await res.json();
-    if (!res.ok) {
-      router.push("/admin/products");
-      return;
-    }
+      const data = await res.json();
+      if (!res.ok) {
+        router.push("/admin/products");
+        return;
+      }
 
-    setImages((prev) => [...prev, ...data]);
+      setImages((prev) => [...prev, ...data]);
 
-    if (!activeImage && data.length > 0) {
-      setActiveImage(data[0].url);
+      if (!activeImage && data.length > 0) {
+        setActiveImage(data[0].url);
+      }
+    } catch (err) {
+      toast.error("Image upload failed");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -288,6 +341,114 @@ export default function EditProductPage() {
     setForm({ ...form, [activeTab]: value });
   };
 
+  // ================= VIDEO UPLOAD (Direct to Cloudinary) =================
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Client-side validation
+    if (!file.type.startsWith("video/")) {
+      toast.error("Please select a video file");
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("Video must be under 50MB");
+      return;
+    }
+
+    setUploadingVideo(true);
+    setVideoProgress(0);
+    const toastId = toast.loading("Preparing upload...", { duration: Infinity });
+
+    try {
+      // Step 1: Get signed credentials from backend
+      const sigRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/video-signature`,
+        { credentials: "include" }
+      );
+
+      if (!sigRes.ok) {
+        toast.error("Failed to authorize upload", { id: toastId });
+        setUploadingVideo(false);
+        return;
+      }
+
+      const { signature, timestamp, api_key, cloud_name, folder } = await sigRes.json();
+
+      // Step 2: Upload directly to Cloudinary
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", api_key);
+      formData.append("timestamp", timestamp);
+      formData.append("signature", signature);
+      formData.append("folder", folder);
+      formData.append("resource_type", "video");
+
+      toast.loading("Uploading video... 0%", { id: toastId, duration: Infinity });
+
+      const xhr = new XMLHttpRequest();
+      videoXhrRef.current = xhr;
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloud_name}/video/upload`);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const pct = Math.round((event.loaded / event.total) * 100);
+          setVideoProgress(pct);
+          toast.loading(`Uploading video... ${pct}%`, { id: toastId, duration: Infinity });
+        }
+      };
+
+      xhr.onload = () => {
+        videoXhrRef.current = null;
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            setVideo({
+              url: data.secure_url,
+              public_id: data.public_id,
+            });
+            toast.success("Video uploaded successfully", { id: toastId, duration: 4000 });
+          } else {
+            toast.error(data.error?.message || "Video upload failed", { id: toastId, duration: 4000 });
+          }
+        } catch {
+          toast.error("Video upload failed", { id: toastId, duration: 4000 });
+        } finally {
+          setUploadingVideo(false);
+          setVideoProgress(0);
+        }
+      };
+
+      xhr.onerror = () => {
+        videoXhrRef.current = null;
+        toast.error("Video upload failed — check your connection", { id: toastId, duration: 4000 });
+        setUploadingVideo(false);
+        setVideoProgress(0);
+      };
+
+      xhr.onabort = () => {
+        videoXhrRef.current = null;
+        toast.dismiss(toastId);
+        setUploadingVideo(false);
+        setVideoProgress(0);
+      };
+
+      xhr.send(formData);
+    } catch (err) {
+      toast.error("Video upload failed", { id: toastId, duration: 4000 });
+      setUploadingVideo(false);
+      setVideoProgress(0);
+    }
+
+    e.target.value = "";
+  };
+
+  const handleRemoveVideo = () => {
+    setVideo(null);
+    toast.success("Video removed");
+  };
+
   const handleUpdate = async () => {
     try {
       setUpdating(true);
@@ -311,6 +472,7 @@ export default function EditProductPage() {
             description: form.description,
             faq: form.faq,
             images,
+            video: video || { url: null, public_id: null },
           }),
         },
       );
@@ -425,6 +587,70 @@ export default function EditProductPage() {
                 />
               </label>
             </div>
+          </div>
+
+          {/* VIDEO SECTION */}
+          <div className="mt-6 bg-[#F2F1EC] shadow-md p-6 rounded-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold tracking-wide flex items-center gap-2">
+                <FiVideo size={16} />
+                Product Video
+              </h3>
+              <span className="text-xs text-gray-500">Max 50MB • All formats supported</span>
+            </div>
+
+            {video?.url ? (
+              <div className="relative">
+                <video
+                  src={video.url}
+                  controls
+                  muted
+                  className="w-full max-h-[300px] rounded-lg bg-black"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveVideo}
+                  className="absolute top-3 right-3 bg-black/80 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 transition cursor-pointer"
+                >
+                  <FiX size={16} />
+                </button>
+              </div>
+            ) : (
+              <label
+                className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg py-8 cursor-pointer transition ${
+                  uploadingVideo
+                    ? "opacity-60 pointer-events-none border-gray-300"
+                    : "border-gray-400 hover:border-black hover:bg-[#e8ded5]/30"
+                }`}
+              >
+                {uploadingVideo ? (
+                  <>
+                    <div className="w-full max-w-[200px] mb-3">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-black rounded-full transition-all duration-300 ease-out"
+                          style={{ width: `${videoProgress}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 text-center mt-1.5">{videoProgress}%</p>
+                    </div>
+                    <p className="text-sm text-gray-600">Uploading video...</p>
+                  </>
+                ) : (
+                  <>
+                    <FiVideo size={28} className="mb-2 text-gray-500" />
+                    <p className="text-sm text-gray-600">Click to upload a video</p>
+                    <p className="text-xs text-gray-400 mt-1">MP4, MOV, WebM, AVI, MKV & more</p>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="video/*"
+                  hidden
+                  onChange={handleVideoUpload}
+                />
+              </label>
+            )}
           </div>
 
           {/* RIGHT FORM */}
@@ -596,11 +822,11 @@ export default function EditProductPage() {
         <div className="text-right">
           <button
             onClick={handleUpdate}
-            disabled={updating}
+            disabled={updating || uploading || uploadingVideo}
             className={`
     bg-black text-white px-8 py-3 transition
     ${
-      updating
+      updating || uploading || uploadingVideo
         ? "opacity-50 cursor-not-allowed"
         : "hover:opacity-90 cursor-pointer"
     }

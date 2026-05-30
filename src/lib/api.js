@@ -22,7 +22,9 @@ export async function fetchProducts(categorySlug, search, page = 1, limit = 24) 
 
 
 export const fetchProductBySlug = async (slug) => {
-  const res = await fetch(`${BASE_URL}/products/${slug}`);
+  const res = await fetch(`${BASE_URL}/products/${slug}`, {
+    cache: "no-store",
+  });
   return res.json();
 };
 
